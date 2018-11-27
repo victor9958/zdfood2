@@ -1,0 +1,240 @@
+<!-- 食堂列表 -->
+<title>核销机</title>
+<div class="layui-fluid full-height  ">
+    <div class="layui-card full-height over-auto ">
+        <div class="layui-card-header">核销机</div>
+        <div class="layui-card-body">
+            <fieldset class="layui-elem-field">
+                <legend>搜索条件</legend>
+                <div class="layui-form">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+
+                            <div class="layui-input-inline">
+                                <input type="text" name="machineSn" autocomplete="off" placeholder="请输入设备号" class="layui-input">
+                            </div>
+                            <!-- 下拉列表模板渲染  -->
+                            <div class="layui-input-inline">
+                                <script type="text/html" template lay-url="{{layui.setter.baseUrl}}/system/site/canteens"
+                                    lay-done="{{layui.form.render()}}">
+                                    <select name="canteenId" id="canteen" lay-filter="canteen">
+                                        <option value="" disabled selected>请选择食堂</option>
+                                        {{# layui.each(d.data, function(index, item){ }}
+                                        <option value="{{item.id}}">{{item.name}}</option>
+                                        {{# }); }}
+                                    </select>
+                                </script>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <button class="layui-btn " lay-submit lay-filter="search">查询</button>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+
+            <div class="m-b-10 btn-bar">
+                <button class="layui-btn layui-btn-sm" lay-submit="" lay-filter="LAY-add-machine">新增设备</button>
+            </div>
+            <!-- 财务报表详情 -->
+            <table class="layui-hide" id="machine" lay-filter="machine"></table>
+            <script type="text/html" id="machine-list">
+                <a class="layui-btn layui-btn-xs layui-btn " lay-event="edit">编辑</a>
+                <button class="layui-btn layui-btn-xs layui-btn-danger" lay-event="remove">删除</button>
+            </script>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+    layui.use(['admin', 'form', 'table', 'laydate'], function () {
+        var $ = layui.$,
+            admin = layui.admin,
+            view = layui.view,
+            setter = layui.setter,
+            form = layui.form,
+            laydate = layui.laydate,
+            table = layui.table,
+            upload = layui.upload,
+            laydate = layui.laydate;
+
+        $(function () {
+            var cols = [[
+                { field: 'canteen_id', title: 'id', hide: true }
+                , { field: 'canteenName', title: '餐厅名称' }
+                , { field: 'machine_sn', title: '设备SN号' }
+                , { field: 'remark', title: '设备备注' }
+                , { field: 'updated_at', title: '最后操作时间' }
+                , { title: '详情', align: 'center', toolbar: '#machine-list' }
+            ]];
+            getData();
+            function getData(data) {
+                table.render(
+                    {
+                        elem: '#machine'
+                        , url: setter.baseUrl + '/system/site/machines'
+                        , response: setter.responseTable
+                        , page: setter.pageTable
+                        , cols: cols,
+                        where: data
+                    }
+                );
+            }
+
+
+            //点击搜索订单
+            form.on('submit(search)', function (obj) {
+                console.log(obj);
+                table.reload('machine', {
+                    url: setter.baseUrl + '/system/site/machines',
+                    response: setter.responseTable,
+                    page: setter.pageTable,
+                    cols: cols,
+                    where: obj.field
+                });
+            });
+
+
+            // 新增设备
+            form.on('submit(LAY-add-machine)', function (obj) {
+                console.log(obj);
+                admin.popupCenter({
+                    id: 'Key-addUser'
+                    , title: '新增设备'
+                    , area: ['400px', '320px']
+                    , success: function () {
+                        view(this.id).render('setting/system/canteen/addMachine');
+                    }
+                });
+            });
+
+            // 添加用户的确定事件
+            form.on('submit(LAY-ensure-machine)', function (obj) {
+                //   alert('ssssssss');
+
+
+                var data = {};
+                data = obj.field;
+                console.log(data);
+                //请求添加部门接口
+                admin.req({
+                    url: setter.baseUrl + '/system/site/machine'
+                    , type: 'post'
+                    , data: data
+                    , done: function (res) {
+                        view('old_mobile')
+                        layer.msg(res.message, { icon: 1, time: 2000 });
+                        layer.close(admin.popup.index);//关闭右侧面板
+                        getData();
+                    }
+                });
+            });
+
+
+
+
+            // 监听工具条的点击事件
+            table.on('tool(machine)', function (obj) {
+                var data = obj.data; //获得当前行数据
+                var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+                var tr = obj.tr; //获得当前行 tr 的DOM对象
+                var id = data.id;
+                var deviceNumber = $(this).parent().parent().prev().prev().prev().text();
+                var deviceRemark = $(this).parent().parent().prev().prev().text();
+                var deviceId = $(this).parent().parent().prev().prev().prev().prev().prev().text();
+                var deviceCanteen = $(this).parent().parent().prev().prev().prev().prev().text();
+                console.log(deviceNumber);
+                console.log(deviceRemark);
+                console.log(deviceId);
+                console.log(deviceCanteen);
+                // return;
+                console.log('iddidid' + id);
+                if (obj.event === 'edit') {
+                    layui.data('deviceNumber', {
+                        key: 'number'
+                        , value: deviceNumber
+                    });
+                    layui.data('deviceRemark', {
+                        key: 'remark'
+                        , value: deviceRemark
+                    });
+                    layui.data('deviceId', {
+                        key: 'id'
+                        , value: deviceId
+                    });
+                    layui.data('deviceCanteen', {
+                        key: 'canteen'
+                        , value: deviceCanteen
+                    });
+                    layui.data('id', {
+                        key: 'id'
+                        , value: id
+                    });
+
+                    //编辑按钮
+                    admin.popupCenter({
+                        id: 'Key-editmin'
+                        , title: '编辑用户'
+                        , area: ['456px', '420px']
+                        , success: function () {
+                            view(this.id).render('/setting/system/canteen/ediMachine');
+                        }
+                    });
+                } else if (obj.event === 'remove') {
+
+                    var data = {};
+                    data = obj.field;
+                    console.log(data);
+                    //请求添加部门接口
+                    admin.req({
+                        url: setter.baseUrl + '/system/site/machine/' + id
+                        , type: 'delete'
+                        , data: {}
+                        , done: function (res) {
+                            // view('old_mobile')
+                            layer.msg(res.message, { icon: 1, time: 2000 });
+                            layer.close(admin.popup.index);//关闭右侧面板
+                            // getData(id);
+                            layer.closeAll();
+                            getData();
+                        }
+                    });
+
+                }
+
+            });
+
+            form.on('submit(LAY-ensure-eit)', function (obj) {
+                // 核销机的编辑再看看
+                var data = {};
+                data = obj.field;
+                console.log(data);
+                //请求添加部门接口
+                admin.req({
+                    url: setter.baseUrl + '/system/site/machine/' + layui.data('id').id
+                    , type: 'put'
+                    , data: data
+                    , done: function (res) {
+                        // view('old_mobile')
+                        layer.msg(res.message, { icon: 1, time: 2000 });
+                        layer.close(admin.popup.index);//关闭右侧面板
+                        // getData(id);
+                        getData();
+                    }
+                });
+            });
+
+
+
+
+            $(document).off('click', '#cancel');
+            $(document).on('click', '#cancel', function () {
+                layer.closeAll();
+            });
+
+
+        });
+    });
+</script>

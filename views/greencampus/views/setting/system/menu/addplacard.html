@@ -1,0 +1,167 @@
+<style>
+    .clearfix::after {
+        display: block;
+        content: '';
+        clear: both;
+    }
+
+    .add-slideshow-wrapper {
+        padding: 30px 20px;
+    }
+
+    .add-slideshow-wrapper .line {
+        margin-bottom: 10px;
+        height: 38px;
+        line-height: 38px;
+        position: relative;
+    }
+
+    .add-slideshow-wrapper .line.mb-20 {
+        margin-bottom: 20px;
+    }
+
+    .add-slideshow-wrapper .line.imgupload {
+        height: 108px;
+        line-height: 108px;
+    }
+
+    .add-slideshow-wrapper .line.imgupload .long {
+        height: 108px;
+        line-height: 108px;
+    }
+
+    .add-slideshow-wrapper .line.imgupload .long .add-img {
+        box-sizing: border-box;
+        width: 80px;
+        height: 80px;
+        line-height: 80px;
+        margin-top: 14px;
+        margin-right: 12px;
+        border: 1px solid #e6e6e6;
+        text-align: center;
+    }
+
+    .add-slideshow-wrapper .line.imgupload .long .add-img img {
+        width: 100%;
+        height: 100%;
+        vertical-align: top;
+        cursor: pointer;
+    }
+
+    .add-slideshow-wrapper .line.imgupload .long .add-img .icon {
+        width: 40px;
+        height: 40px;
+        margin-top: 20px;
+        color: #999;
+    }
+
+    .add-slideshow-wrapper .line.imgupload .long .tips {
+        margin-top: 14px;
+        color: #999;
+    }
+
+    .add-slideshow-wrapper .line.imgupload .long .tips p {
+        line-height: 23px;
+    }
+
+    .add-slideshow-wrapper .line .title {
+        width: 118px;
+        text-align: center;
+        color: #666;
+        background: #fbfbfb;
+        border: 1px solid #e6e6e6;
+    }
+
+    .add-slideshow-wrapper .line .long {
+        width: 572px;
+        height: 38px;
+        line-height: 38px;
+        padding-left: 10px;
+        border: 1px solid #e6e6e6;
+    }
+
+    .add-slideshow-wrapper .line .long input {
+        border: none;
+    }
+
+    .add-slideshow-wrapper .btns {
+        margin-top: 40px;
+    }
+</style>
+
+<div class="add-slideshow-wrapper layui-form">
+    <div class="line clearfix">
+        <div class="title pull-left">名称</div>
+        <div class="long layui-inline">
+            <input name="name" type="text" class="layui-input" placeholder="例如：上线宣传" lay-verify="required">
+        </div>
+    </div>
+    <div class="line clearfix">
+        <div class="title pull-left">排序</div>
+        <div class="long layui-inline">
+            <input name="sort" type="text" class="layui-input" placeholder="升序排序" lay-verify="required">
+        </div>
+    </div>
+    <div class="line clearfix mb-20">
+        <div class="title pull-left">状态</div>
+        <div class="long layui-inline">
+            <input name="status" type="radio" class="layui-input" value="0" title="启动" lay-verify="required" checked>
+            <input name="status" type="radio" class="layui-input" value="1" title="禁用" lay-verify="required">
+        </div>
+    </div>
+    <div class="line clearfix imgupload">
+        <div class="title pull-left">图片</div>
+        <div class="long layui-inline clearfix">
+            <div class="add-img pull-left" id="addImg">
+                <svg class="icon" aria-hidden="true">
+                    <use xlink:href="#icon-shchtp"></use>
+                </svg>
+            </div>
+            <div class="tips pull-left">
+                <p>图片大小:2M以内</p>
+                <p>建议尺寸:640*360px</p>
+            </div>
+        </div>
+    </div>
+    <div class="line clearfix">
+        <div class="title pull-left">链接</div>
+        <div class="long layui-inline">
+            <input name="jumpUrl" type="text" class="layui-input" placeholder="添加跳转链接地址">
+        </div>
+    </div>
+    <input type="hidden" name="imageUrl" id="slideImg">
+    <div class="layui-form-item ft-center btns">
+        <button class="layui-btn" lay-submit lay-filter="add-slideshow">确定</button>
+        <button class="layui-btn layui-btn-primary" id="cancel">取消</button>
+    </div>
+</div>
+
+<script>
+    layui.use(['admin', 'form', 'laydate', 'upload'], function () {
+        var $ = layui.$,
+            admin = layui.admin,
+            table = layui.table,
+            setter = layui.setter,
+            laydate = layui.laydate,
+            view = layui.view,
+            distpicker = layui.distpicker,
+            upload = layui.upload,
+            form = layui.form;
+
+        $(function () {
+            form.render();
+
+            upload.render({
+                elem: '#addImg',
+                url: setter.baseUrl + '/public/oss-upload',
+                done: function (res) {
+                    console.log(res);
+                    $('#slideImg').val(res.data.ossUrl);
+                    $('.add-img .icon').hide();
+                    var img = '<img src="' + res.data.ossUrl + '">';
+                    $('.add-img').append(img);
+                }
+            });
+        });
+    });
+</script>

@@ -1,0 +1,175 @@
+<!-- 签单月报表 -->
+<style>
+    .btn-bar {
+        background: #f7f8fa;
+        padding: 4px 10px;
+    }
+    .ml {
+        margin-left: 10px;
+    }
+</style>
+<title>签单月报表</title>
+<div class="layui-fluid full-height">
+    <div class="layui-card full-height over-auto">
+        <div class="layui-card-header">签单月报表</div>
+        <div class="layui-card-body">
+            <fieldset class="layui-elem-field">
+                <legend>搜索条件</legend>
+                <div class="layui-form">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <!-- 下拉列表模板渲染 -->
+                            <div class="layui-input-inline">
+                                <script type="text/html" template lay-url="{{layui.setter.baseUrl}}/system/site/campuses"
+                                    lay-done="{{layui.form.render()}}">
+                                    <select name="campus_id" id="campus" lay-filter="campus">
+                                        <option value="" disabled selected>请选择校区</option>
+                                        {{# layui.each(d.data, function(index, item){ }}
+                                        <option value="{{item.id}}">{{item.name}}</option>
+                                        {{# }); }}
+                                    </select>
+                                </script>
+                            </div>
+                            <div class="layui-input-inline">
+                                <!-- <script type="text/html" template lay-url="{{layui.setter.baseUrl}}/system/site/units?withoutPage=1" -->
+                                    <!-- lay-done="{{layui.form.render()}}"> -->
+
+                                <select name="sign_unit_id" id="branch_month" lay-filter="branch">
+                                    <option value="" disabled selected>请选择签单部门</option>
+                                    <!-- {{# layui.each(d.data, function(index, item){ }}
+                                    <option value="{{item.id}}">{{item.name}}</option>
+                                    {{# }); }} -->
+                                </select>
+                            <!-- </script> -->
+                            </div>
+                            <div class="layui-input-inline">
+                                <input type="text" class="layui-input time" id="ordermonthdate" placeholder="请选择开始时间和结束时间">
+                                <input type="hidden" name="start_time" id="ordermonthStartTime" value="">
+                                <input type="hidden" name="end_time" id="ordermonthEndTime" value="">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <button class="layui-btn" lay-submit lay-filter="LAY-dmonth-demand">查询</button>
+                            <!-- <script type="text/html" template>
+                                <a href="{{layui.setter.baseUrl}}/finance/sign-month-statistics-export?Authorization={{layui.data('layuiAdmin').Authorization}}"
+                                class="layui-btn ml">导出</a>
+                            </script>
+                            <script type="text/html" template>
+                                <a href="{{layui.setter.baseUrl}}/finance/sign-month-statistics-print?Authorization={{layui.data('layuiAdmin').Authorization}}"
+                                class="layui-btn ml">打印</a>
+                            </script> -->
+                            <a href="javascript:;" class="layui-btn layui-btn-normal" lay-submit lay-filter="LAY-report-month">导出Excel</a>
+                            <!-- </div> -->
+                            
+                            <a href="javascript:;" class="layui-btn layui-btn-normal" lay-submit lay-filter="LAY-report-month-print">打印</a> 
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+            <!-- <div class="m-b-10 btn-bar">
+                <script type="text/html" template>
+                    <a href="{{layui.setter.baseUrl}}/manage/mango-order/exportorder?Authorization={{layui.data('layuiAdmin').Authorization}}"
+                    class="layui-btn layui-btn-sm ml">导出</a>
+                </script>
+                <button class="layui-btn layui-btn-sm" id='print' lay-filter='print'>打印</button>
+            </div> -->
+            <!-- 财务报表详情 -->
+            <table class="layui-hide" id="repMonth" lay-filter="repMonth"></table>
+        </div>
+    </div>
+</div>
+
+<script type="text/html" id="orderOperate">
+    <a class="layui-btn layui-btn-xs layui-btn-primary" lay-event="detail">详情</a>
+</script>
+
+<script>
+    layui.use(['admin', 'form', 'table', 'laydate'], function () {
+        var $ = layui.$,
+            admin = layui.admin,
+            view = layui.view,
+            setter = layui.setter,
+            form = layui.form,
+            laydate = layui.laydate,
+            table = layui.table,
+            upload = layui.upload,
+            laydate = layui.laydate;
+
+        $(function () {
+            var cols = [[ //表头
+                { field: 'campus_name', title: '校区' }
+                , { field: 'unit_name', title: '单位' }
+                , { field: 'sign_count', title: '签单笔数' }
+                , { field: 'sign_price_count', title: '签单金额' }
+            ]];
+            form.render();
+            table.render(
+                {
+                    elem: '#repMonth'
+                    , url: setter.baseUrl + '/finance/sign-month-statistics'
+                    , response: setter.responseTable
+                    , page: setter.pageTable
+                    , cols: cols
+                }
+            );
+            // 时间控件
+            laydate.render({
+                elem: '#ordermonthdate' //指定元素
+                , type: 'date'
+                , range: '-'
+                , done: function (value, date, endDate) {
+                    console.log(value);
+                    // 获取到的日期格式进行分割2018-10-09 - 2018-11-21
+                    var beginTime = value.split(' - ')[0];
+                    var endTime = value.split(' - ')[1];
+                    $('#ordermonthStartTime').val(beginTime);
+                    $('#ordermonthEndTime').val(endTime);
+                }
+            });
+            //点击搜索订单
+            form.on('submit(LAY-dmonth-demand)', function (obj) {
+                console.log(obj);
+                table.reload('repMonth', {
+                    url: setter.baseUrl + '/finance/sign-month-statistics',
+                    response: setter.responseTable,
+                    page: setter.pageTable,
+                    cols: cols,
+                    where: obj.field
+                });
+            });
+            form.on('select(campus)', function (data) {
+                var campusId = data.value;
+                admin.req({
+                    url: setter.baseUrl + '/system/site/units?withoutPage=1',
+                    type: 'get',
+                    data: { campusId: campusId },
+                    done: function (res) {
+                        var _html = '<option value="" disabled selected>请选择签单部门</option>';
+                        $.each(res.data, function (i, k) {
+                            _html += '<option value="' + k.id + '">' + k.name + '</option>'
+                        })
+                        $('#branch_month').html(_html)
+                        form.render();
+                    }
+                });
+            });
+
+            
+            
+            function deviceExport(filter, url, deviceType) {
+                form.on(filter, function (obj) {
+                    console.log(obj);
+                    var href = setter.baseUrl + url + '?Authorization=' + layui.data('layuiAdmin').Authorization + '&campus_id=' +
+                        obj.field.campus_id + '&sign_unit_id=' + obj.field.sign_unit_id + '&start_time=' + obj.field.start_time + '&end_time=' +
+                        obj.field.end_time ;
+                    window.location.href = href;
+                });
+            };
+            deviceExport('submit(LAY-report-month)', '/finance/sign-month-statistics-export', 3);
+
+             deviceExport('submit(LAY-report-month-print)', '/finance/sign-month-statistics-print', 3);
+
+
+        });
+    });
+</script>

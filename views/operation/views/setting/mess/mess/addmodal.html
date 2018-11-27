@@ -1,0 +1,89 @@
+<div id="add_modal" class="layui-form layui-form-pane" lay-filter="search-for-examine">
+    <div class="layui-inline">
+        <label class="layui-form-label">模板ID</label>
+        <div class="layui-input-block">
+            <input type="text" name="templet_id" autocomplete="off" placeholder="请输入模板ID" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-inline">
+        <label class="layui-form-label">公众号名称</label>
+        <div class="layui-input-block">
+            <input type="text" name="wechat_name" autocomplete="off" placeholder="请输入公众号名称" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-inline">
+        <label class="layui-form-label">应用模块</label>
+        <div class="layui-input-block">
+            <input type="text" name="model_name" autocomplete="off" placeholder="请输入应用模块" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-inline">
+        <label class="layui-form-label">模块位置</label>
+        <div class="layui-input-block">
+            <input type="text" name="model_position" autocomplete="off" placeholder="请输入模块位置" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-inline">
+        <label class="layui-form-label">URL</label>
+        <div class="layui-input-block">
+            <input type="text" name="jump_url" autocomplete="off" placeholder="请输入URL" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-inline">
+        <label class="layui-form-label">appID</label>
+        <div class="layui-input-block">
+            <input value="" type="text" name="app_id" autocomplete="off" placeholder="请输入appID" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item p-t-10 ft-center">
+        <button class="layui-btn ok" lay-submit lay-filter="LAY-add-child">确定</button>
+        <button class="layui-btn layui-btn-primary cancel">取消</button>
+    </div>
+</div>
+<script>
+    layui.use(['admin', 'form'], function(){
+        var $ = layui.$
+            ,admin = layui.admin
+            ,setter = layui.setter
+            ,form = layui.form;
+        form.render();
+        $(function(){
+            form.on('submit(LAY-add-child)', function(obj){
+                if(!obj.field.templet_id){
+                    layer.msg('请输入模板ID', {icon: 5, time: 1000});
+                }else if(!obj.field.wechat_name){
+                    layer.msg('请输入公众号名称', {icon: 5, time: 1000});
+                }else if(!obj.field.model_name){
+                    layer.msg('请输入应用模块', {icon: 5, time: 1000});
+                }else if(!obj.field.model_position){
+                    layer.msg('请输入模块位置', {icon: 5, time: 1000});
+                }else if(!obj.field.jump_url){
+                    layer.msg('请输入URL', {icon: 5, time: 1000});
+                }else if(!obj.field.app_id){
+                    layer.msg('请输入appID', {icon: 5, time: 1000});
+                }else{
+                    admin.req({
+                        url: setter.baseUrl + '/templet/updateTemplet'
+                        , type: 'POST'
+                        ,data:obj.field
+                        , done: function (res) {
+                            layer.close(admin.popup.index);
+                            layer.msg(res.message, {icon: 1, time: 2000});
+                            setTimeout(function(){
+                                window.parent.location.reload();
+                            },2000);
+                        }
+                    });
+                }
+            })
+        })
+        //取消
+        $(document).off('click','#add_modal .cancel');
+        $(document).on('click','#add_modal .cancel',function(){
+            layer.close(admin.popup.index);
+        })
+
+
+
+    })
+</script>

@@ -1,0 +1,922 @@
+<script type="text/html" template>
+    <link rel="stylesheet" href="{{ layui.setter.base }}style/setting/fodder.css?v={{ layui.admin.v }}-1" media="all">
+    <link rel="stylesheet" href="{{ layui.setter.base }}style/plugcss/zTreeStyle.css?v={{ layui.admin.v }}-1" media="all">
+</script>
+<title>素材配置</title>
+<script type="text/html" id="app_content" template lay-url="{{layui.setter.baseUrl + '/banner/'+ layui.data('fodder').fodder.editId}}" lay-done="layui.data.done(d)">
+<div class="layui-fluid layui-border-box full-height wechat_detail" lay-templateid="app_content">
+    <div class="layui-card full-height flex flex-v">
+        <div class="layui-card-header">微信端配置</div>
+        <div class="layui-card-body layui-form">
+            <div class="modal_mess layui-tab-content">
+                <p class="public_title" style="margin-bottom:15px;">
+                    <i></i>
+                    <span>模板信息</span>
+                </p>
+                <div class="layui-form layui-form-pane layui-container" lay-filter="search-for-examine">
+                    <div class="layui-row layui-col-space20">
+                        <div class="layui-inline layui-col-xs6">
+                            <label class="layui-form-label">应用模板</label>
+                            <div class="layui-input-block">
+                                <input value="{{d.data.model_name || ' '}}" type="text" name="model_name" autocomplete="off" class="layui-input" disabled>
+                            </div>
+                        </div>
+                        <div class="layui-inline layui-col-xs6">
+                            <label class="layui-form-label">模块位置</label>
+                            <div class="layui-input-block">
+                                <input value="{{d.data.model_position || ' '}}" type="text" name="model_position" autocomplete="off"class="layui-input" disabled>
+                            </div>
+                        </div>
+                        <div class="layui-inline layui-col-xs6">
+                            <label class="layui-form-label">推送量</label>
+                            <div class="layui-input-block">
+                                <input value="" type="text" name="common_num" autocomplete="off"  class="layui-input" disabled>
+                            </div>
+                        </div>
+                        <div class="layui-inline layui-col-xs6">
+                            <label class="layui-form-label">点击率</label>
+                            <div class="layui-input-block">
+                                <input value="" type="text" name="click_num" autocomplete="off" class="layui-input" disabled>
+                            </div>
+                        </div>
+                        <div class="layui-inline layui-col-xs6">
+                            <label class="layui-form-label">转换率(1)</label>
+                            <div class="layui-input-block">
+                                <input value="" type="text" name="title" autocomplete="off" class="layui-input" disabled>
+                            </div>
+                        </div>
+                        <div class="layui-inline layui-col-xs6">
+                            <label class="layui-form-label">转换率</label>
+                            <div class="layui-input-block">
+                                <input value="" type="text" name="title" autocomplete="off" class="layui-input" disabled>
+                            </div>
+                        </div>
+                        <div class="layui-inline layui-col-xs6">
+                            <label class="layui-form-label">公众号名称</label>
+                            <div class="layui-input-block">
+                                <input value="{{d.data.wechat_name || ' '}}" type="text" name="wechat_name" autocomplete="off" class="layui-input" disabled>
+                            </div>
+                        </div>
+                        <div class="layui-inline layui-col-xs6">
+                            <label class="layui-form-label">模板ID</label>
+                            <div class="layui-input-block">
+                                <input value="{{d.data.templet_id || ' '}}" type="text" name="templet_id" autocomplete="off" class="layui-input" disabled>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <p class="public_title" style="margin:15px 0;">
+                    <i></i>
+                    <span>banner配置</span>
+                </p>
+                <div class="banner_list">
+                    <div class="layui-inline">
+                        {{#  if(d.data.bannerImagesList.length==0){ }}
+                        <div class="layui-tab layui-tab-card layui-form">
+                            <ul class="layui-tab-title">
+                                <li class="layui-this">图片1</li>
+                                <li>图片2</li>
+                                <li>图片3</li>
+                                <li>图片4</li>
+                            </ul>
+                            <div class="layui-tab-content">
+                                <div class="layui-tab-item layui-show" listId="1">
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">上传图片</label>
+                                        <button type="button" class="layui-btn layui-btn-green upload_img"><i class="layui-icon"></i>上传图片</button>
+                                        <span class="imgName layui-elip"></span>
+                                        <input type="hidden" name="img_name_1_0" class="img_name">
+                                    </div>
+                                    <div class="layui-form-item" lay-filter="url_status_1">
+                                        <label class="layui-form-label">链接开关</label>
+                                        <div class="layui-input-block">
+                                            <input type="radio" class="url_status" name="url_status_1_0" value="1" title="开启">
+                                            <input type="radio" class="url_status" name="url_status_1_0" value="0" title="关闭" checked>
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">图片链接</label>
+                                        <div class="layui-input-block">
+                                            <input type="text" name="image_url_1_0" value="" placeholder="请输入链接" autocomplete="off" class="layui-input img_url">
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">banner展示</label>
+                                        <div class="layui-input-block">
+                                            <input type="radio" class="status" name="status_1_0" value="1" title="开启">
+                                            <input type="radio" class="status" name="status_1_0" value="0" title="关闭" checked>
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">banner位图片排序</label>
+                                        <div class="layui-input-block">
+                                            <input type="number" min="0" name="sort_1_0" value="" placeholder="请输入排序" autocomplete="off" class="layui-input sort">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="layui-tab-item">
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">上传图片</label>
+                                        <button type="button" class="layui-btn layui-btn-green upload_img"><i class="layui-icon"></i>上传图片</button>
+                                        <span class="imgName layui-elip"></span>
+                                        <input type="hidden" name="img_name_1_1" class="img_name">
+                                    </div>
+                                    <div class="layui-form-item" lay-filter="url_status_1">
+                                        <label class="layui-form-label">链接开关</label>
+                                        <div class="layui-input-block">
+                                            <input type="radio" class="url_status" name="url_status_1_1" value="1" title="开启">
+                                            <input type="radio" class="url_status" name="url_status_1_1" value="0" title="关闭" checked>
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">图片链接</label>
+                                        <div class="layui-input-block">
+                                            <input type="text" name="image_url_1_1" value="" placeholder="请输入链接" autocomplete="off" class="layui-input img_url">
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">banner展示</label>
+                                        <div class="layui-input-block">
+                                            <input type="radio" class="status" name="status_1_1" value="1" title="开启">
+                                            <input type="radio" class="status" name="status_1_1" value="0" title="关闭" checked>
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">banner位图片排序</label>
+                                        <div class="layui-input-block">
+                                            <input type="number" min="0" name="sort_1_1" value="" placeholder="请输入排序" autocomplete="off" class="layui-input sort">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="layui-tab-item">
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">上传图片</label>
+                                        <button type="button" class="layui-btn layui-btn-green upload_img"><i class="layui-icon"></i>上传图片</button>
+                                        <span class="imgName layui-elip"></span>
+                                        <input type="hidden" name="img_name_1_2" class="img_name">
+                                    </div>
+                                    <div class="layui-form-item" lay-filter="url_status_1">
+                                        <label class="layui-form-label">链接开关</label>
+                                        <div class="layui-input-block">
+                                            <input type="radio" class="url_status" name="url_status_1_2" value="1" title="开启">
+                                            <input type="radio" class="url_status" name="url_status_1_2" value="0" title="关闭" checked>
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">图片链接</label>
+                                        <div class="layui-input-block">
+                                            <input type="text" name="image_url_1_2" value="" placeholder="请输入链接" autocomplete="off" class="layui-input img_url">
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">banner展示</label>
+                                        <div class="layui-input-block">
+                                            <input type="radio" class="status" name="status_1_2" value="1" title="开启">
+                                            <input type="radio" class="status" name="status_1_2" value="0" title="关闭" checked>
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">banner位图片排序</label>
+                                        <div class="layui-input-block">
+                                            <input type="number" min="0" name="sort_1_2" value="" placeholder="请输入排序" autocomplete="off" class="layui-input sort">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="layui-tab-item">
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">上传图片</label>
+                                        <button type="button" class="layui-btn layui-btn-green upload_img"><i class="layui-icon"></i>上传图片</button>
+                                        <span class="imgName layui-elip"></span>
+                                        <input type="hidden" name="img_name_1_3" class="img_name">
+                                    </div>
+                                    <div class="layui-form-item" lay-filter="url_status_1">
+                                        <label class="layui-form-label">链接开关</label>
+                                        <div class="layui-input-block">
+                                            <input type="radio" class="url_status" name="url_status_1_3" value="1" title="开启">
+                                            <input type="radio" class="url_status" name="url_status_1_3" value="0" title="关闭" checked>
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">图片链接</label>
+                                        <div class="layui-input-block">
+                                            <input type="text" name="image_url_1_3" value="" placeholder="请输入链接" autocomplete="off" class="layui-input img_url">
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">banner展示</label>
+                                        <div class="layui-input-block">
+                                            <input type="radio" class="status" name="status_1_3" value="1" title="开启">
+                                            <input type="radio" class="status" name="status_1_3" value="0" title="关闭" checked>
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">banner位图片排序</label>
+                                        <div class="layui-input-block">
+                                            <input type="number" min="0" name="sort_1_3" value="" placeholder="请输入排序" autocomplete="off" class="layui-input sort">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-tab layui-tab-card card_functiuon">
+                                <button class="layui-btn layui-btn-xs delete layui-btn-danger">删除</button>
+                                <button class="layui-btn layui-btn-xs add">增加</button>
+                            </div>
+                            <div class="card_empty">清空</div>
+                        </div>
+                        {{#  } }}
+                        {{#  layui.each(d.data.bannerImagesList, function(index, item){ }}
+                        <div class="layui-tab layui-tab-card layui-form">
+                            <ul class="layui-tab-title">
+                                <li class="layui-this">图片1</li>
+                                <li>图片2</li>
+                                <li>图片3</li>
+                                <li>图片4</li>
+                            </ul>
+                            <div class="layui-tab-content">
+                                {{#  layui.each(item, function(i, k){ }}
+                                {{#  if(i==0){ }}
+                                <div class="layui-tab-item layui-show" listId="{{k.list}}">
+                                {{#  } }}
+                                {{#  if(i>0){ }}
+                                <div class="layui-tab-item">
+                                    {{#  } }}
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">上传图片</label>
+                                        <button type="button" class="layui-btn layui-btn-green upload_img"><i class="layui-icon"></i>上传图片</button>
+                                        <span class="imgName layui-elip">{{k.img_name || ' '}}</span>
+                                        <input type="hidden" name="img_name_{{k.list}}_{{i}}" value="{{k.img_name || ' '}}" class="img_name">
+                                    </div>
+                                    <div class="layui-form-item" lay-filter="url_status_{{k.list}}">
+                                        <label class="layui-form-label">链接开关</label>
+                                        <div class="layui-input-block">
+                                            {{#  if(k.url_status==1){ }}
+                                            <input type="radio" class="url_status" name="url_status_{{k.list}}_{{i}}" value="1" title="开启" checked>
+                                            <input type="radio" class="url_status" name="url_status_{{k.list}}_{{i}}" value="0" title="关闭" >
+                                            {{#  } }}
+                                            {{#  if(k.url_status==0){ }}
+                                            <input type="radio" class="url_status" name="url_status_{{k.list}}_{{i}}" value="1" title="开启">
+                                            <input type="radio" class="url_status" name="url_status_{{k.list}}_{{i}}" value="0" title="关闭" checked>
+                                            {{#  } }}
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">图片链接</label>
+                                        <div class="layui-input-block">
+                                            <input type="text" name="image_url_{{k.list}}_{{i}}" value="{{k.image_url  || ' '}}" placeholder="请输入链接" autocomplete="off" class="layui-input img_url">
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">banner展示</label>
+                                        <div class="layui-input-block">
+                                            {{#  if(k.status==1){ }}
+                                            <input type="radio" class="status" name="status_{{k.list}}_{{i}}" value="1" title="开启" checked>
+                                            <input type="radio" class="status" name="status_{{k.list}}_{{i}}" value="0" title="关闭" >
+                                            {{#  } }}
+                                            {{#  if(k.status==0){ }}
+                                            <input type="radio" class="status" name="status_{{k.list}}_{{i}}" value="1" title="开启">
+                                            <input type="radio" class="status" name="status_{{k.list}}_{{i}}" value="0" title="关闭" checked>
+                                            {{#  } }}
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">banner位图片排序</label>
+                                        <div class="layui-input-block">
+                                            <input type="number" min="0" name="sort_{{k.list}}_{{i}}" value="{{k.sort || ' '}}" placeholder="请输入排序" autocomplete="off" class="layui-input sort">
+                                        </div>
+                                    </div>
+                                    <input type="hidden" name="img_id_{{k.list}}_{{i}}" value="{{k.img_id}}"  class="layui-input">
+                                </div>
+                                {{#  }); }}
+                                </div>
+                                <div class="layui-tab layui-tab-card card_functiuon">
+                                    <button class="layui-btn layui-btn-xs delete layui-btn-danger">删除</button>
+                                    <button class="layui-btn layui-btn-xs add">增加</button>
+                                </div>
+                                <div class="card_empty">清空</div>
+                            </div>
+                        {{#  }); }}
+                    </div>
+                    <div class="layui-inline">
+                        <img src="/greencampus/style/res/mobile.jpg" alt="">
+                    </div>
+                </div>
+                <div class="layui-tab function">
+                    <button class="layui-btn save" lay-submit lay-filter="fodder-detailSave">保存</button>
+                    <button class="layui-btn return" lay-submit lay-filter="fodder-detailReturn">返回</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</script>
+<script>
+    layui.data.done = function(d){
+        layui.use(['admin','upload','form','view'], function() {
+            var $ = layui.$,
+                admin = layui.admin,
+                setter = layui.setter,
+                upload = layui.upload,
+                form = layui.form/*,
+                view = layui.view*/;
+            form.render();
+            var banner_id=layui.data('fodder').fodder.editId;
+            $('.banner_list .layui-tab-card.card_functiuon .add').css('display','none');
+            $('.banner_list .layui-tab-card.card_functiuon .add').last().css('display','block');
+            //图片上传
+            function imguload(cls){
+                upload.render({
+                    elem: cls
+                    ,url: setter.baseUrl + '/public/oss'
+                    ,before: function(obj){
+                        var img_obj=$(this.item[0]);
+                        console.log(img_obj)
+                        obj.preview(function(index, file, result) {
+                            img_obj.siblings('.imgName').html(file.name);
+                        })
+                    }
+                    , done: function (res) {
+                        var img_obj=$(this.item[0]);
+                        layer.msg(res.message);
+                        img_obj.siblings('.img_name').val(res.data.ossUrl);
+                    }
+                });
+            }
+            imguload('.upload_img')
+            //增加
+            $(document).off('click','.card_functiuon > .add');
+            $(document).on('click','.card_functiuon > .add',function(){
+                layer.open({
+                    type: 1
+                    ,id: 'add_hint'
+                    ,content: '<div style="padding: 20px 100px;">是否确认增加</div>'
+                    ,btn: '确认'
+                    ,btnAlign: 'c' //按钮居中
+                    ,shade: 0 //不显示遮罩
+                    ,yes: function(){
+                        layer.closeAll();
+                        var listId=Number($('.banner_list').children().first().children().last().children('.layui-tab-content').children().first().attr('listId'))+1;
+                        /*admin.req({
+                            url: setter.baseUrl + '/banner/add-model-banner/'+banner_id
+                            , type: 'POST'
+                            ,data:{'list':listId}
+                            , done: function (res) {
+                                if(res.message=='操作成功'){
+                                    $('.banner_list .layui-tab-card.card_functiuon .add').css('display','none');
+                                    $('.banner_list .layui-tab-card.card_functiuon .add').last().css('display','block');
+                                    //location.reload()
+                                    //element.init();
+                                    layer.msg(res.message, {icon: 1, time: 2000});
+                                    //view('app_content').refresh();
+                                }
+                            }
+
+                        });*/
+                        var banner_html='<div class="layui-tab layui-tab-card">'+
+                            '                   <ul class="layui-tab-title">'+
+                            '                       <li class="layui-this">图片1</li>'+
+                            '                       <li>图片2</li>'+
+                            '                       <li>图片3</li>'+
+                            '                      <li>图片4</li>'+
+                            '                   </ul>'+
+                            '                   <div class="layui-tab-content">';
+                        var banner_item1='<div class="layui-tab-item layui-show" listId="'+listId+'">'+
+                            '                  <div class="layui-form-item">'+
+                            '                       <label class="layui-form-label">上传图片</label>'+
+                            '                           <button type="button" class="layui-btn layui-btn-green upload_img_'+listId+'_0"><i class="layui-icon"></i>上传图片</button>'+
+                            '                           <span class="imgName"></span>'+
+                            '                           <input type="hidden" name="img_name_'+listId+'_0" class="img_name">'+
+                            '                   </div>'+
+                            '                   <div class="layui-form-item">'+
+                            '                       <label class="layui-form-label">链接开关</label>'+
+                            '                       <div class="layui-input-block">'+
+                            '                           <input type="radio" class="url_status" name="url_status_'+listId+'_0" value="1" title="开启">'+
+                            '                           <div class="layui-unselect layui-form-radio"><i class="layui-anim layui-icon"></i><div>开启</div></div>'+
+                            '                           <input type="radio" class="url_status" name="url_status_'+listId+'_0" value="0" title="关闭" checked>'+
+                            '                           <div class="layui-unselect layui-form-radio layui-form-radioed"><i class="layui-anim layui-icon layui-anim-scaleSpring"></i><div>关闭</div></div>'+
+                            '                       </div>'+
+                            '                   </div>'+
+                            '                   <div class="layui-form-item">'+
+                            '                       <label class="layui-form-label">图片链接</label>'+
+                            '                           <div class="layui-input-block">'+
+                            '                               <input type="text" name="image_url_'+listId+'_0" value="" placeholder="请输入链接" autocomplete="off" class="layui-input img_url">'+
+                            '                       </div>'+
+                            '                   </div>'+
+                            '                   <div class="layui-form-item">'+
+                            '                       <label class="layui-form-label">banner展示</label>'+
+                            '                       <div class="layui-input-block">'+
+                            '                           <input type="radio" class="status" name="status_'+listId+'_0" value="1" title="开启">'+
+                            '                           <div class="layui-unselect layui-form-radio"><i class="layui-anim layui-icon"></i><div>开启</div></div>'+
+                            '                           <input type="radio" class="status" name="status_'+listId+'_0" value="0" title="关闭" checked>'+
+                            '                           <div class="layui-unselect layui-form-radio layui-form-radioed"><i class="layui-anim layui-icon layui-anim-scaleSpring"></i><div>关闭</div></div>'+
+                            '                       </div>'+
+                            '                   </div>'+
+                            '                   <div class="layui-form-item">'+
+                            '                       <label class="layui-form-label">banner位图片排序</label>'+
+                            '                       <div class="layui-input-block">'+
+                            '                           <input type="number" name="sort_'+listId+'_0" value="" placeholder="请输入排序" autocomplete="off" class="layui-input sort">'+
+                            '                       </div>'+
+                            '                   </div>'+
+                            '                   <input type="hidden" name="img_id_'+listId+'_0" value=""  class="layui-input">'+
+                            '               </div>';
+                        var banner_item2='<div class="layui-tab-item">'+
+                            '                  <div class="layui-form-item">'+
+                            '                       <label class="layui-form-label">上传图片</label>'+
+                            '                           <button type="button" class="layui-btn layui-btn-green upload_img_'+listId+'_1"><i class="layui-icon"></i>上传图片</button>'+
+                            '                           <span class="imgName"></span>'+
+                            '                           <input type="hidden" name="img_name_'+listId+'_1" class="img_name">'+
+                            '                   </div>'+
+                            '                   <div class="layui-form-item">'+
+                            '                       <label class="layui-form-label">链接开关</label>'+
+                            '                       <div class="layui-input-block">'+
+                            '                           <input type="radio" class="url_status" name="url_status_'+listId+'_1" value="1" title="开启">'+
+                            '                           <div class="layui-unselect layui-form-radio"><i class="layui-anim layui-icon"></i><div>开启</div></div>'+
+                            '                           <input type="radio" class="url_status" name="url_status_'+listId+'_1" value="0" title="关闭" checked>'+
+                            '                           <div class="layui-unselect layui-form-radio layui-form-radioed"><i class="layui-anim layui-icon layui-anim-scaleSpring"></i><div>关闭</div></div>'+
+                            '                       </div>'+
+                            '                   </div>'+
+                            '                   <div class="layui-form-item">'+
+                            '                       <label class="layui-form-label">图片链接</label>'+
+                            '                           <div class="layui-input-block">'+
+                            '                               <input type="text" name="image_url_'+listId+'_1" value="" placeholder="请输入链接" autocomplete="off" class="layui-input img_url">'+
+                            '                       </div>'+
+                            '                   </div>'+
+                            '                   <div class="layui-form-item">'+
+                            '                       <label class="layui-form-label">banner展示</label>'+
+                            '                       <div class="layui-input-block">'+
+                            '                           <input type="radio" class="status" name="status_'+listId+'_1" value="1" title="开启">'+
+                            '                           <div class="layui-unselect layui-form-radio"><i class="layui-anim layui-icon"></i><div>开启</div></div>'+
+                            '                           <input type="radio" class="status" name="status_'+listId+'_1" value="0" title="关闭" checked>'+
+                            '                           <div class="layui-unselect layui-form-radio layui-form-radioed"><i class="layui-anim layui-icon layui-anim-scaleSpring"></i><div>关闭</div></div>'+
+                            '                       </div>'+
+                            '                   </div>'+
+                            '                   <div class="layui-form-item">'+
+                            '                       <label class="layui-form-label">banner位图片排序</label>'+
+                            '                       <div class="layui-input-block">'+
+                            '                           <input type="number" name="sort_'+listId+'_1" value="" placeholder="请输入排序" autocomplete="off" class="layui-input sort">'+
+                            '                       </div>'+
+                            '                   </div>'+
+                            '                   <input type="hidden" name="img_id_'+listId+'_1" value=""  class="layui-input">'+
+                            '               </div>';
+                        var banner_item3='<div class="layui-tab-item">'+
+                            '                  <div class="layui-form-item">'+
+                            '                       <label class="layui-form-label">上传图片</label>'+
+                            '                           <button type="button" class="layui-btn layui-btn-green upload_img_'+listId+'_2"><i class="layui-icon"></i>上传图片</button>'+
+                            '                           <span class="imgName"></span>'+
+                            '                           <input type="hidden" name="img_name_'+listId+'_2" class="img_name">'+
+                            '                   </div>'+
+                            '                   <div class="layui-form-item">'+
+                            '                       <label class="layui-form-label">链接开关</label>'+
+                            '                       <div class="layui-input-block">'+
+                            '                           <input type="radio" class="url_status" name="url_status_'+listId+'_2" value="1" title="开启">'+
+                            '                           <div class="layui-unselect layui-form-radio"><i class="layui-anim layui-icon"></i><div>开启</div></div>'+
+                            '                           <input type="radio" class="url_status" name="url_status_'+listId+'_2" value="0" title="关闭" checked>'+
+                            '                           <div class="layui-unselect layui-form-radio layui-form-radioed"><i class="layui-anim layui-icon layui-anim-scaleSpring"></i><div>关闭</div></div>'+
+                            '                       </div>'+
+                            '                   </div>'+
+                            '                   <div class="layui-form-item">'+
+                            '                       <label class="layui-form-label">图片链接</label>'+
+                            '                           <div class="layui-input-block">'+
+                            '                               <input type="text" name="image_url_'+listId+'_2" value="" placeholder="请输入链接" autocomplete="off" class="layui-input img_url">'+
+                            '                       </div>'+
+                            '                   </div>'+
+                            '                   <div class="layui-form-item">'+
+                            '                       <label class="layui-form-label">banner展示</label>'+
+                            '                       <div class="layui-input-block">'+
+                            '                           <input type="radio" class="status" name="status_'+listId+'_2" value="1" title="开启">'+
+                            '                           <div class="layui-unselect layui-form-radio"><i class="layui-anim layui-icon"></i><div>开启</div></div>'+
+                            '                           <input type="radio" class="status" name="status_'+listId+'_2" value="0" title="关闭" checked>'+
+                            '                           <div class="layui-unselect layui-form-radio layui-form-radioed"><i class="layui-anim layui-icon layui-anim-scaleSpring"></i><div>关闭</div></div>'+
+                            '                       </div>'+
+                            '                   </div>'+
+                            '                   <div class="layui-form-item">'+
+                            '                       <label class="layui-form-label">banner位图片排序</label>'+
+                            '                       <div class="layui-input-block">'+
+                            '                           <input type="number" name="sort_'+listId+'_2" value="" placeholder="请输入排序" autocomplete="off" class="layui-input sort">'+
+                            '                       </div>'+
+                            '                   </div>'+
+                            '                   <input type="hidden" name="img_id_'+listId+'_2" value=""  class="layui-input">'+
+                            '               </div>';
+                        var banner_item4='<div class="layui-tab-item">'+
+                            '                  <div class="layui-form-item">'+
+                            '                       <label class="layui-form-label">上传图片</label>'+
+                            '                           <button type="button" class="layui-btn layui-btn-green upload_img_'+listId+'_3"><i class="layui-icon"></i>上传图片</button>'+
+                            '                           <span class="imgName"></span>'+
+                            '                           <input type="hidden" name="img_name_'+listId+'_3" class="img_name">'+
+                            '                   </div>'+
+                            '                   <div class="layui-form-item">'+
+                            '                       <label class="layui-form-label">链接开关</label>'+
+                            '                       <div class="layui-input-block">'+
+                            '                           <input type="radio" class="url_status" name="url_status_'+listId+'_3" value="1" title="开启">'+
+                            '                           <div class="layui-unselect layui-form-radio"><i class="layui-anim layui-icon"></i><div>开启</div></div>'+
+                            '                           <input type="radio" class="url_status" name="url_status_'+listId+'_3" value="0" title="关闭" checked>'+
+                            '                           <div class="layui-unselect layui-form-radio layui-form-radioed"><i class="layui-anim layui-icon layui-anim-scaleSpring"></i><div>关闭</div></div>'+
+                            '                       </div>'+
+                            '                   </div>'+
+                            '                   <div class="layui-form-item">'+
+                            '                       <label class="layui-form-label">图片链接</label>'+
+                            '                           <div class="layui-input-block">'+
+                            '                               <input type="text" name="image_url_'+listId+'_3" value="" placeholder="请输入链接" autocomplete="off" class="layui-input img_url">'+
+                            '                       </div>'+
+                            '                   </div>'+
+                            '                   <div class="layui-form-item">'+
+                            '                       <label class="layui-form-label">banner展示</label>'+
+                            '                       <div class="layui-input-block">'+
+                            '                           <input type="radio" class="status" name="status_'+listId+'_3" value="1" title="开启">'+
+                            '                           <div class="layui-unselect layui-form-radio"><i class="layui-anim layui-icon"></i><div>开启</div></div>'+
+                            '                           <input type="radio" class="status" name="status_'+listId+'_3" value="0" title="关闭" checked>'+
+                            '                           <div class="layui-unselect layui-form-radio layui-form-radioed"><i class="layui-anim layui-icon layui-anim-scaleSpring"></i><div>关闭</div></div>'+
+                            '                       </div>'+
+                            '                   </div>'+
+                            '                   <div class="layui-form-item">'+
+                            '                       <label class="layui-form-label">banner位图片排序</label>'+
+                            '                       <div class="layui-input-block">'+
+                            '                           <input type="number" name="sort_'+listId+'_3" value="" placeholder="请输入排序" autocomplete="off" class="layui-input sort">'+
+                            '                       </div>'+
+                            '                   </div>'+
+                            '                   <input type="hidden" name="img_id_'+listId+'_3" value=""  class="layui-input">'+
+                            '               </div>';
+                        var banner_last='</div>'+
+                            '                   <div class="layui-tab layui-tab-card card_functiuon">'+
+                            '                      <button class="layui-btn layui-btn-xs delete layui-btn-danger">删除</button>'+
+                            '                      <button class="layui-btn layui-btn-xs add">增加</button>'+
+                            '                   </div>'+
+                            '                   <div class="card_empty">清空</div>'+
+                            '            </div>';
+                        $('.banner_list .layui-inline:first').append(banner_html+banner_item1+banner_item2+banner_item3+banner_item4+banner_last);
+                        $('.banner_list .layui-tab-card.card_functiuon .add').css('display','none');
+                        $('.banner_list .layui-tab-card.card_functiuon .add').last().css('display','block');
+                        form.render();
+                        imguload('.upload_img_'+listId+'_0');
+                        imguload('.upload_img_'+listId+'_1');
+                        imguload('.upload_img_'+listId+'_2');
+                        imguload('.upload_img_'+listId+'_3');
+                    }
+                });
+            });
+            //删除
+            $(document).off('click','.card_functiuon > .delete');
+            $(document).on('click','.card_functiuon > .delete',function(){
+                var that=this;
+                if($('.card_functiuon > .delete').length>1){
+                     layer.open({
+                         type: 1
+                         ,id: 'add_hint'
+                         ,content: '<div style="padding: 20px 100px;">是否确认删除</div>'
+                         ,btn: '确认'
+                         ,btnAlign: 'c' //按钮居中
+                         ,shade: 0 //不显示遮罩
+                         ,yes: function() {
+                             layer.closeAll();
+                             var listId=$(that).parent().siblings('.layui-tab-content').children('.layui-tab-item').first().attr('listId');
+                             /*admin.req({
+                                 url: setter.baseUrl + '/banner/delete/'+banner_id
+                                 , type: 'delete'
+                                 ,data:{'list':listId}
+                                 , done: function (res) {
+                                    layer.msg(res.message, {icon: 1, time: 2000});
+                                    //location.reload()
+                                     view('app_content').refresh();
+                                 }
+                            });*/
+                             $(that).parent().parent('.layui-tab-card').remove();
+                             $('.banner_list .layui-tab-card.card_functiuon .add').css('display','none');
+                             $('.banner_list .layui-tab-card.card_functiuon .add').last().css('display','block');
+                         }
+                     });
+                }else{
+                    layer.open({
+                        type: 1
+                        ,id: 'add_hint'
+                        ,content: '<div style="padding: 20px 40px 10px;">最少要保留一个banner位模板不可删除</div>'
+                        ,btn: '确认'
+                        ,btnAlign: 'c' //按钮居中
+                        ,shade: 0 //不显示遮罩
+                        ,yes: function(index, layero){
+                            layer.close(index);
+                        }
+                    });
+                }
+
+            });
+            //清空
+            $(document).off('click','.layui-tab > .card_empty');
+            $(document).on('click','.layui-tab > .card_empty',function(){
+                var that=this;
+                layer.open({
+                    type: 1
+                    ,id: 'add_hint'
+                    ,content: '<div style="padding: 20px 100px;">是否清空配置信息</div>'
+                    ,btn: '确认'
+                    ,btnAlign: 'c' //按钮居中
+                    ,shade: 0 //不显示遮罩
+                    ,yes: function() {
+                        $(that).siblings('.layui-tab-content').children().each(function(index,val){
+                            console.log($(val).find('.url_status'))
+                            $(val).find('.url_status').prop("checked",'0');
+                            $(val).find('.status').prop("checked",'0');
+                            $(val).find('.imgName').html('');
+                            $(val).find('.img_name').val('');
+                            $(val).find('.img_url').val('');
+                            $(val).find('.sort').val('');
+                        });
+                        form.render();
+                        layer.closeAll();
+                    }
+                });
+            });
+            /*$(document).on('click','.card_functiuon > .add',function(){
+                //最终的listId
+                var listId=Number($('.banner_list').children().last().prev().children('.layui-tab-content').children().first().attr('listId'))+1;
+                var banner_html='<div class="layui-tab layui-tab-card">'+
+                '                   <ul class="layui-tab-title">'+
+                '                       <li class="layui-this">图片1</li>'+
+                '                       <li>图片2</li>'+
+                '                       <li>图片3</li>'+
+                '                      <li>图片4</li>'+
+                '                   </ul>'+
+                '                   <div class="layui-tab-content">';
+                 var banner_item1='<div class="layui-tab-item layui-show" listId="'+listId+'">'+
+                     '                  <div class="layui-form-item">'+
+                     '                       <label class="layui-form-label">上传图片</label>'+
+                     '                           <button type="button" class="layui-btn layui-btn-danger upload_img"><i class="layui-icon"></i>上传图片</button>'+
+                     '                           <span class="imgName"></span>'+
+                     '                           <input type="hidden" name="img_name_'+listId+'_0" class="img_name">'+
+                     '                   </div>'+
+                     '                   <div class="layui-form-item">'+
+                     '                       <label class="layui-form-label">链接开关</label>'+
+                     '                       <div class="layui-input-block">'+
+                     '                           <input type="radio" class="url_status" name="url_status_'+listId+'_0" value="1" title="开启">'+
+                     '                           <div class="layui-unselect layui-form-radio"><i class="layui-anim layui-icon"></i><div>开启</div></div>'+
+                     '                           <input type="radio" class="url_status" name="url_status_'+listId+'_0" value="0" title="关闭" checked>'+
+                     '                           <div class="layui-unselect layui-form-radio layui-form-radioed"><i class="layui-anim layui-icon layui-anim-scaleSpring"></i><div>关闭</div></div>'+
+                     '                       </div>'+
+                     '                   </div>'+
+                     '                   <div class="layui-form-item">'+
+                     '                       <label class="layui-form-label">图片链接</label>'+
+                     '                           <div class="layui-input-block">'+
+                     '                               <input type="text" name="image_url_'+listId+'_0" value="" placeholder="请输入链接" autocomplete="off" class="layui-input img_url">'+
+                     '                       </div>'+
+                     '                   </div>'+
+                     '                   <div class="layui-form-item">'+
+                     '                       <label class="layui-form-label">banner展示</label>'+
+                     '                       <div class="layui-input-block">'+
+                     '                           <input type="radio" class="status" name="status_'+listId+'_0" value="1" title="开启">'+
+                     '                           <div class="layui-unselect layui-form-radio"><i class="layui-anim layui-icon"></i><div>开启</div></div>'+
+                     '                           <input type="radio" class="status" name="status_'+listId+'_0" value="0" title="关闭" checked>'+
+                     '                           <div class="layui-unselect layui-form-radio layui-form-radioed"><i class="layui-anim layui-icon layui-anim-scaleSpring"></i><div>关闭</div></div>'+
+                     '                       </div>'+
+                     '                   </div>'+
+                     '                   <div class="layui-form-item">'+
+                     '                       <label class="layui-form-label">banner位图片排序</label>'+
+                     '                       <div class="layui-input-block">'+
+                     '                           <input type="number" name="sort_'+listId+'_0" value="" placeholder="请输入排序" autocomplete="off" class="layui-input sort">'+
+                     '                       </div>'+
+                     '                   </div>'+
+                     '                   <input type="hidden" name="img_id_'+listId+'_0" value=""  class="layui-input">'+
+                     '               </div>';
+                var banner_item2='<div class="layui-tab-item">'+
+                    '                  <div class="layui-form-item">'+
+                    '                       <label class="layui-form-label">上传图片</label>'+
+                    '                           <button type="button" class="layui-btn layui-btn-danger upload_img"><i class="layui-icon"></i>上传图片</button>'+
+                    '                           <span class="imgName"></span>'+
+                    '                           <input type="hidden" name="img_name_'+listId+'_1" class="img_name">'+
+                    '                   </div>'+
+                    '                   <div class="layui-form-item">'+
+                    '                       <label class="layui-form-label">链接开关</label>'+
+                    '                       <div class="layui-input-block">'+
+                    '                           <input type="radio" class="url_status" name="url_status_'+listId+'_1" value="1" title="开启">'+
+                    '                           <div class="layui-unselect layui-form-radio"><i class="layui-anim layui-icon"></i><div>开启</div></div>'+
+                    '                           <input type="radio" class="url_status" name="url_status_'+listId+'_1" value="0" title="关闭" checked>'+
+                    '                           <div class="layui-unselect layui-form-radio layui-form-radioed"><i class="layui-anim layui-icon layui-anim-scaleSpring"></i><div>关闭</div></div>'+
+                    '                       </div>'+
+                    '                   </div>'+
+                    '                   <div class="layui-form-item">'+
+                    '                       <label class="layui-form-label">图片链接</label>'+
+                    '                           <div class="layui-input-block">'+
+                    '                               <input type="text" name="image_url_'+listId+'_1" value="" placeholder="请输入链接" autocomplete="off" class="layui-input img_url">'+
+                    '                       </div>'+
+                    '                   </div>'+
+                    '                   <div class="layui-form-item">'+
+                    '                       <label class="layui-form-label">banner展示</label>'+
+                    '                       <div class="layui-input-block">'+
+                    '                           <input type="radio" class="status" name="status_'+listId+'_1" value="1" title="开启">'+
+                    '                           <div class="layui-unselect layui-form-radio"><i class="layui-anim layui-icon"></i><div>开启</div></div>'+
+                    '                           <input type="radio" class="status" name="status_'+listId+'_1" value="0" title="关闭" checked>'+
+                    '                           <div class="layui-unselect layui-form-radio layui-form-radioed"><i class="layui-anim layui-icon layui-anim-scaleSpring"></i><div>关闭</div></div>'+
+                    '                       </div>'+
+                    '                   </div>'+
+                    '                   <div class="layui-form-item">'+
+                    '                       <label class="layui-form-label">banner位图片排序</label>'+
+                    '                       <div class="layui-input-block">'+
+                    '                           <input type="number" name="sort_'+listId+'_1" value="" placeholder="请输入排序" autocomplete="off" class="layui-input sort">'+
+                    '                       </div>'+
+                    '                   </div>'+
+                    '                   <input type="hidden" name="img_id_'+listId+'_1" value=""  class="layui-input">'+
+                    '               </div>';
+                var banner_item3='<div class="layui-tab-item">'+
+                    '                  <div class="layui-form-item">'+
+                    '                       <label class="layui-form-label">上传图片</label>'+
+                    '                           <button type="button" class="layui-btn layui-btn-danger upload_img"><i class="layui-icon"></i>上传图片</button>'+
+                    '                           <span class="imgName"></span>'+
+                    '                           <input type="hidden" name="img_name_'+listId+'_2" class="img_name">'+
+                    '                   </div>'+
+                    '                   <div class="layui-form-item">'+
+                    '                       <label class="layui-form-label">链接开关</label>'+
+                    '                       <div class="layui-input-block">'+
+                    '                           <input type="radio" class="url_status" name="url_status_'+listId+'_2" value="1" title="开启">'+
+                    '                           <div class="layui-unselect layui-form-radio"><i class="layui-anim layui-icon"></i><div>开启</div></div>'+
+                    '                           <input type="radio" class="url_status" name="url_status_'+listId+'_2" value="0" title="关闭" checked>'+
+                    '                           <div class="layui-unselect layui-form-radio layui-form-radioed"><i class="layui-anim layui-icon layui-anim-scaleSpring"></i><div>关闭</div></div>'+
+                    '                       </div>'+
+                    '                   </div>'+
+                    '                   <div class="layui-form-item">'+
+                    '                       <label class="layui-form-label">图片链接</label>'+
+                    '                           <div class="layui-input-block">'+
+                    '                               <input type="text" name="image_url_'+listId+'_2" value="" placeholder="请输入链接" autocomplete="off" class="layui-input img_url">'+
+                    '                       </div>'+
+                    '                   </div>'+
+                    '                   <div class="layui-form-item">'+
+                    '                       <label class="layui-form-label">banner展示</label>'+
+                    '                       <div class="layui-input-block">'+
+                    '                           <input type="radio" class="status" name="status_'+listId+'_2" value="1" title="开启">'+
+                    '                           <div class="layui-unselect layui-form-radio"><i class="layui-anim layui-icon"></i><div>开启</div></div>'+
+                    '                           <input type="radio" class="status" name="status_'+listId+'_2" value="0" title="关闭" checked>'+
+                    '                           <div class="layui-unselect layui-form-radio layui-form-radioed"><i class="layui-anim layui-icon layui-anim-scaleSpring"></i><div>关闭</div></div>'+
+                    '                       </div>'+
+                    '                   </div>'+
+                    '                   <div class="layui-form-item">'+
+                    '                       <label class="layui-form-label">banner位图片排序</label>'+
+                    '                       <div class="layui-input-block">'+
+                    '                           <input type="number" name="sort_'+listId+'_2" value="" placeholder="请输入排序" autocomplete="off" class="layui-input sort">'+
+                    '                       </div>'+
+                    '                   </div>'+
+                    '                   <input type="hidden" name="img_id_'+listId+'_2" value=""  class="layui-input">'+
+                    '               </div>';
+                var banner_item4='<div class="layui-tab-item">'+
+                    '                  <div class="layui-form-item">'+
+                    '                       <label class="layui-form-label">上传图片</label>'+
+                    '                           <button type="button" class="layui-btn layui-btn-danger upload_img"><i class="layui-icon"></i>上传图片</button>'+
+                    '                           <span class="imgName"></span>'+
+                    '                           <input type="hidden" name="img_name_'+listId+'_3" class="img_name">'+
+                    '                   </div>'+
+                    '                   <div class="layui-form-item">'+
+                    '                       <label class="layui-form-label">链接开关</label>'+
+                    '                       <div class="layui-input-block">'+
+                    '                           <input type="radio" class="url_status" name="url_status_'+listId+'_3" value="1" title="开启">'+
+                    '                           <div class="layui-unselect layui-form-radio"><i class="layui-anim layui-icon"></i><div>开启</div></div>'+
+                    '                           <input type="radio" class="url_status" name="url_status_'+listId+'_3" value="0" title="关闭" checked>'+
+                    '                           <div class="layui-unselect layui-form-radio layui-form-radioed"><i class="layui-anim layui-icon layui-anim-scaleSpring"></i><div>关闭</div></div>'+
+                    '                       </div>'+
+                    '                   </div>'+
+                    '                   <div class="layui-form-item">'+
+                    '                       <label class="layui-form-label">图片链接</label>'+
+                    '                           <div class="layui-input-block">'+
+                    '                               <input type="text" name="image_url_'+listId+'_3" value="" placeholder="请输入链接" autocomplete="off" class="layui-input img_url">'+
+                    '                       </div>'+
+                    '                   </div>'+
+                    '                   <div class="layui-form-item">'+
+                    '                       <label class="layui-form-label">banner展示</label>'+
+                    '                       <div class="layui-input-block">'+
+                    '                           <input type="radio" class="status" name="status_'+listId+'_3" value="1" title="开启">'+
+                    '                           <div class="layui-unselect layui-form-radio"><i class="layui-anim layui-icon"></i><div>开启</div></div>'+
+                    '                           <input type="radio" class="status" name="status_'+listId+'_3" value="0" title="关闭" checked>'+
+                    '                           <div class="layui-unselect layui-form-radio layui-form-radioed"><i class="layui-anim layui-icon layui-anim-scaleSpring"></i><div>关闭</div></div>'+
+                    '                       </div>'+
+                    '                   </div>'+
+                    '                   <div class="layui-form-item">'+
+                    '                       <label class="layui-form-label">banner位图片排序</label>'+
+                    '                       <div class="layui-input-block">'+
+                    '                           <input type="number" name="sort_'+listId+'_3" value="" placeholder="请输入排序" autocomplete="off" class="layui-input sort">'+
+                    '                       </div>'+
+                    '                   </div>'+
+                    '                   <input type="hidden" name="img_id_'+listId+'_3" value=""  class="layui-input">'+
+                    '               </div>';
+                var banner_last='</div>'+
+                '                   <div class="layui-tab layui-tab-card card_functiuon">'+
+                '                      <button class="layui-btn layui-btn-xs delete layui-btn-danger">删除</button>'+
+                '                      <button class="layui-btn layui-btn-xs add">增加</button>'+
+                '                   </div>'+
+                '            </div>';
+                $('.banner_list .layui-tab-card.card_functiuon .add').css('display','none');
+                $('.banner_list .function').before(banner_html+banner_item1+banner_item2+banner_item3+banner_item4+banner_last);
+               /!* $('.banner_list .function').before(banner_item1);
+                $('.banner_list .function').before(banner_item2);
+                $('.banner_list .function').before(banner_item3);
+                $('.banner_list .function').before(banner_item4);
+                $('.banner_list .function').before(banner_last);*!/
+                /!*var bannerHtml='';
+                var _html='';
+                //var length=$('.banner_list .layui-tab-card').length;
+                //for(var i=0;i<4;i++){
+                    //if(i=0){
+                        //bannerHtml+='<div class="layui-tab-item layui-show">'
+                    //}else{
+                        bannerHtml+='<div class="layui-tab-item">'
+                    //}
+                    bannerHtml+='<div class="layui-form-item">'+
+            '                       <label class="layui-form-label">上传图片</label>'+
+            '                           <button type="button" class="layui-btn layui-btn-danger upload_img"><i class="layui-icon"></i>上传图片</button>'+
+            '                           <span class="imgName"></span>'+
+            '                           <input type="hidden" name="img_name_'+length+'_'+i+'" class="img_name">'+
+            '                   </div>'+
+            '                   <div class="layui-form-item" ''>'+
+            '                       <label class="layui-form-label">链接开关</label>'+
+            '                       <div class="layui-input-block">'+
+            '                           <input type="radio" class="url_status" name="url_status_'+length+'_'+i+'" value="1" title="开启">'+
+            '                           <input type="radio" class="url_status" name="url_status_'+length+'_'+i+'" value="0" title="关闭" checked>'+
+            '                       </div>'+
+            '                   </div>'+
+            '                   <div class="layui-form-item">'+
+            '                       <label class="layui-form-label">图片链接</label>'+
+            '                           <div class="layui-input-block">'+
+            '                               <input type="text" name="image_url_'+length+'_'+i+'" value="'+length+'_'+i+'" placeholder="请输入链接" autocomplete="off" class="layui-input img_url">'+
+            '                       </div>'+
+            '                   </div>'+
+            '                   <div class="layui-form-item">'+
+            '                       <label class="layui-form-label">banner展示</label>'+
+            '                       <div class="layui-input-block">'+
+                        '               <input type="radio" class="status" name="status_'+length+'_'+i+'" value="1" title="开启">'+
+                        '               <input type="radio" class="status" name="status_'+length+'_'+i+'" value="0" title="关闭" checked>'+
+            '                       </div>'+
+            '                   </div>'+
+            '                   <div class="layui-form-item">'+
+            '                       <label class="layui-form-label">banner位图片排序</label>'+
+            '                       <div class="layui-input-block">'+
+            //'                           <input type="number" name="sort_'+length+'_'+i+'" value="" placeholder="请输入排序" autocomplete="off" class="layui-input sort">'+
+            '                       </div>'+
+            '                   </div>'+
+            //'                   <input type="hidden" name="img_id_'+length+'_'+i+'" value=""  class="layui-input">'+
+            '               </div>'
+                //}
+                var _html=' <div class="layui-tab layui-tab-card">'
+                '               <ul class="layui-tab-title">'+
+                    '               <li class="layui-this">图片1</li>'+
+                    '               <li>图片2</li>'+
+                    '               <li>图片3</li>'+
+                    '               <li>图片4</li>'+
+                '               </ul>'+
+                '               <div class="layui-tab-content">'+bannerHtml+
+                '               </div>'+
+                '               <div class="layui-tab layui-tab-card card_functiuon">'+
+                    '               <button class="layui-btn layui-btn-xs delete layui-btn-danger">删除</button>'+
+                    '               <button class="layui-btn layui-btn-xs add">增加</button>'+
+                '               </div>'+
+                '            </div>'
+                $('.banner_list .layui-tab-card.card_functiuon .add').css('display','none');
+                $('.banner_list .function').before('<div class="layui-tab layui-tab-card">'+_html+'</div>');*!/
+               // $('.banner_list .layui-tab-card.card_functiuon .add').not($('.banner_list .layui-tab-card.card_functiuon .add:last')).remove();
+            })*/
+            //保存
+            form.on('submit(fodder-detailSave)', function (data) {
+                var listArr=$('.banner_list .layui-tab-content');
+                var dataArr=[];
+                if(listArr.length){
+                    //i:listid  index 里层id
+                    listArr.each(function(ind,k){
+                        var i=$(k).children().first().attr('listId');
+                        $(k).find('.layui-tab-item').each(function(index,val){
+                            var list={};
+                            list.list=i;
+                            list.img_name=data.field['img_name_'+i+'_'+index];
+                            list.url_status=data.field['url_status_'+i+'_'+index];
+                            list.image_url=data.field['image_url_'+i+'_'+index];
+                            list.status=data.field['status_'+i+'_'+index];
+                            list.sort=data.field['sort_'+i+'_'+index];
+                            list.banner_id=banner_id;
+                            list.img_id=data.field['img_id_'+i+'_'+index];
+                            if(list.img_name==undefined){
+                                list.img_name='';
+                            }
+                            if(list.image_url==undefined){
+                                list.image_url='';
+                            }
+                            if(list.sort==undefined){
+                                list.sort='';
+                            }
+                            dataArr.push(list);
+                        })
+                    });
+                    //console.log(dataArr)
+                    admin.req({
+                        url: setter.baseUrl + '/banner/add-banner/'+banner_id
+                        , type: 'POST'
+                        ,data:{data:dataArr}
+                        , done: function (res) {
+                            layer.msg(res.message, {icon: 1, time: 2000});
+                            setTimeout(function(){
+                                location.reload();
+                            },2000)
+
+                        }
+                    });
+                }
+
+            });
+            //返回
+            form.on('submit(fodder-detailReturn)', function (data) {
+                location.href="/#/setting/fodder/wechat"
+            });
+        })
+    }
+
+</script>

@@ -1,0 +1,57 @@
+.department .layui-card-body {
+  margin: 0 15px;
+  padding: 10px 0;
+}
+.department .content {
+  padding: 10px 0;
+}
+.department .content-line {
+  width: 300px;
+  padding: 0 8px;
+  float: left;
+}
+.department .content-line .layui-card {
+  border: 1px solid #e6e6e6;
+}
+.department .dept-list li {
+  position: relative;
+  padding: 4px 6px;
+  line-height: 30px;
+}
+.department .dept-list li:hover .icon-btn-box {
+  display: block;
+}
+.department .dept-list li:hover .goto,
+.department .dept-list li .goto {
+  display: none;
+}
+.department .dept-list .icon-btn-box {
+  line-height: 38px;
+  position: absolute;
+  right: 6px;
+  top: 0;
+  display: none;
+}
+.department .dept-list .dept-item {
+  display: flex;
+  justify-content: space-between;
+  cursor: pointer;
+}
+.department .dept-list .dept-item .icon {
+  margin-left: 8px;
+}
+.department .dept-list .item .icon {
+  margin-left: 8px;
+}
+.department .dept-list .dept-item.active {
+  background: #f7f8fa;
+}
+.department .dept-list .dept-item.active .goto {
+  display: block;
+}
+.department .dept-list .dept-item.active:hover .goto {
+  display: none;
+}
+.department .hide {
+  display: none;
+}

@@ -1,0 +1,494 @@
+<title>员工列表</title>
+<style>
+    .btn-bar {
+        background: #f7f8fa;
+        padding: 4px 10px;
+    }
+
+    .active {
+        background: #F6F6F6;
+    }
+
+    .pay .list-wrapper li {
+        padding: 6px;
+        line-height: 30px;
+    }
+</style>
+
+<body>
+    <!-- 员工列表 -->
+    <div class='layui-fluid full-height pay over-auto'>
+        <div class='layui-row full-height layui-col-space10'>
+            <div class="layui-card-header" style="background-color:#fff">员工列表</div>
+            <div class="layui-col-xs  layui-col-lg3 full-height">
+                <div class='layui-card layui-border-box full-height'>
+                    <div class="layui-card-body layui-form full-height flex flex-v">
+                        <div class='flex-1 over-auto'>
+                            <div class=" full-height">
+                                <div class="layui-card layui-border-box full-height">
+                                    <div class="layui-card-body layui-form full-height flex flex-v">
+                                        <div class="flex-1 over-auto">
+                                            <ul class="list-wrapper" id='payList' lay-templateid="payList"></ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class='layui-col-xs8 layui-col-md8 layui-col-lg9 full-height '>
+                <div class="layui-card full-height flex flex-v">
+                    <div class="layui-card-body">
+                        <fieldset class="layui-elem-field">
+                            <legend>搜索条件</legend>
+                            <div class="layui-form">
+                                <div class="layui-form-item">
+                                    <div class="layui-inline">
+                                        <div class="layui-input-inline">
+                                            <input type="text" name="query" autocomplete="off" placeholder="请输入手机/学工号"
+                                                class="layui-input">
+                                        </div>
+                                        <div class="layui-inline pull-right">
+                                            <button class="layui-btn " lay-submit lay-filter="search">搜索</button>
+                                            <!-- <script type="text/html" template>
+                                                <a href="{{layui.setter.baseUrl}}/system/account/role/1/admins-export?Authorization={{layui.data('layuiAdmin').Authorization}}"
+                                                   class="layui-btn">导出数据</a>
+                                            </script> -->
+                                            <a href="javascript:;" class="layui-btn layui-btn-normal" lay-submit
+                                                lay-filter="LAY-system-admin-list">导出Excel</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <div class="m-b-10 btn-bar">
+                            <!-- <script type="text/html" template>
+                            <a href="{{layui.setter.baseUrl}}/system/account/admins-import?Authorization={{layui.data('layuiAdmin').Authorization}}"
+                               class="layui-btn layui-btn-sm">导入用户</a>
+                        </script> -->
+
+                            <button type="button" class="layui-btn layui-btn-sm" id="import_park">导入文件</button>
+
+
+
+                            <button class="layui-btn layui-btn-sm " id="addUser" lay-submit lay-filter="addUser">添加用户
+                            </button>
+                            <button class="layui-btn layui-btn-sm layui-btn-danger " id="deleteUser">删除用户</button>
+                            <button class="layui-btn layui-btn-sm  layui-btn-danger" id="userSet">成员权限设置</button>
+                        </div>
+                        <table class="layui-hide" id="adminlist" lay-filter="adminlist"></table>
+                        <script type="text/html" id="adminOrder">
+                        <div class="layui-btn-container">
+                            <button class="layui-btn layui-btn-xs" lay-event="overhead">置顶</button>
+                            <button class="layui-btn layui-btn-xs" lay-event="editPassword">修改密码</button>
+                            <button class="layui-btn layui-btn-xs" lay-event="edit">编辑</button>
+                        </div>
+                    </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <input type="hidden" class="hide" value="">
+
+    <script>
+
+        // 注册layui组件
+        layui.use(['element', 'upload', 'admin', 'form', 'table', 'laydate'], function () {
+            var $ = layui.$,
+                admin = layui.admin,
+                view = layui.view,
+                setter = layui.setter,
+                form = layui.form,
+                table = layui.table,
+                upload = layui.upload,
+                laydate = layui.laydate,
+                element = layui.element;
+            // 初始化的事件
+            $(function () {
+
+
+                var id = '';
+                // 获取数据表格
+                var cols = [[ //表头
+                    { type: 'checkbox', fixed: 'left' }
+                    , { field: 'name', title: '姓名' }
+                    , { field: 'mobile', title: '手机号' }
+                    , { field: 'job_no', title: '工号' }
+                    , { field: 'position', title: '岗位' }
+                    , { title: '操作', align: 'center', toolbar: '#adminOrder' }
+                ]];
+                //获取食堂
+                form.on('select(campus)', function (data) {
+                    var campusId = data.value;
+                    admin.req({
+                        url: setter.baseUrl + '/system/site/canteens',
+                        type: 'get',
+                        data: { campusId: campusId },
+                        done: function (res) {
+                            var _html = '<option value="" disabled selected>请选择食堂</option>';
+                            $(res.data).each(function (i, k) {
+                                _html += '<option value="' + k.id + '">' + k.name + '</option>'
+                            })
+                            $('#canteenser').html(_html)
+                            form.render();
+                        }
+                    });
+                });
+                // 左边的tab栏框的页面渲染
+                getNav();
+
+                function getNav() {
+                    admin.req({
+                        url: setter.baseUrl + '/system/account/roles'
+                        , type: 'get'
+                        , data: {}
+                        , done: function (res) {
+                            var _html = '';
+                            $(res.data).each(function (i, k) {
+                                if (i == 0) {
+                                    id = k.id
+                                    _html += '<li class="active" data-id="' + k.id + '">' + k.name + '</li>'
+                                } else {
+                                    _html += '<li data-id="' + k.id + '">' + k.name + '</li>'
+                                }
+                            })
+                            $('#payList').html(_html);
+                            getTable(id);
+                        }
+                    });
+                }
+
+                // list列表的切换
+                $(document).on('click', '#payList >li', function () {
+                    var id = $(this).attr('data-id');
+                    $(this).addClass('active');
+                    $(this).siblings('li').removeClass('active');
+                    getTable(id);
+                    //点击搜索按钮
+
+                });
+
+
+
+                form.on('submit(search)', function (obj) {
+                    console.log(obj);
+                    var id = $('.active').attr('data-id');
+                    table.reload('adminlist', {
+                        url: setter.baseUrl + '/system/account/role/' + id + '/admins',
+                        response: setter.responseTable,
+                        page: setter.pageTable,
+                        cols: cols,
+                        where: obj.field,
+                    });
+                });
+
+                // 点击tab的点击事件获取右边的表格
+                function getTable(id) {
+                    table.render(
+                        {
+                            elem: '#adminlist'
+                            , url: setter.baseUrl + '/system/account/role/' + id + '/admins'
+                            , response: setter.responseTable
+                            , page: setter.pageTable
+                            , cols: cols,
+                            where: id
+                        }
+                    );
+                }
+
+
+                // 添加用户事件（跳地址链接）
+                $(document).off('click', '#addUser');
+                $(document).on('click', '#addUser', function () {
+                    admin.popupCenter({
+                        id: 'Key-addUser'
+                        , title: '添加用户'
+                        , area: ['400px', '320px']
+                        , success: function () {
+                            view(this.id).render('setting/system/admin/adduser');
+                        }
+                    });
+                })
+                // 添加用户的确定事件
+                form.on('submit(LAY-add-ensure)', function (obj) {
+                    // 手机号正则表达式处理
+                    function codeVerification(phone) {
+                        let phoneCodeVerification = /^[1][3,4,5,7,8][0-9]{9}$/;
+                        return phoneCodeVerification.test(phone);
+                    }
+
+                    var mobilb = $('.mobil').val();
+                    if (!codeVerification(mobilb)) {
+                        layer.msg('您的手机号码不正确，请重新填写！', { icon: 2, time: 3000 });
+                        return false;
+                    }
+
+                    var id = $('#payList .active').attr('data-id');
+
+                    var data = {};
+                    data = obj.field;
+                    data.roleId = id
+                    //请求添加部门接口
+                    admin.req({
+                        url: setter.baseUrl + '/system/account/admin'
+                        , type: 'post'
+                        , data: data
+                        , done: function (res) {
+                            view('old_mobile')
+                            layer.msg(res.message, { icon: 1, time: 2000 });
+                            layer.close(admin.popup.index);//关闭右侧面板
+                            getTable(id);
+                        }
+                    });
+                });
+
+                var userId = ''
+                //表格右边工具栏
+                table.on('tool(adminlist)', function (obj) {
+                    var data = obj.data; //获得当前行数据
+                    var Id = data.id;
+                    // var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+                    // var tr = obj.tr; //获得当前行 tr 的DOM对象
+                    // var checkStatus = table.checkStatus(obj.config.id);
+                    if (obj.event === 'overhead') { //顶置
+                        // console.log();
+                        admin.req({
+                            url: setter.baseUrl + '/system/account/admin/' + Id + '/top'
+                            , type: 'put'
+                            // , data: data
+                            , done: function (res) {
+                                view('old_mobile')
+                                layer.msg(res.message, { icon: 1, time: 2000 });
+                                layer.close(admin.popup.index);//关闭右侧面板
+                                // 这里的全局id和局部id要区分
+                                // getTable(id);
+                                $(".layui-laypage-btn")[0].click(); 
+                                // table.render();
+                            }
+                        });
+                    } else if (obj.event === 'edit') {   //编辑
+                        // var userIdList = getMemberId('id');
+                        console.log(obj);
+                        layui.data('authorityUser', {
+                            key: 'userList'
+                            , value: obj.data.id
+                        });
+
+                        admin.popupCenter({
+                            id: 'Key-editmin'
+                            , title: '编辑用户'
+                            , area: ['456px', '420px']
+                            , success: function () {
+                                view(this.id).render('setting/system/admin/editmin');
+                            }
+                        });
+                        // var data = {};
+                        // data = obj.field;
+                        // data.roleId = id
+                        // admin.req({
+                        //     url: setter.baseUrl + '/system/account/admin/' + Id
+                        //     , type: 'put'
+                        //     // , data: data
+                        //     , done: function (res) {
+                        //         view('old_mobile')
+                        //         layer.msg(res.message, { icon: 1, time: 2000 });
+                        //         layer.close(admin.popup.index);//关闭右侧面板
+                        //         // 这里的全局id和局部id要区分
+                        //         getTable(id);
+                        //     }
+                        // });
+                    } else if (obj.event === 'editPassword') {
+                        userId = obj.data.id
+                        admin.popupCenter({
+                            id: 'LAY-editPassword'
+                            , title: '修改密码'
+                            , area: ['400px', '300px']
+                            , success: function () {
+                                view(this.id).render('setting/system/admin/editPassword');
+                            }
+                        });
+                    }
+                });
+
+                form.on('submit(LAY-editPassword)', function () {
+                    var password = $('#password').val();
+                    if (password.length < 6) {
+                        layer.msg('密码不能小于6位哦', { icon: 5, time: 2000 })
+                    } else {
+                        admin.req({
+                            url: setter.baseUrl + '/system/account/admin/' + userId + '/ps'
+                            , type: 'PUT'
+                            , data: { password: password }
+                            , done: function (res) {
+                                layer.msg(res.message, { icon: 1, time: 2000 }, function () {
+                                    layer.closeAll();
+                                });
+
+                            }
+                        });
+                    }
+                })
+
+                // 批量操作
+                function getMemberId(name) {
+                    var parameter = [];
+                    var checkStatus = table.checkStatus('adminlist'), data = checkStatus.data;
+                    for (var i in data) {
+                        parameter.push(data[i][name]);
+                    }
+                    return parameter;
+                }
+
+
+                // 批量删除用户
+                $(document).off('click', '#deleteUser');
+                $(document).on('click', '#deleteUser', function () {
+                    var userIdList = getMemberId('id');
+                    console.log(userIdList.length);
+                    if (userIdList.length > 0) {
+
+                        // 提示确定要删除用户吗
+
+                        layer.confirm('是否确定要删除该会员?', { icon: 1, title: '提示' }, function (index) {
+                            admin.req({
+                                url: setter.baseUrl + '/system/account/admins'
+                                , type: 'delete'
+                                , data: { idList: userIdList }
+                                , done: function (res) {
+                                    view('old_mobile')
+                                    layer.msg(res.message, { icon: 1, time: 2000 });
+                                    layer.close(admin.popup.index);//关闭右侧面板
+                                    getTable(id);
+                                }
+                            });
+                        });
+                    } else {
+                        layer.msg('请选择要删除的用户', { icon: 2, time: 2000 });
+                        console.log('userIdList');
+
+                    }
+
+                });
+
+                $(document).off('click', '#userSet');
+                $(document).on('click', '#userSet', function () {
+                    var userIdList = getMemberId('id');
+                    layui.data('authorityUser', {
+                        key: 'userList'
+                        , value: userIdList
+                    });
+                    if (userIdList.length > 0) {
+                        admin.popupRight({
+                            id: 'LAY_adminPopupAuthority'
+                            , title: '成员权限管理'
+                            , area: '80%'
+                            , closeBtn: 1
+                            , success: function () {
+                                view(this.id).render('setting/system/admin/auth');
+                            }
+                        });
+                    } else {
+                        layer.alert('请选择要操作的成员！', { icon: 5 });
+                    }
+                })
+
+
+                //权限管理
+                $(document).off('click', '#authorityConfirm');
+                $(document).on('click', '#authorityConfirm', function () {
+                    var userList = layui.data('authorityUser').userList;
+                    var permissionList = [];
+                    $("input:checkbox[name='authority']:checked").each(function () {
+                        permissionList.push($(this).val());
+                    });
+                    admin.req({
+                        url: setter.baseUrl + '/system/account/assign-permissions'
+                        , type: 'put'
+                        , data: { 'userIdList': userList, 'permissionList': permissionList }
+                        , done: function (res) {
+                            layer.close(admin.popup.index);
+                            layui.data('authorityUser', null);
+                            layer.msg(res.message, { icon: 1, time: 2000 });
+                        }
+                    });
+                })
+
+                $(document).off('click', '#cancel');
+                $(document).on('click', '#cancel', function () {
+                    layer.closeAll();
+                });
+
+
+                function deviceExport(filter, deviceType) {
+
+                    form.on(filter, function (obj) {
+                        var id = $('.active').attr('data-id');
+                        console.log(obj);
+                        var href = setter.baseUrl + '/system/account/role/' + id + '/admins-export' + '?Authorization='
+                            + layui.data('layuiAdmin').Authorization + '&query=' + obj.field.query;
+                        window.location.href = href;
+                    });
+                };
+
+                deviceExport('submit(LAY-system-admin-list)', 3);
+
+                // 导入用户
+
+
+
+                //指定允许上传的文件类型
+                // upload.render({
+                //     elem: '#uploadExcel'
+                //     , url: setter.baseUrl + '/system/account/admins-import'
+                //     , accept: 'excelPath' //普通文件
+                //     , multiple: true
+                //     , done: function (res) {
+                //         console.log(res);
+                //     }
+                // });
+
+
+
+                $(document).off('click', '#import_park');
+                $(document).on('click', '#import_park', function () {
+                    admin.popupCenter({
+                        id: 'LAY_adminPopupImportPark'
+                        , title: '导入Excel数据'
+                        , area: ['600px', '550px']
+                        , success: function () {
+                            view(this.id).render('setting/system/admin/import');
+                        }
+                    });
+                })
+
+
+
+                $(document).off('click', '#confirm_park');
+                $(document).on('click', '#confirm_park', function () {
+                    var excelPath = $('#excelPath_park').val();
+                    if (!excelPath) {
+                        layer.alert('请先上传需要导入的文件！', { icon: 5 });
+                    } else {
+                        admin.req({
+                            url: setter.baseUrl + '/system/account/admins-import' //实际使用请改成服务端真实接口
+                            , type: 'post'
+                            , data: { 'excelPath': excelPath }
+                            , done: function (res) {
+                                layer.close(admin.popup.index);
+                                parentId = 0;
+                                // tree = $.fn.zTree.init($("#parkTree"), setting);
+                                layer.msg(res.message, { icon: 1, time: 2000 });
+                            }
+                        });
+                    }
+                }) 
+
+
+            });
+        });
+
+    </script>

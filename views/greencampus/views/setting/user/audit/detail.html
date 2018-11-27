@@ -1,0 +1,75 @@
+<title>用户详情</title>
+<div class="layui-fluid layui-border-box full-height">
+    <div class="layui-row full-height">
+        <div class="layui-card full-height flex flex-v">
+            <div class="layui-card-header">
+                用户详情
+            </div>
+            <div class="layui-card-body flex-1 over-auto">
+                <div class="layui-form layui-form-pane full-height flex flex-v">
+                    <script type="text/html" template
+                            lay-url="{{layui.setter.baseUrl + '/user-manage/role/user/'+layui.data('currentId').id}}">
+                        <div class="layui-clear flex-1">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">姓名</label><!--<span class="important">*</span>-->
+                                <div class="layui-input-block">
+                                    <input type="text" autocomplete="off" value="{{ d.data.user.name }}" class="layui-input" readonly>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">手机号</label>
+                                <div class="layui-input-block">
+                                    <input type="text" autocomplete="off" value="{{ d.data.user.mobile }}" class="layui-input" readonly>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">学号/工号</label>
+                                <div class="layui-input-block">
+                                    <input type="text" autocomplete="off" value="{{ d.data.user.job_number }}" class="layui-input" readonly>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">角色</label>
+                                <div class="layui-input-block">
+                                    <input type="text" autocomplete="off" value="{{ d.data.user.role.role_name }}" class="layui-input" readonly>
+                                </div>
+                            </div>
+                            {{# layui.each(d.data.structureData,function(index,item){ }}
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">{{ item.title }}</label>
+                                <div class="layui-input-block">
+                                    <input type="text" autocomplete="off" value="{{ item.structure != null?item.structure.name:'' }}" class="layui-input" readonly>
+                                </div>
+                            </div>
+                            {{# }) }}
+                            {{# layui.each(d.data.extendsData,function(index,item){ }}
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">{{ item.title }}</label>
+                                <div class="layui-input-block">
+                                    <input type="text" autocomplete="off" value="{{ item.value!=null?item.value:'' }}" class="layui-input" readonly>
+                                </div>
+                            </div>
+                            {{# }) }}
+                        </div>
+                        <div class="layui-form-item p-t-10">
+                            <button class="layui-btn layui-btn-primary" id="back">返回</button>
+                        </div>
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    layui.use('admin', function () {
+        var $ = layui.$;
+
+        //修改用户信息
+        $(document).off('click', '#back');
+        $(document).on('click', '#back', function () {
+            window.history.go(-1);
+        })
+
+    });
+
+</script>

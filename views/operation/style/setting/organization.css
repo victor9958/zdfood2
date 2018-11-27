@@ -1,0 +1,121 @@
+.organization .search {
+  padding: 8px 15px;
+  height: 38px;
+  line-height: 20px;
+  cursor: pointer;
+  border: 1px solid #c9c9c9;
+  background-color: #FBFBFB;
+  border-radius: 0 2px 2px 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+.organization .icon-search {
+  position: absolute;
+  top: 8px;
+  left: 10px;
+}
+.organization .layui-input-search {
+  padding-left: 30px;
+}
+.organization .panel-card .title {
+  margin: 20px 0 15px;
+}
+.organization .panel-card .handle {
+  background: #f7f8fa;
+  padding: 4px 15px 4px 30px;
+}
+.organization .ui-state-default {
+  padding: 10px 30px;
+  border-bottom: 1px solid #e6e6e6;
+}
+.organization .option-tips {
+  padding: 10px;
+  display: none;
+  text-align: center;
+  background: #ffffcc;
+}
+.organization .option-tips a {
+  color: #1E9FFF;
+  margin-left: 30px;
+}
+.organization .layui-layer-adminRight {
+  top: 0 !important;
+}
+.organization .deptName {
+  width: 100%;
+  z-index: 100;
+  background: #fff;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+.organization .editname {
+  width: 100%;
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 10px 15px;
+}
+.organization .fixed-card-top {
+  width: 100%;
+  z-index: 100;
+  padding: 10px 15px;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.organization .search-result {
+  width: 100%;
+  display: none;
+  z-index: 100;
+  overflow: auto;
+  min-height: 200px;
+  max-height: 400px;
+  background: #fff;
+  border-radius: 2px;
+  border: 1px solid #d2d2d2;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
+  box-sizing: border-box;
+  position: absolute;
+  left: 0;
+  top: 42px;
+}
+.organization .search-result li {
+  padding: 8px 10px;
+  border-bottom: 1px solid #f2f2f2;
+}
+.organization .search-result li p {
+  padding-bottom: 10px;
+  padding-top: 10px;
+  margin-left: 10px;
+  border-bottom: 1px solid #f2f2f2;
+}
+.organization .search-result li p:first-of-type {
+  padding-top: 0;
+  margin-left: 0;
+}
+.organization .search-result li p:last-of-type {
+  padding-bottom: 0;
+  border-bottom: none;
+}
+.organization .sort-btn {
+  cursor: pointer;
+}
+.organization .result-list {
+  cursor: pointer;
+}
+#deleteParent {
+  display: none;
+}
+#deleteParent.edit-show {
+  display: inline-block;
+}
+/*park*/
+.park .layui-form-item .layui-form-checkbox[lay-skin=primary] {
+  margin-top: 0;
+}
+.park .sortable .layui-form-item {
+  margin-bottom: 0;
+}

@@ -1,0 +1,69 @@
+<style>
+    .fixed-btn_park {
+        width: 100%;
+        background: #fff;
+        box-sizing: border-box;
+        position: absolute;
+        left: 0;
+        bottom: 20px;
+    }
+</style>
+<div class="centerLayer">
+    <!--<p class="layui-form-item">导入会覆盖原有成员信息，如需更新已存在员工信息，请导出后在表格中修改再上传</p>-->
+    <div class="layui-form-item">
+        <p><span class="ft-red">*</span> 推荐使用标准模版导入数据</p>
+        <p><span class="ft-red">*</span> 仅支持xls或xlsx格式的文件</p>
+        <p><span class="ft-red">*</span> 文件大小不超过2MB </p>
+        <p><span class="ft-red">*</span> 文件中数据不超过5000行</p>
+        <p><span class="ft-red">*</span> 文件中数据不超过200列</p>
+        <hr/>
+        <div class="layui-input m-t-40 hide">
+            <svg class="icon ft-green" aria-hidden="true" style="margin-top: 9px;">
+                <use xlink:href="#icon-Excel"></use>
+            </svg>
+            <span id="file_name_park" class="ft-green p-l-10"></span>
+        </div>
+        <img id="example" width="100%" src="/src/style/res/example.png"/>
+    </div>
+    <div class="layui-form-item fixed-btn_park p-t-10 ft-center">
+        <button class="layui-btn layui-btn-danger" id="upload_park" style="margin-right: 10px;">上传文件</button>
+        <button class="layui-btn" id="confirm_park">导入</button>
+        <button class="layui-btn layui-btn-primary" id="cancel">取消</button>
+    </div>
+    <input id="excelPath_park" value="" hidden/>
+</div>
+<script>
+    layui.use('upload', function(){
+        var $ = layui.$,
+            upload = layui.upload,
+            setter = layui.setter;
+
+        $(function(){
+            //upload file
+            var load;
+            upload.render({
+                elem: '#upload_park' //绑定元素
+                ,url: setter.baseUrl + '/user-manage/organize/excel-upload' //上传接口
+                ,accept: 'file' //允许上传的文件类型
+                ,before: function(obj){
+                    load = layer.load(); //上传loading
+                    obj.preview(function(index, file, result){
+                        $('#file_name_park').html(file.name).parents('.layui-input').show(); //得到文件对象
+                        $('#example').hide();
+                    });
+                }
+                ,done: function(res){
+                    layer.close(load);
+                    layer.msg(res.message, {icon: 1, time: 2000});
+                    $('#excelPath_park').val(res.data);
+                    $('#upload_park').html('重新上传');
+                }
+                ,error: function(){
+                    //请求异常回调
+                    layer.close(admin.popup.index);
+                }
+            });
+        })
+
+    });
+</script>

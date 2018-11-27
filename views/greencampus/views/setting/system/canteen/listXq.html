@@ -1,0 +1,665 @@
+<!-- 食堂管理详情 -->
+
+<title>食堂管理详情</title>
+<style>
+    .over-auto {
+        overflow: hidden;
+    }
+    .V_text_left {
+        text-align: left;
+        width: 45px;
+        padding-right: 0px;
+    }
+
+    .layui-form-item {
+        margin-bottom: 9px;
+    }
+    #list-editImg {
+        margin-top: 10px;
+    }
+    #list-editImg img {
+        width: 150px;
+        height: 150px;;
+    }
+
+     .banner_img {
+    width: 351px;
+    height: 98px;
+    margin-right: 10px;
+    border-radius: 4px;
+    border: 1px solid #e6e6e6;
+}
+</style>
+<div class="layui-fluid full-height  ">
+    <div class="layui-card full-height ">
+        <div class="layui-card-body" style="background-color:#fff;margin-bottom:10px">
+            <div class="over-auto layui-form layui-form-pane " lay-filter="stlb" >
+                <!-- 提示：如果你不想用form，你可以换成div等任何一个普通元素 -->
+                <div class="layui-form-item" pang>
+                    <label class="layui-form-label">名称</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="name" id="canteen" placeholder="请输入食堂" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-form-item" pang>
+                    <label class="layui-form-label">联系电话</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="phone" placeholder="请输入联系电话" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item" pang>
+                    <label class="layui-form-label">简介</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="description" placeholder="请输入简介类型" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+
+
+                <div class="layui-form-item" pang>
+                    <label class="layui-form-label">就餐方式</label>
+                    <div class="layui-input-block">
+                        <select name="eatType" lay-filter="aihao">
+                            <option value="1">外卖</option>
+                            <option value="2">堂食</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="layui-form-item" pang>
+                    <label class="layui-form-label">就餐时间</label>
+                    <div class="layui-input-block">
+                        <label class="layui-form-label V_text_left">中餐：</label>
+
+
+
+
+                        <div class="layui-input-inline">
+                            <input type="text" class="layui-input time" id="lunchStartAtId" placeholder="请选择开始时间和结束时间"
+                                value="">
+                            <input type="hidden" name="lunchStartAt" id="lunchStartAt_start" value="">
+                            <input type="hidden" name="lunchEndAt" id="lunchStartAtz_end" value="">
+                        </div>
+
+
+                        <label class="layui-form-label V_text_left">晚餐：</label>
+                        <div class="layui-input-inline">
+                            <input type="text" class="layui-input time" id="dinnerStartAtId" placeholder="请选择开始时间和结束时间">
+                            <input type="hidden" name="dinnerStartAt" id="dinnerStartAt_start" value="">
+                            <input type="hidden" name="dinnerEndAt" id="dinnerStartAt_end" value="">
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- 堂食的预约天数eatInSubDays -->
+                <div class="layui-form-item" pang>
+                    <label class="layui-form-label">预约有效期</label>
+                    <div class="layui-input-block">
+                        <label class="layui-form-label ">个人餐：</label>
+                        <div class="layui-input-inline">
+                            <div class=" conceal_hide ">
+                                <select name="personSubDays" lay-filter="">
+                                    <option value="" disabled selected>请选择天数</option>
+                                    <option value="1">1天</option>
+                                    <option value="2">2天</option>
+                                    <option value="3">3天</option>
+                                    <option value="4">4天</option>
+                                    <option value="5">5天</option>
+                                    <option value="6">6天</option>
+                                    <option value="7">7天</option>
+                                </select>
+                            </div>
+                            <div class=" conceal">
+                                <select name="eatInSubDays" lay-filter="">
+                                    <option value="1">1天</option>
+                                    <option value="2">2天</option>
+                                    <option value="3">3天</option>
+                                    <option value="4">4天</option>
+                                    <option value="5">5天</option>
+                                    <option value="6">6天</option>
+                                    <option value="7">7天</option>
+                                </select>
+                            </div>
+
+                        </div>
+                        <div class="layui-v-hide">
+                            <label class="layui-form-label ">团餐：</label>
+                            <div class="layui-input-inline">
+                                <select name="groupSubDays" id="" lay-filter="">
+                                    <option value="" disabled selected>请选择天数</option>
+                                    <option value="1">1天</option>
+                                    <option value="2">2天</option>
+                                    <option value="3">3天</option>
+                                    <option value="4">4天</option>
+                                    <option value="5">5天</option>
+                                    <option value="6">6天</option>
+                                    <option value="7">7天</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layui-form-item" pang>
+                    <label class="layui-form-label ">不可预约日期</label>
+                    <div class="layui-input-block">
+                        <label class="layui-form-label ">个人餐：</label>
+                        <div class="layui-input-inline">
+                            <div class="conceal_hide">
+                                <input type="text" class="layui-input time" id="notTime_id" placeholder="请选择开始时间和结束时间">
+                                <input type="hidden" name="personNoSubStartDate" id="notTime_start" value="">
+                                <input type="hidden" name="personNoSubEndDate" id="notTimez_end" value="">
+                            </div>
+                            <div class="conceal">
+                                <input type="text" class="layui-input time" id="notTime_idt" placeholder="请选择开始时间和结束时间">
+                                <input type="hidden" name="eatInNoSubStartDate" id="notTime_startt" value="">
+                                <input type="hidden" name="eatInNoSubEndDate" id="notTimez_endt" value="">
+                            </div>
+                        </div>
+                        <div class="layui-v-hide">
+                            <label class="layui-form-label ">团餐：</label>
+                            <div class="layui-input-inline">
+                                <input type="text" class="layui-input time" id="notTimeTuan_id" placeholder="请选择开始时间和结束时间">
+                                <input type="hidden" name="groupNoSubStartDate" id="orderpayxqStartTimeTcno" value="">
+                                <input type="hidden" name="groupNoSubEndDate" id="orderpayxqEndTimeTcno" value="">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label font_14">不可预约时间</label>
+                    <div class="layui-input--block">
+                        <label class="layui-form-label ">个人餐：</label>
+                        <div class="layui-input-inline">
+                            <div class="conceal_hide">
+                                <input type="text" class="layui-input time" id="orderxqdateTcnoN_id" placeholder="请选择开始时间和结束时间">
+                                <input type="hidden" name="personNoSubStartTime" id="orderpayxqStartTimeTcnoN" value="">
+                                <input type="hidden" name="personNoSubEndTime" id="orderpayxqEndTimeTcnoN" value="">
+                            </div>
+                            <div class="conceal">
+                                <input type="text" class="layui-input time" id="orderxqdateTcnoN_idt" placeholder="请选择开始时间和结束时间">
+                                <input type="hidden" name="eatInNoSubStartTime" id="orderpayxqStartTimeTcnoNtV" value="">
+                                <input type="hidden" name="eatInNoSubEndTime" id="orderpayxqEndTimeTcnoNtV" value="">
+                            </div>
+                        </div>
+                        <div class="layui-v-hide">
+                            <label class="layui-form-label ">团餐：</label>
+                            <div class="layui-input-inline">
+                                <input type="text" class="layui-input time" id="orderxqdateTcnoNTV" placeholder="请选择开始时间和结束时间">
+                                <input type="hidden" name="groupNoSubStarTime" id="orderpayxqStartTimeTcnoNT" value="">
+                                <input type="hidden" name="groupNoSubEndTime" id="orderpayxqEndTimeTcnoNT" value="">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">（设置不可预约日期内的时间段，默认全天）</div>
+                </div>
+
+                <!-- 预约限制 -->
+                <div class="layui-form-item">
+                    <label class="layui-form-label">预约限制</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="cantSubMinute" placeholder="不可点餐时间" autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">就餐时间前/后（）分钟不可点餐</div>
+                </div>
+
+                <!-- 保质期-->
+                <div class="layui-form-item expiration">
+                    <label class="layui-form-label ">保质期</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="orderExpire" placeholder="订单失效时间" autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">超出就餐截止时间后（）小时，订单失效</div>
+                </div>
+
+                <!-- 5 -->
+                <div class="layui-form-item">
+                    <label class="layui-form-label ">地 址</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="address" placeholder="请输入地址" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label ">经 度</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="longitude" placeholder="请输入经度" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label ">纬 度</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="latitude" placeholder="请输入纬度" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label ">商户号</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="accounts" placeholder="请输入商户号" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label ">电子邮箱</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="email" placeholder="请输入电子邮箱" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+
+                <!-- 上传图片 -->
+                <div class="layui-form-item" pane="">
+                    <label class="layui-form-label">上传图片</label>
+                   
+                        <div class="layui-input-block block-blank">
+                            <div class="m-b-10">
+                                    <script type="text/html" template lay-url="{{layui.setter.baseUrl}}/system/site/canteen/{{layui.data('canteenId').id}}">
+                                <div class= "list-add-img">
+                                       
+                                    {{# 
+                                        if(d.data.image_url){
+                                        }}
+                                            
+                                                <img class="banner_img "   src="{{d.data.image_url}}" alt=""  id="list-editImg" >
+                                            
+                                    {{#  }else {
+                                    }}
+                                        <img class="banner_img"  src= "/cardmax/style/res/banner_default.png" id="list-editImg">
+                                    
+                                    {{#
+
+                                        }
+                                    }}
+                                   
+                                    <!-- <input type="hidden" class="layui-upload-file" value="{{d.data.image_url}}"  id="editSlideImg" name="imageUrl"> -->
+                               
+                                </div>
+                                <input type="hidden" name="imageUrl" lay-verify="required" value="{{d.data.image_url}}" class="layui-input content">
+                            </script>
+                            </div>
+                            <div class="m-b-10">
+                                <button class="layui-btn upload_img" id="uptest">上传图片</button>
+                              
+                            </div>
+                            <p class="ft-gray">建议图片大小不超过2M</p>
+                        </div>
+                   
+                </div>
+
+                <!-- </script> -->
+                <!-- 上传图片 -->
+                <div class="layui-form-item layui-form-text page">
+                    <button class="layui-btn" lay-submit id="" lay-filter="canteen-submit">确定</button>
+                </div>
+                <input type="hidden" class="shid" value="">
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+    layui.use(['admin', 'form', 'table', 'laydate', 'upload'], function (obj) {
+        var $ = layui.$,
+            admin = layui.admin,
+            view = layui.view,
+            setter = layui.setter,
+            form = layui.form,
+            table = layui.table,
+            upload = layui.upload,
+            laydate = layui.laydate;
+        $('.conceal').hide();
+        $('.expiration').hide();
+
+        //上传图片
+        upload.render({
+            elem: '#uptest',
+            url: setter.baseUrl + '/public/oss-upload',
+            done: function (res) {
+                console.log(res);
+               
+                var img = '<img class= "banner_img" src="' + res.data.ossUrl + '">';
+                $('.list-add-img').html(img);
+                $('.content').val(res.data.ossUrl);
+            }
+        });
+
+            form.render();
+        // 中餐时间
+        laydate.render({
+            elem: '#lunchStartAtId' //指定元素
+            , type: 'time'
+            , range: '-'
+            , done: function (value, date, endDate) {
+                console.log(value);
+                var beginTime = value.split(' - ')[0];
+                var endTime = value.split(' - ')[1];
+                console.log(beginTime);
+                $('#lunchStartAt_start').val(beginTime);
+                $('#lunchStartAtz_end').val(endTime);
+            }
+        });
+
+        // 晚餐时间
+        laydate.render({
+            elem: '#dinnerStartAtId' //指定元素
+            , type: 'time'
+            , range: '-'
+            , done: function (value, date, endDate) {
+                console.log(value);
+                var beginTime = value.split(' - ')[0];
+                var endTime = value.split(' - ')[1];
+                $('#dinnerStartAt_start').val(beginTime);
+                $('#dinnerStartAt_end').val(endTime);
+            }
+        });
+        // 不可预约日期（个人）
+        laydate.render({
+            elem: '#notTime_idt' //指定元素
+            , type: 'date'
+            , range: '-'
+            , done: function (value, date, endDate) {
+                console.log(value);
+                var beginTime = value.split(' - ')[0];
+                var endTime = value.split(' - ')[1];
+                $('#notTime_startt').val(beginTime);
+                $('#notTimez_endt').val(endTime);
+            }
+        });
+
+
+
+        laydate.render({
+            elem: '#notTime_id' //指定元素
+            , type: 'date'
+            , range: '-'
+            , done: function (value, date, endDate) {
+                console.log(value);
+                var beginTime = value.split(' - ')[0];
+                var endTime = value.split(' - ')[1];
+                $('#notTime_start').val(beginTime);
+                $('#notTimez_end').val(endTime);
+            }
+        });
+
+        // 不可预约（团餐）
+        laydate.render({
+            elem: '#notTimeTuan_id' //指定元素notTimeTuan_id
+            , type: 'date'
+            , range: '-'
+            , done: function (value, date, endDate) {
+                console.log(value);
+                // 获取到的日期格式进行分割2018-10-09 - 2018-11-21
+                var beginTime = value.split(' - ')[0];
+                var endTime = value.split(' - ')[1];
+                $('#orderpayxqStartTimeTcno').val(beginTime);
+                $('#orderpayxqEndTimeTcno').val(endTime);
+            }
+        });
+
+        // 不可预约时间（个人）
+        laydate.render({
+            elem: '#orderxqdateTcnoN_id' //指定元素
+            , type: 'time'
+            , range: '-'
+            , done: function (value, date, endDate) {
+                console.log(value);
+                // 获取到的日期格式进行分割2018-10-09 - 2018-11-21
+                var beginTime = value.split(' - ')[0];
+                var endTime = value.split(' - ')[1];
+                $('#orderpayxqStartTimeTcnoN').val(beginTime);
+                $('#orderpayxqEndTimeTcnoN').val(endTime);
+            }
+        });
+
+        laydate.render({
+            elem: '#orderxqdateTcnoN_idt' //指定元素
+            , type: 'time'
+            , range: '-'
+            , done: function (value, date, endDate) {
+                console.log(value);
+                // 获取到的日期格式进行分割2018-10-09 - 2018-11-21
+                var beginTime = value.split(' - ')[0];
+                var endTime = value.split(' - ')[1];
+                $('#orderpayxqStartTimeTcnoNtV').val(beginTime);
+                $('#orderpayxqEndTimeTcnoNtV').val(endTime);
+            }
+        });
+
+
+        laydate.render({
+            elem: '#orderxqdateTcnoNTV' //指定元素
+            , type: 'time'
+            , range: '-'
+            , done: function (value, date, endDate) {
+                console.log(value);
+                // 获取到的日期格式进行分割2018-10-09 - 2018-11-21
+                var beginTime = value.split(' - ')[0];
+                var endTime = value.split(' - ')[1];
+                $('#orderpayxqStartTimeTcnoNT').val(beginTime);
+                $('#orderpayxqEndTimeTcnoNT').val(endTime);
+            }
+        });
+
+        form.on('select(aihao)', function (data) {
+            var aihao = data.value;
+            if (aihao == 2) {
+                $('.layui-v-hide').hide();
+                $('.shid').val('2');
+                $('.conceal_hide').hide();
+                $('.conceal').show();
+                $('.expiration').show();
+            } else {
+                $('.layui-v-hide').show();
+                $('.shid').val('1');
+                $('.conceal_hide').show();
+                $('.conceal').hide();
+                $('.expiration').hide();
+            }
+        });
+
+
+        // 页面数据的渲染
+        admin.req({
+            url: setter.baseUrl + "/system/site/canteen/" + layui.data('canteenId').id
+            , type: 'get'
+            , data: {}
+            , done: function (res) {
+                //这里可以写逻辑判断
+                // 外卖是1堂食是2(外卖才会显示团餐)
+                if (res.data.eat_type == 2) {
+                    $('.layui-v-hide').hide();
+                    $('.shid').val('2');
+                    $('.conceal_hide').hide();
+                    $('.conceal').show();
+                    $('.expiration').show();
+            
+                    // $('.conceal_hide').show();
+                } else {
+                    // $('.layui-v-hide').show();
+                    $('.shid').val('1');
+                    $('.layui-v-hide').show();
+                    $('.conceal_hide').show();
+                    $('.conceal').hide();
+                    $('.expiration').hide();
+                }
+
+
+                // alert(res.data.sub_days.eat_in);     
+                form.val('stlb', {
+                    "name": res.data.name ? res.data.name : ""
+                    , "phone": res.data.phone ? res.data.phone : ""
+                    , "description": res.data.description ? res.data.description : ""
+                    , "eatType": res.data.eat_type ? res.data.eat_type : ""
+                    // 预约有效期
+                    , "personSubDays": res.data.sub_days ? (res.data.sub_days.person ? res.data.sub_days.person : "") : ""
+                    , "eatInSubDays": res.data.sub_days ? (res.data.sub_days.eat_in ? res.data.sub_days.eat_in : "") : ""
+                    , "groupSubDays": res.data.sub_days ? (res.data.sub_days.group ? res.data.sub_days.group : "") : ""
+
+                    //预约限制
+                    , 'cantSubMinute': res.data.cant_sub_minute ? res.data.cant_sub_minute : ""
+                    , 'orderExpire': res.data.order_expire ? res.data.order_expire : ""
+                    , 'address': res.data.address ? res.data.address : ""
+                    , 'longitude': res.data.longitude ? res.data.longitude : ""
+                    , 'latitude': res.data.latitude ? res.data.latitude : ""
+                    // //营业时间
+                    // ,'businessTime':res.data.
+                    , 'accounts': res.data.accounts ? res.data.accounts : ""
+                    // 电子邮箱
+                    , "email": res.data.email ? res.data.email : ""
+                });
+                // 堂食的
+                // 补
+
+                // 外卖中餐
+                laydate.render({
+                    elem: '#lunchStartAtId'
+                    , value: res.data.lunch_start_at && res.data.lunch_end_at ? res.data.lunch_start_at + ' - ' + res.data.lunch_end_at : ""
+                    , isInitValue: true
+                })
+                $('#lunchStartAt_start').val( res.data.lunch_start_at ? res.data.lunch_start_at : "");
+                $('#lunchStartAtz_end').val( res.data.lunch_end_at ? res.data.lunch_end_at : "");
+
+
+
+                // 外卖晚餐
+                laydate.render({
+                    elem: '#dinnerStartAtId'
+                    , value: res.data.dinner_start_at && res.data.dinner_end_at ? res.data.dinner_start_at + ' - ' + res.data.dinner_end_at : ""
+                    , isInitValue: true
+                })
+                $('#dinnerStartAt_start').val( res.data.dinner_start_at ? res.data.dinner_start_at : "");
+                $('#dinnerStartAt_end').val( res.data.dinner_end_at ?  res.data.dinner_end_at : "");
+    
+
+
+             // 堂食不可预约日期
+                laydate.render({
+                    elem: '#notTime_idt'
+                    , value: res.data.no_sub_date ? (res.data.no_sub_date.eat_in_start && res.data.no_sub_date.eat_in_end ? res.data.no_sub_date.eat_in_start + ' - ' + res.data.no_sub_date.eat_in_end : "") : ""
+                    , isInitValue: true
+                })
+
+                $('#notTime_startt').val( res.data.no_sub_date ? (res.data.no_sub_date.eat_in_start ? res.data.no_sub_date.eat_in_start  : "") : "");
+                $('#notTimez_endt').val( res.data.no_sub_date ? ( res.data.no_sub_date.eat_in_end ? res.data.no_sub_date.eat_in_end : "") : "");
+
+            //    堂食不可预约时间
+                laydate.render({
+                    elem: '#orderxqdateTcnoN_idt'
+                    , value: res.data.no_sub_time ? (res.data.no_sub_time.eat_in_start && res.data.no_sub_time.eat_in_end ? res.data.no_sub_time.eat_in_start + ' - ' + res.data.no_sub_time.eat_in_end : "") : ""
+                    , isInitValue: true
+                })
+
+                 $('#orderpayxqStartTimeTcnoNtV').val( res.data.no_sub_time ? (res.data.no_sub_time.eat_in_start ? res.data.no_sub_time.eat_in_start : "") : "");
+                $('#orderpayxqEndTimeTcnoNtV').val(  res.data.no_sub_time ? (res.data.no_sub_time.eat_in_end ? res.data.no_sub_time.eat_in_end : "") : "");
+              
+                // 外卖
+                // 外卖个人餐
+                laydate.render({
+                    elem: '#notTime_id'
+                    , value: res.data.no_sub_date ? (res.data.no_sub_date.person_start && res.data.no_sub_date.person_end ? res.data.no_sub_date.person_start + ' - ' + res.data.no_sub_date.person_end : "") : ""
+                    , isInitValue: true
+                })
+                $('#notTime_start').val( res.data.no_sub_date ? (res.data.no_sub_date.person_start ? res.data.no_sub_date.person_start : "") : "");
+                $('#notTimez_end').val(  res.data.no_sub_date ? (res.data.no_sub_date.person_end ? res.data.no_sub_date.person_end : "") : "");
+
+
+                // 外卖团餐
+                laydate.render({
+                    elem: '#notTimeTuan_id'
+                    , value: res.data.no_sub_date ? (res.data.no_sub_date.group_start && res.data.no_sub_date.group_end ? res.data.no_sub_date.group_start + ' - ' + res.data.no_sub_date.group_end : "") : ""
+                    , isInitValue: true
+                })
+
+                $('#orderpayxqStartTimeTcno').val(res.data.no_sub_date ? (res.data.no_sub_date.group_start ? res.data.no_sub_date.group_start : "") : "");
+                $('#orderpayxqEndTimeTcno').val( res.data.no_sub_date ? (res.data.no_sub_date.group_end ? res.data.no_sub_date.group_end : "") : "");
+
+
+
+                // 外卖不可预约个人餐
+                laydate.render({
+                    elem: '#orderxqdateTcnoN_id'
+                    , value: res.data.no_sub_time ? (res.data.no_sub_time.person_start && res.data.no_sub_time.person_end ? res.data.no_sub_time.person_start + ' - ' + res.data.no_sub_time.person_end : "") : ""
+                    , isInitValue: true
+                })
+                $('#orderpayxqStartTimeTcnoN').val(res.data.no_sub_time ? (res.data.no_sub_time.person_start  ? res.data.no_sub_time.person_start : "") : "");
+                $('#orderpayxqEndTimeTcnoN').val( res.data.no_sub_time ? (res.data.no_sub_time.person_end ? res.data.no_sub_time.person_end : "") : "");
+
+                // 外卖不可预约团餐
+                laydate.render({
+                    elem: '#orderxqdateTcnoNTV'
+                    , value: res.data.no_sub_time ? (res.data.no_sub_time.group_start && res.data.no_sub_time.group_end ? res.data.no_sub_time.group_start + ' - ' + res.data.no_sub_time.group_end : "") : ""
+                    , isInitValue: true
+                })
+
+                 $('#orderpayxqStartTimeTcnoNT').val(res.data.no_sub_time ? (res.data.no_sub_time.group_start  ? res.data.no_sub_time.group_start  : "") : "");
+                $('#orderpayxqEndTimeTcnoNT').val(res.data.no_sub_time ? (res.data.no_sub_time.group_start ?  res.data.no_sub_time.group_end : "") : "");
+            }
+        })
+
+
+
+        var hide = $('.shid').val();
+        if (hide == 1) {
+            $('.layui-v-hide').show();
+            $('.conceal').show();
+            $('.shid').val('1');
+            $('.conceal').hide();
+         
+        } else {
+        
+            $('.layui-v-hide').hide();
+           
+        }
+
+        // 点击确定事件
+        // 添加用户的确定事件
+        form.on('submit(canteen-submit)', function (obj) {
+
+
+
+            // alert(111);
+            var data = obj.field;
+            var hidn = $('.shid').val();
+            if (hidn == 1) {
+                delete data.file;
+                delete data.eatInSubDays;
+                delete data.eatInNoSubEndDate;
+                delete data.eatInNoSubStartDate;
+                delete data.eatInNoSubStartTime;
+                delete data.eatInNoSubEndTime;
+                delete data.order_expire
+            } else if (hidn == 2) {
+                delete data.file;
+                delete data.personSubDays;
+                delete data.groupSubDays;
+                delete data.personNoSubStartDate;
+                delete data.personNoSubEndDate;
+                delete data.personNoSubStartTime;
+                delete data.personNoSubEndTime;
+                delete data.groupNoSubStartDate;
+                delete data.groupNoSubEndDate;
+                delete data.groupNoSubEndTime;
+                delete data.groupNoSubStarTime;
+            }
+
+
+
+            // var data  = remove(data.file);
+            console.log(data);
+            id = data.id;
+            // 请求添加部门接口
+            admin.req({
+                url: setter.baseUrl + '/system/site/canteen/' + layui.data('canteenId').id
+                , type: 'put'
+                , data: data
+                , done: function (res) {
+                    layer.msg(res.message, { icon: 1, time: 5000 });
+                    layer.close(admin.popup.index);//关闭右侧面板
+                    window.location.hash = "#/setting/system/canteen/list";
+                }
+            });
+        });
+    });
+</script>

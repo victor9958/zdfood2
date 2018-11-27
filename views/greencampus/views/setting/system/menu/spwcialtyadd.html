@@ -1,0 +1,70 @@
+<!--  -->
+<style>
+    .content {
+        min-height: 258px;
+    }
+</style>
+<!-- 标准的弹框案例 -->
+<div class="layui-form centerLayer">
+    <div class="content">
+        <div class="layui-form-item">
+            <label class="layui-form-label left">校区：</label>
+            <div class="layui-input-block">
+                <script type="text/html" template lay-url="{{layui.setter.baseUrl}}/system/site/campuses"
+                        lay-done="{{layui.form.render()}}">
+
+                    <select name="campusId" id="campus" lay-filter="campus">
+                        <option value="" disabled selected>请选择校区</option>
+                        {{# layui.each(d.data, function(index, item){ }}
+                        <option value="{{item.id}}">{{item.name}}</option>
+                        {{# }); }}
+                    </select>
+                </script>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label left">食堂：</label>
+            <div class="layui-input-block">
+                <select name="canteenId" id="canteenser" lay-filter="canteenser">
+                    <option value="" disabled selected>请选择食堂</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label left">菜品：</label>
+            <div class="layui-input-block">
+                <select name="idList" id="foods" lay-filter="foods">
+                    <option value="" disabled selected>请选择菜品</option>
+                </select>
+
+            <!--    <script type="text/html" template lay-url="{{layui.setter.baseUrl}}/system/goods"
+                        lay-done="{{layui.form.render()}}">
+                    <select name="idList">
+                        <option value="" disabled selected>请选择菜品</option>
+                        {{# layui.each(d.data, function(index, item){ }}
+                        <option value="{{item.id}}">{{item.name}}</option>
+                        {{# }); }}
+                    </select>
+                </script>-->
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label left">排序：</label>
+            <div class="layui-input-block">
+                <input type="text" name="sort" lay-verify="required" autocomplete="off" placeholder="请输入排序"
+                       class="layui-input">
+            </div>
+        </div>
+
+
+    </div>
+    <div class="layui-form-item p-t-10 ft-center">
+        <button class="layui-btn" lay-submit lay-filter="LAY-add-ensure">确定</button>
+        <button class="layui-btn layui-btn-primary" id="cancel">取消</button>
+    </div>
+</div>
+
+

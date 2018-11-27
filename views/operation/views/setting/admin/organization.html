@@ -1,0 +1,115 @@
+<script type="text/html" template>
+    <link rel="stylesheet" href="{{ layui.setter.base }}style/setting/organization.css?v={{ layui.admin.v }}-1" media="all">
+    <link rel="stylesheet" href="{{ layui.setter.base }}style/plugcss/zTreeStyle.css?v={{ layui.admin.v }}-1" media="all">
+</script>
+
+<title>组织架构管理</title>
+<div class="layui-fluid layui-border-box full-height organization" id="LAY-user-organization-list">
+    <div class="layui-row layui-col-space10 full-height">
+        <div class="layui-col-xs4 layui-col-md4 layui-col-lg3 full-height">
+            <div class="layui-card full-height">
+                <div class="layui-card-body layui-clear full-height">
+                    <div class="fixed-card-top">
+                        <div class="layui-form-item relative_">
+                            <label class="layui-icon layui-icon-search icon-search"></label>
+                            <input type="text" id="globalKey" autocomplete="off" placeholder="请输入部门/人员" class="layui-input layui-input-search">
+                            <label class="search" id="globalSearch">搜索</label>
+                            <ul class="search-result">
+                                <!--搜索结果-->
+                            </ul>
+                        </div>
+                        <div class="layui-form-item layui-btn-group layui-col-xs12">
+                            <button class="layui-btn layui-btn-sm layui-btn-primary layui-col-xs6" id="import">导入成员</button>
+                            <button class="layui-btn layui-btn-sm layui-btn-primary layui-col-xs6" id="export">导出成员</button>
+                        </div>
+                        <button class="layui-btn layui-btn-sm layui-col-xs12" id="addParentDept">添加一级部门</button>
+                    </div>
+
+                    <div class="full-height" style="padding-top: 140px;">
+                        <div class="full-height over-auto">
+                            <!--组织架构树-->
+                            <div class="result"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-xs8 layui-col-md8 layui-col-lg9 full-height">
+            <div class="layui-card full-height">
+                <div class="layui-card-body deptName">
+                    <span id="name" style="margin-right: 20px"></span>
+                    <a href="javascript:;" class="layui-btn layui-btn-sm layui-btn-primary" id="editname">编辑</a>
+                    <a href="javascript:;" class="layui-btn layui-btn-sm layui-btn-primary" id="deleteParent" data-type="delete">删除</a>
+                    <!--<a href="#" class="layui-btn layui-btn-sm layui-btn-warm">部门权限管理</a>-->
+                    <!--<div class="editname">-->
+                        <!--<input type="text" id="deptname" autocomplete="off" placeholder="请输入部门名称" class="layui-input">-->
+                    <!--</div>-->
+                </div>
+                <div class="layui-card-body full-height over-auto" style="padding-top: 40px;">
+                    <div class="panel-card dept">
+                        <div class="title">
+                            <svg class="icon" aria-hidden="true">
+                                <use xlink:href="#icon-xjbm"></use>
+                            </svg>
+                            下级部门
+                        </div>
+                        <div class="handle">
+                            <a href="javascript:;" id="addDept" class="layui-btn layui-btn-sm layui-btn-primary">添加下级部门</a>
+                            <a href="javascript:;" class="layui-btn layui-btn-sm layui-btn-primary" id="sort">调整顺序</a>
+                        </div>
+                        <div class="panel-body">
+                            <!--部门列表-->
+                            <div class="option-tips">上下拖动来调整部门顺序，记得保存哦<a href="javascript:;" id="saveDept">保存</a><a href="javascript:;" id="cancelDept">取消</a></div>
+                            <ul class="sortable" id="sortable">
+                                <!--<li class="ui-state-default"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span>Item 7</li>-->
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="panel-card dept">
+                        <div class="title">
+                            <svg class="icon" aria-hidden="true">
+                                <use xlink:href="#icon-bmry"></use>
+                            </svg>
+                            部门人员
+                            <div class="layui-input-inline relative_ pull-right" style="margin-top: ;">
+                                <label class="layui-icon layui-icon-search icon-search" style="top: 4px;"></label>
+                                <input type="text" id="queryMember" autocomplete="off" placeholder="请输入姓名/手机号" class="layui-input layui-input-search" style="width:250px;height: 30px;">
+                                <label class="search" style="padding: 4px 15px;line-height: 20px;height: 30px;" id="searchMember">搜索</label>
+                            </div>
+                        </div>
+                        <div class="handle layui-clear">
+                            <a href="javascript:;" class="layui-btn layui-btn-sm" id="addMember">添加成员</a>
+                            <a href="javascript:;" class="layui-btn layui-btn-sm layui-btn-primary" id="modifyDept">调整部门</a>
+                            <!--<a href="javascript:;" class="layui-btn layui-btn-sm layui-btn-primary">调整顺序</a>-->
+                            <a href="javascript:;" class="layui-btn layui-btn-sm layui-btn-danger" id="authority">成员权限管理</a>
+                            <a href="javascript:;" class="layui-btn layui-btn-sm layui-btn-primary" id="batchDelete">批量删除</a>
+                        </div>
+                        <div class="panel-body">
+                            <table id="member" class="layui-table" lay-filter="memberTable"></table>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/html" id="option">
+    <a class="layui-btn layui-btn-xs" lay-event="toTop">置顶</a>
+    <a class="layui-btn layui-btn-xs layui-btn-primary" lay-event="memberDetail">编辑</a>
+</script>
+<script type="text/html" id="is_admin">
+    {{ d.name }}
+    {{#  if(d.is_admin == 1){ }}
+    <span class="layui-badge">主管理员</span>
+    {{#  } }}
+</script>
+
+<!--<script type="text/html" id="switchTpl">
+    &lt;!&ndash; 这里的 checked 的状态只是演示 &ndash;&gt;
+    <input type="checkbox" name="isTop" id="{{d.id}}" value="{{d.sort}}" lay-skin="switch" lay-text="是|否" lay-filter="toTop" {{ d.sort > 0 ? 'checked' : '' }}>
+</script>-->
+<script>
+    layui.use('setting/organization', layui.factory('setting/organization'));
+</script>

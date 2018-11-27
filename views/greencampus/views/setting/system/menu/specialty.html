@@ -1,0 +1,351 @@
+<!-- 招牌菜管理 -->
+
+<style>
+    .specialtyTxt {
+        line-height: 32px;
+    }
+
+    #specialty {
+        width: 30px;
+        padding: 0 10px;
+        border: 1px solid #E6E6E6;
+        border-radius: 4px;
+        text-align: center;
+        margin-left: 10px;
+    }
+
+</style>
+<title>招牌菜管理</title>
+<div class="layui-fluid full-height">
+    <div class="layui-card full-height over-auto">
+        <div class="layui-card-header">招牌菜管理</div>
+        <div class="layui-card-body">
+            <fieldset class="layui-elem-field">
+                <legend>搜索条件</legend>
+                <div class="layui-form">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <!-- 下拉列表模板渲染  -->
+                            <div class="layui-input-inline">
+                                <script type="text/html" template lay-url="{{layui.setter.baseUrl}}/system/site/campuses"
+                                    lay-done="{{layui.form.render()}}">
+
+                                    <select name="campusId" id="campus" lay-filter="campus">
+                                        <option value="" disabled selected>请选择校区</option>
+                                        {{# layui.each(d.data, function(index, item){ }}
+                                        <option value="{{item.id}}">{{item.name}}</option>
+                                        {{# }); }}
+                                    </select>
+                                </script>
+                            </div>
+                            <div class="layui-inline ">
+                                <button class="layui-btn " lay-submit lay-filter="search">查询</button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </fieldset>
+            <div class="layui-form-item">
+                <div class="layui-inline  pull-right">
+                    <div class="layui-inline flex">
+                        <p class="specialtyTxt">当前招牌菜数量为</p>
+                        <input id="specialty" type="text" value="">
+                        <!-- 当前招牌菜数量为  -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-form-item btn-bar">
+                <button class="layui-btn layui-btn-sm" lay-submit id='newZpc' lay-filter="newZpc">新建招牌菜</button>
+            </div>
+            <!-- 财务报表详情 -->
+
+            <table class="layui-hide" id="speac" lay-filter="speac"></table>
+
+            <script type="text/html" id="spebode">
+                <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+                <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+            </script>
+        </div>
+    </div>
+</div>
+
+<!-- <script type="text/html" id="upCanlist">
+    <a class="layui-btn layui-btn-xs layui-btn " lay-event="updateCanlist">编辑</a>
+</script> -->
+
+<script>
+    layui.use(['admin', 'form', 'table', 'laydate'], function () {
+        var $ = layui.$,
+            admin = layui.admin,
+            view = layui.view,
+            setter = layui.setter,
+            form = layui.form,
+            table = layui.table,
+            upload = layui.upload,
+            laydate = layui.laydate;
+
+        $(function () {
+            form.render();
+            // 招牌菜的个数
+            getSpecialtyNum();
+
+            function getSpecialtyNum() {
+                admin.req({
+                    url: setter.baseUrl + '/system/specialty/specialty-goods/limit',
+                    type: 'get',
+                    // data: data,
+                    done: function (res) {
+                        $('#specialty').val(res.data.value);
+                        console.log(res);
+                    }
+                });
+            }
+
+
+            var col = [[ //表头
+                { type: 'numbers', title: '序号', width: 60}
+                , { field: 'campusName', title: '校区' }
+                , { field: 'canteenName', title: '食堂' }
+                , { field: 'name', title: '菜品' }
+                , { field: 'specialty_sort', title: '排序' }
+                , { title: '操作', align: 'center', toolbar: '#spebode' }
+            ]]
+            getTable();
+
+            function getTable() {
+                table.render(
+                    {
+                        elem: '#speac'
+                        , url: setter.baseUrl + '/system/specialty/goods'
+                        , data: {}
+                        , response: setter.responseTable
+                        , page: setter.pageTable
+                        , cols: col
+                    }
+                );
+            }
+
+
+            //点击搜索订单
+            form.on('submit(search)', function (obj) {
+                // var campus_Id = 
+                console.log(obj);
+                table.reload('speac', {
+                    url: setter.baseUrl + '/system/specialty/goods',
+                    data: {},
+                    response: setter.responseTable,
+                    page: setter.pageTable,
+                    cols: col,
+                    where: obj.field
+                });
+            });
+
+            $(document).off('click', '#newZpc');
+            $(document).on('click', '#newZpc', function () {
+                admin.popupCenter({
+                    id: 'Key-addZpc'
+                    , title: '新增招牌菜'
+                    , area: ['400px', '420px']
+                    , success: function () {
+                        view(this.id).render('setting/system/menu/spwcialtyadd');
+                    }
+                });
+            })
+
+            //获取食堂
+            var campusId;
+            form.on('select(campus)', function (data) {
+                campusId = data.value;
+                admin.req({
+                    url: setter.baseUrl + '/system/site/canteens',
+                    type: 'get',
+                    data: { campusId: campusId },
+                    done: function (res) {
+                        var _html = '<option value="" disabled selected>请选择食堂</option>';
+                        $(res.data).each(function (i, k) {
+                            _html += '<option value="' + k.id + '">' + k.name + '</option>'
+                        })
+                        $('#canteenser').html(_html)
+                        form.render();
+                    }
+                });
+            });
+
+            // 获取菜品
+            form.on('select(canteenser)', function (data) {
+                var canteenId = data.value;
+                admin.req({
+                    url: setter.baseUrl + '/system/goods',
+                    type: 'get',
+                    data: { canteenId: canteenId, campusId: campusId ,'isSpecialty':0 },
+                    done: function (res) {
+                        var _html = '<option value="" disabled selected>请选择菜品</option>';
+                        $(res.data).each(function (i, k) {
+                            _html += '<option value="' + k.id + '">' + k.name + '</option>'
+                        })
+                        $('#foods').html(_html)
+                        form.render();
+                    }
+                });
+            });
+
+            // 添加招牌菜的确定事件
+            form.on('submit(LAY-add-ensure)', function (obj) {
+                var data = {};
+                data = obj.field;
+                data.toggle = 1;
+                var idList = data.idList;
+                data.idList = [];
+                if (idList) {
+                    data.idList.push(idList);
+                }
+                console.log(data.idList.length)
+                if (!obj.field.campusId) {
+                    layer.msg('请选择校区', { icon: 5, time: 2000 });
+                } else if (!obj.field.canteenId) {
+                    layer.msg('请选择食堂', { icon: 5, time: 2000 });
+                } else if (data.idList.length <= 0) {
+                    layer.msg('请选择菜品', { icon: 5, time: 2000 });
+                } else {
+                    // data.roleId = id
+                    //请求添加部门接口
+                    admin.req({
+                        url: setter.baseUrl + '/system/specialty/toggle-specialty-goods'
+                        , type: 'put'
+                        , data: data
+                        , done: function (res) {
+                            view('old_mobile');
+
+                            getSpecialtyNum();
+                            getTable();
+                            layer.msg(res.message, { icon: 1, time: 2000 });
+                            layer.close(admin.popup.index);//关闭右侧面板
+                            // getTable(id);
+
+                        }
+                    });
+                }
+            });
+
+
+            form.on('submit(LAY-edit-ensure)', function (obj) {
+                console.log(obj);
+
+                var data = {};
+                data = obj.field;
+                var goodsId = data.idList;
+                console.log(goodsId);
+
+                var idList = data.idList;
+                data.idList = [];
+                if (idList) {
+                    data.idList.push(idList);
+                }
+                data.goodsId = goodsId
+                console.log(data.idList.length)
+                if (!obj.field.campusId) {
+                    layer.msg('请选择校区', { icon: 5, time: 2000 });
+                } else if (!obj.field.canteenId) {
+                    layer.msg('请选择食堂', { icon: 5, time: 2000 });
+                } else if (data.idList.length <= 0) {
+                    layer.msg('请选择菜品', { icon: 5, time: 2000 });
+                } else {
+                    //请求添加部门接口
+                    admin.req({
+                        url: setter.baseUrl + '/system/specialty/specialty-goods/' + goodsId
+                        , type: 'put'
+                        , data: data
+                        , done: function (res) {
+                            view('old_mobile');
+                            layer.msg(res.message, { icon: 1, time: 2000 });
+                            layer.close(admin.popup.index);//关闭右侧面板
+                            // getTable(id);
+                            getTable();
+                        }
+                    });
+                }
+            });
+
+            // 招牌菜的输入
+
+
+            $('#specialty').bind('keyup', function (event) {
+
+                if (event.keyCode == "13") {
+                    var limit = $('#specialty').val();
+                    admin.req({
+                        url: setter.baseUrl + '/system/specialty/specialty-goods/limit'
+                        , type: 'put'
+                        , data: {limit:limit}
+                        , done: function (res) {
+                            view('old_mobile');
+                            layer.msg(res.message, { icon: 1, time: 2000 });
+                            layer.close(admin.popup.index);//关闭右侧面板
+                            // getTable(id);
+                            getTable();
+                        }
+                    });
+
+                    //回车执行查询
+
+                    // $('#search_button').click();
+
+                }
+
+            });
+
+
+
+
+            // 监听工具条的点击事件
+            table.on('tool(speac)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+                var data = obj.data; //获得当前行数据
+                var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+                var tr = obj.tr; //获得当前行 tr 的DOM对象
+                idList = data.id;
+
+
+                layui.data('specialtyId', {
+                    key: 'id',
+                    value: idList
+                });
+                if (layEvent === 'edit') { //编辑
+                    idList = data.id;
+                    console.log(idList);
+                    // console.log('ss'+idList);
+                    // location.hash = '/setting/system/canteen/listXq';
+                    admin.popupCenter({
+                        id: 'Key-addZpc'
+                        , title: '编辑招牌菜'
+                        , area: ['400px', '420px']
+                        , success: function () {
+                            view(this.id).render('setting/system/menu/spwcialtyedit');
+                        }
+                    });
+                } else if (layEvent === 'del') {
+                    // alert('点击删除');
+
+                    layer.confirm('确定要删除招牌菜?', { icon: 1, title: '提示' }, function (index) {
+                        admin.req({
+                            url: setter.baseUrl + '/system/specialty/toggle-specialty-goods'
+                            , type: 'put'
+                            , data: { idList: [idList], toggle: 0 }
+                            , done: function (res) {
+                                layer.msg(res.message, { icon: 1, time: 2000 });
+                                layer.close(admin.popup.index);//关闭右侧面板
+                                getSpecialtyNum();
+                                getTable();
+                            }
+                        });
+                    })
+
+
+                }
+            });
+        });
+    });
+</script>

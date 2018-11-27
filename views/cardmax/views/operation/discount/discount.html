@@ -1,0 +1,104 @@
+<title>优惠活动</title>
+<div class="layui-fluid full-height role">
+    <div class="layui-row full-height">
+        <div class="layui-card layui-border-box full-height flex flex-v">
+            <div class="layui-card-header">优惠活动</div>
+            <div class="layui-card-body flex flex-v flex-1">
+                <fieldset class="layui-elem-field site-demo-button">
+                    <legend>搜索条件</legend>
+                    <div class="layui-form">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <div class="layui-input-inline">
+                                    <script type="text/html" template
+                                            lay-url="{{layui.setter.baseUrl}}/auth/operators"
+                                            lay-done="{{layui.form.render()}}">
+                                        <select class="role" name="operatorId" lay-search>
+                                            <option value="">请选择运营商</option>
+                                            {{# layui.each(d.data,function(index,item){ }}
+                                            <option value="{{ item.id }}">{{ item.name }}</option>
+                                            {{# }) }}
+                                        </select>
+                                    </script>
+                                </div>
+                                <div class="layui-input-inline">
+                                    <select class="role" name="logicStatus" lay-search>
+                                        <option value="">请选择状态</option>
+                                        <option value="0">已关闭</option>
+                                        <option value="1">使用中</option>
+                                        <option value="2">未开始</option>
+                                        <option value="3">已过期</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <button class="layui-btn" lay-submit lay-filter="search-discount">搜索</button>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+                <div class="m-b-10 btn-bar">
+                    <button class="layui-btn layui-btn-sm" id="addDiscount" lay-href="/operation/discount/add">新增</button>
+                    <button class="layui-btn layui-btn-danger layui-btn-sm" id="deleteDiscount">删除</button>
+                </div>
+                <div class="flex-1 over-auto">
+                    <div class="layui-table" id="table-discount" lay-filter="discountList"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script type="text/html" id="discountOption">
+    <a class="layui-btn layui-btn-xs layui-btn-primary" lay-event="edit">编辑</a>
+</script>
+
+
+<script>
+    layui.use(['operation/operation', 'table', 'form'], function () {
+        var $ = layui.$,
+            form = layui.form,
+            table = layui.table,
+            operation = layui.admin.operation;
+
+        $(function () {
+            var globalQuery = {}
+            var col = [
+                {type: 'checkbox', fixed: 'left'}
+                , {type: 'numbers', title: '序号', width: 60}
+                , {field: 'title', title: '优惠名称'}
+                , {field: 'couponType', title: '优惠类型'}
+                , {field: 'operatorName', title: '运营商'}
+                , {field: 'dateDuration', title: '优惠时段'}
+                , {field: 'remark', title: '备注'}
+                , {field: 'statusTitle', title: '状态'}
+                , {title: '操作', width: 100, toolbar: '#discountOption'}]
+            form.render();
+            operation.tableData('table-discount', '/operate-manage/activity/list', {}, col)
+
+            form.on('submit(search-discount)', function (obj) {
+                globalQuery = obj.field;
+                operation.tableData('table-discount', '/operate-manage/activity/list', globalQuery, col)
+            });
+
+            $(document).off('click', '#deleteDiscount')
+            $(document).on('click', '#deleteDiscount', function () {
+                var idList = operation.getCheckList('table-discount')
+                if (idList.length > 0) {
+                    operation.deleteList('/operate-manage/activity/list', {idList: idList}, function () {
+                        operation.tableData('table-discount', '/operate-manage/activity/list', globalQuery, col)
+                    })
+                } else {
+                    layer.alert('请选择要操作的记录！', {icon: 5});
+                }
+                console.log(idList)
+            })
+
+            table.on('tool(discountList)', function (obj) {
+                var data = obj.data;
+                layui.data('temporary', {key: 'temporary', value: data.id});
+                location.hash = "/operation/discount/edit";
+            });
+        })
+    });
+</script>

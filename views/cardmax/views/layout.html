@@ -1,0 +1,268 @@
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <script type="text/html" template lay-url="{{layui.setter.baseUrl}}/auth/initialize"
+                lay-done="layui.element.render('nav', 'layout-right');">
+            <div class="layui-logo" lay-href="">
+                <a><img class="user_logo" src="{{ layui.setter.base }}style/res/logo.jpg"/>{{ d.data.operatorName }}</a>
+            </div>
+            <!-- 头部区域 -->
+            <ul class="layui-nav layui-layout-right" lay-filter="layout-right" style="padding-right: 20px">
+
+
+                <li class="layui-nav-item" lay-unselect>
+                    <a lay-href="setting/message/feedback" layadmin-event="message">
+                        <i class="layui-icon layui-icon-notice"></i>
+                        {{# if(d.totalCount > 0){ }}
+                        <span class="layui-badge-dot"></span>
+                        {{# } }}
+                    </a>
+                    {{#
+                    layui.data('message', {key:'repair', value: d.repairCount});
+                    layui.data('message', {key:'feedback', value: d.feedbackCount});
+                    }}
+                </li>
+                <li class="layui-nav-item" lay-unselect>
+                    <a href="javascript:;">
+                        <cite>{{ d.data.user.name }}</cite>
+                    </a>
+                    <dl class="layui-nav-child">
+                        <!--<dd><a lay-href="set/base/website">基本资料</a></dd>-->
+                        <!--<dd><a lay-href="set/security/">操作日志</a></dd>-->
+                        <!--<hr>-->
+                        <dd layadmin-event="logout"><a>退出登录</a></dd>
+                    </dl>
+                </li>
+
+            </ul>
+        </script>
+        <ul class="layui-nav layui-layout-left">
+            <li class="layui-nav-item layadmin-flexible" lay-unselect>
+                <a href="javascript:;" layadmin-event="flexible" title="侧边伸缩">
+                    <i class="layui-icon layui-icon-shrink-right" id="LAY_app_flexible"></i>
+                </a>
+            </li>
+
+            <!--一级菜单渲染-->
+            <script type="text/html" template lay-url="{{ layui.setter.baseUrl }}/auth/base-menu"
+                    lay-done="layui.element.render('nav', 'layadmin-base-menu');layui.data('baseMenu', {key:'menus',value:d.data})">
+                <ul class="layui-nav" lay-filter="layadmin-base-menu" style="display: inline-block">
+                    {{#
+                    layui.each(d.data, function(index, item){
+                    }}
+                    <li class="layui-nav-item layui-hide-xs layui-hide-sm layui-show-md-inline-block {{ item.id===layui.data('menuParam').id?'layui-this':'' }}">
+                        <a lay-href="{{ item.name_rule }}" data-id="{{ item.id }}" layadmin-event="nav" title="">
+                            <svg class="icon" aria-hidden="true">
+                                <use xlink:href="#{{ item.icon }}"></use>
+                            </svg>
+                            {{ item.title }}
+                        </a>
+                    </li>
+                    {{# }) }}
+                </ul>
+            </script>
+
+
+            <li class="layui-nav-item layui-hide-xs" lay-unselect>
+                <a href="javascript:;" layadmin-event="refresh" title="刷新">
+                    <i class="layui-icon layui-icon-refresh"></i>
+                </a>
+            </li>
+        </ul>
+
+    </div>
+
+    <script type="text/html" template lay-url="{{ layui.setter.baseUrl }}/auth/child-menu"
+            lay-data="{id: '{{ layui.data('menuParam').id }}'}"
+            lay-done="layui.element.render('nav', 'layadmin-side-child');" id="TPL_layout">
+        <div class="layadmin-fixed" lay-templateid="TPL_layout">
+            {{#
+            var firstMenu = d["base-permission"];
+            var path = layui.router().path
+            ,dataName = layui.setter.response.dataName
+            ,firstURL = function(item){
+            var url = [firstMenu, item.name];
+            if(!item.list){
+            return url.join('/') + '/';
+            }
+            layui.each(item.list, function(index1, item1){
+            url.push(item1.name);
+            /*if(!item1.list){
+            return url.push('');
+            }*/
+            layui.each(item1.list, function(index2, item2){
+            url.push(item2.name);
+            if(index2 === 0) return true;
+            });
+            if(index1 === 0) return true;
+            });
+            return url.join('/');
+            }
+            ,itemShow = function(index, item){
+            return path[1] === item.name || (index === 0 && !path[0]) || path.join('/') === item.jump;
+            };
+            }}
+
+            <!-- 左侧主菜单 -->
+            <div class="layui-side layui-side-menu">
+                <div class="layui-side-scroll">
+                    <ul id="LAY_menuItemElem" lay-filter="layadmin-system-menu">
+                        {{# var inMenu;
+                        layui.each(d[dataName], function(index, item){
+                        var isChildMenu = typeof item.list === 'object' && item.list.length > 0;
+                        console.log(index, isChildMenu);
+                        if(!path[0] || (path[1] && path[1] == item.name && isChildMenu)){
+                        inMenu = true;
+                        }
+                        console.log(inMenu);
+                        var url = typeof item.jump === 'string' ? item.jump : (
+                        layui.admin.prevRouter[item.name] ? (
+                        layui.admin.prevErrorRouter[item.name] === layui.admin.prevRouter[item.name]
+                        ? firstURL(item)
+                        : layui.admin.prevRouter[item.name]
+                        ) : firstURL(item)
+                        )
+                        ,hrefon = item.jump && (layui.admin.screen() >= 2 || (isChildMenu ? false : true));
+                        console.log(url, hrefon);
+                        }}
+                        <li data-name="{{ item.name || '' }}" id="{{ item.rule }}" {{ hrefon ? (
+                        'lay-href="'+ url +'"') : '' }}
+                        {{ itemShow(index, item) ? 'class="layui-this"' : '' }}>
+                        <i>
+                            <svg class="icon" aria-hidden="true">
+                                <use xlink:href="#{{ item.icon }}"></use>
+                            </svg>
+                        </i>{{ item.title }}
+                        </li>
+                        {{#
+                        }); }}
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 根据二级菜单情况，自动切换伸缩状态 -->
+            {{# layui.admin.sideFlexible(inMenu ? 'spread' : null, true); }}
+
+            <!-- 左侧子菜单 -->
+            <div class="layui-side layui-side-child">
+                <div class="layui-side-scroll" id="LAY_menuContentElem">
+                    {{#
+                    var baseMenu = d['base-permission'];
+                    layui.each(d[dataName], function(index, item){
+                    }}
+                    <div class="layui-menu-item {{ itemShow(index, item) ? 'layui-show' : '' }}">
+                        <ul class="layui-nav layui-nav-tree" lay-filter="layadmin-side-child">
+                            {{# layui.each(item.list, function(index2, item2){
+                            var isThis = (index2 === 0 && path[1] !== item.name && path[0])
+                            || (path[0] === baseMenu && path[1] === item.name && path[2] === item2.name)
+                            ,isChildlist = typeof item2.list === 'object' && item2.list.length > 0
+                            ,hrefStr = [baseMenu, item.name, item2.name, isChildlist ? item2.list[0].name :
+                            ''].join('/')
+                            ,secondMenuHref = typeof item2.jump === 'string'
+                            ? item2.jump
+                            : (isChildlist?hrefStr:hrefStr.substring(0,hrefStr.length-1));
+                            console.log(isThis);
+                            console.log(isChildlist);
+                            if(isThis){
+                            item2.spread = true;
+                            }
+                            }}
+                            <li class="layui-nav-item relative_ {{ item2.spread ? ' layui-nav-itemed' : '' }} {{ isThis ? ' layui-this' : '' }}"
+                                id="{{ item2.rule }}">
+                                <a href="javascript:;" {{ (item2.jump || !isChildlist) ? 'lay-href="'+ secondMenuHref
+                                +'"' : '' }}>
+                                {{ item2.title }}
+                                </a>
+                                {{# if(isChildlist){ }}
+                                <span class="layui-icon layui-icon-right pull-right icon-menu-right"></span>
+                                <dl class="layui-nav-child">
+                                    {{# layui.each(item2.list, function(index3, item3){
+                                    var isThis3 = path[1] === item.name && path[2] === item2.name && path[3] ===
+                                    item3.name;
+                                    }}
+                                    <dd {{ isThis3 ?
+                                    'class="layui-this"' : '' }}>
+                                    <a lay-href="{{ [baseMenu, item.name, item2.name, item3.name].join('/') }}">{{
+                                        item3.title
+                                        }}</a>
+                                    </dd>
+                                    {{# }); }}
+                                </dl>
+                                {{# } }}
+
+                                {{# if(item2.rule === 'backlog' && layui.data('message').todo){ }}
+                                <span class="layui-badge" style="right: 10px;">{{layui.data('message').todo}}</span>
+                                {{# }else if(item2.rule === 'notice' && layui.data('message').notice){ }}
+                                <span class="layui-badge" style="right: 10px;">{{layui.data('message').notice}}</span>
+                                {{# }else if(item2.rule === 'upgrade' && layui.data('message').upgrade){ }}
+                                <span class="layui-badge" style="right: 10px;">{{layui.data('message').upgrade}}</span>
+                                {{# }else if(item2.rule === 'feedback' && layui.data('message').feedback){ }}
+                                <span class="layui-badge" style="right: 10px;">{{layui.data('message').feedback}}</span>
+                                {{#} }}
+                            </li>
+                            {{#
+                            });
+                            }}
+                        </ul>
+                    </div>
+
+                    {{# }); }}
+                </div>
+            </div>
+
+        </div>
+    </script>
+
+    <!-- 页面标签 -->
+    <script type="text/html" template lay-done="layui.element.render('nav', 'layadmin-pagetabs-nav')">
+        {{# if(layui.setter.pageTabs){ }}
+        <div class="layadmin-pagetabs" id="LAY_app_tabs">
+            <div class="layui-icon layadmin-tabs-control layui-icon-prev icon-" layadmin-event="leftPage"></div>
+            <div class="layui-icon layadmin-tabs-control layui-icon-next" layadmin-event="rightPage"></div>
+            <div class="layui-icon layadmin-tabs-control layui-icon-down">
+                <ul class="layui-nav layadmin-tabs-select" lay-filter="layadmin-pagetabs-nav">
+                    <li class="layui-nav-item" lay-unselect>
+                        <a href="javascript:;"></a>
+                        <dl class="layui-nav-child layui-anim-fadein">
+                            <dd layadmin-event="closeThisTabs"><a href="javascript:;">关闭当前标签页</a></dd>
+                            <dd layadmin-event="closeOtherTabs"><a href="javascript:;">关闭其它标签页</a></dd>
+                            <dd layadmin-event="closeAllTabs"><a href="javascript:;">关闭全部标签页</a></dd>
+                        </dl>
+                    </li>
+                </ul>
+            </div>
+            <div class="layui-tab" lay-unauto lay-allowClose="true" lay-filter="layadmin-layout-tabs">
+                <ul class="layui-tab-title" id="LAY_app_tabsheader">
+                    <li lay-id="/"><i class="layui-icon layui-icon-home"></i></li>
+                </ul>
+            </div>
+        </div>
+        {{# } }}
+    </script>
+
+    <div class="layui-body" id="LAY_app_body">
+        <div class="layadmin-tabsbody-item layui-show"></div>
+    </div>
+</div>
+
+<script>
+    layui.use(['admin'], function () {
+        var $ = layui.$,
+            admin = layui.admin,
+            view = layui.view;
+
+        $(function () {
+            if (!layui.data('password').hasPassword) {
+                admin.popupCenter({
+                    id: 'LAY_adminPopupModifyDept'
+                    , title: '设置管理密码'
+                    , closeBtn: 0
+                    , area: ['400px', '320px']
+                    , success: function () {
+                        view(this.id).render('/auth/administrators/setpassword');
+                    }
+                });
+            }
+        })
+
+    })
+</script>

@@ -1,0 +1,87 @@
+<!-- 系统日志 -->
+
+<title>系统日志</title>
+<style>
+    .btn-bar {
+        background: #f7f8fa;
+        padding: 4px 10px;
+    }
+</style>
+
+<body>
+<div class='layui-fluid full-height '>
+
+    <div class='layui-card full-height over-auto'>
+        <!-- //上面的head，标题  -->
+        <div class="layui-card-header">系统日志</div>
+        <!-- //content身体部分  -->
+        <div class='layui-card-body flex-1 flex'>
+            <!-- //设置-webkit-box-flex: 1;  -->
+            <div class='flex-1 over-auto'>
+                <fieldset class="layui-elem-field site-demo-button">
+                    <legend>搜索条件</legend>
+                    <div class="layui-form" lay-filter="search-for-examine">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <div class="layui-input-inline">
+                                    <input type="text" name="query" class="layui-input" autocomplete="off"
+                                           placeholder="请输入关键字">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <button class="layui-btn" lay-submit lay-filter="KEY-log-search">搜索</button>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+                <!-- <div class="layui-input-inline">
+                     <div class="layui-input-inline">
+                         <input type="text" name="query" class="layui-input" autocomplete="off" placeholder="请输入关键字">
+                     </div>
+                     <button class="layui-btn layui-btn-sm " lay-submit lay-filter="KEY-log-search">搜索</button>
+                 </div>-->
+                <!-- <div class="layui-card-body"> -->
+                    <table class="layui-hide" id="sysLog" lay-filter="sysLog"></table>
+                <!-- </div> -->
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    layui.use(['admin', 'form', 'table', 'laydate'], function () {
+        var $ = layui.$,
+            admin = layui.admin,
+            view = layui.view,
+            setter = layui.setter,
+            form = layui.form,
+            laydate = layui.laydate,
+            table = layui.table,
+            upload = layui.upload,
+            laydate = layui.laydate;
+        $(function () {
+            var cols = [[{type: 'numbers', title: '序号', width: 60}
+                , {field: 'description', title: '动作'}
+                , {field: 'admin_name', title: '操作人'}
+                , {field: 'created_at', title: '时间'}
+            ]];
+            table.render(
+                {
+                    elem: '#sysLog'
+                    , url: setter.baseUrl + '/system/logs'
+                    , response: setter.responseTable
+                    , page: setter.pageTable
+                    , cols: cols//表头
+                }
+            );
+            form.on('submit(KEY-log-search)', function (obj) {
+                table.reload('sysLog', {
+                    url: setter.baseUrl + '/system/logs',
+                    response: setter.responseTable,
+                    page: setter.pageTable,
+                    cols: cols,
+                    where: obj.field
+                });
+            });
+        });
+    });
+</script>

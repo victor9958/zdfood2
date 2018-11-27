@@ -1,0 +1,121 @@
+<!-- 楼幢管理 -->
+
+<title>会员列表</title>
+<style>
+    .btn-bar {
+        background: #f7f8fa;
+        padding: 4px 10px;
+    }
+</style>
+
+<body>
+    <!-- 会员列表 -->
+    <div class='layui-fluid full-height '>
+
+        <div class='layui-card full-height'>
+            <!-- //上面的head，标题  -->
+            <div class="layui-card-header">会员列表</div>
+            <!-- //content身体部分  -->
+            <div class='layui-card-body flex-1 flex'>
+                <!-- //设置-webkit-box-flex: 1;  -->
+                <div class='flex-1 over-auto'>
+                    <fieldset class="layui-elem-field site-demo-button">
+                        <legend>搜索条件</legend>
+                        <div class="layui-form" lay-filter="search-for-examine">
+                            <div class="layui-form-item">
+                                <div class="layui-input-inline">
+                                    <select name="shoole" id="">
+                                        <option value="" disabled selected>紫荆港校区</option>
+                                        <option value="1">紫荆港校区1</option>
+                                        <option value="2">紫荆港校区2</option>
+                                    </select>
+                                </div>
+                                <button class="layui-btn" lay-submit="" lay-filter="LAY-search-users">查询</button>
+
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <div class="m-b-10 btn-bar">
+                        <button class="layui-btn layui-btn-sm" id="bath-on">批量发布</button>
+                        <button class="layui-btn layui-btn-sm layui-btn-danger" id="bath-off">批量删除</button>
+                    </div>
+                    <div class="layui-form layui-border-box layui-table-view" lay-filter="LAY-table-9">
+                        <div class="layui-table-box">
+                            <div class="layui-table-header">
+                                <table cellspacing="0" cellpadding="0" border="0" class="layui-table" lay-skin="line">
+                                    <thead>
+                                        <tr>
+                                            <th data-field="1" data-unresize="true">
+                                                <div class="layui-table-cell laytable-cell-9-1 "><span>序号</span></div>
+                                            </th>
+                                            <th data-field="device_name">
+                                                <div class="layui-table-cell laytable-cell-9-device_name"><span>代码</span></div>
+                                            </th>
+                                            <th data-field="title">
+                                                <div class="layui-table-cell laytable-cell-9-title"><span>名称</span></div>
+                                            </th>
+                                            <th data-field="siteTitle">
+                                                <div class="layui-table-cell laytable-cell-9-siteTitle"><span>所属校区</span></div>
+                                            </th>
+                                            <th data-field="operatorName">
+                                                <div class="layui-table-cell laytable-cell-9-operatorName"><span>所属区域</span></div>
+                                            </th>
+                                            <th data-field="statusTitle">
+                                                <div class="layui-table-cell laytable-cell-9-statusTitle"><span>最高楼层</span></div>
+                                            </th>
+                                            <th data-field="version">
+                                                <div class="layui-table-cell laytable-cell-9-version"><span>操作</span></div>
+                                            </th>
+                                        </tr>
+                                    </thead>
+
+
+                                </table>
+                            </div>
+
+                            <!-- 表格的数据内容 -->
+                            <div class="layui-table-body layui-table-main">
+
+                            </div>
+                        </div>
+                        <div class="layui-table-page">
+                            <div id="layui-table-page67">
+                                <div class="layui-box layui-laypage layui-laypage-default" id="layui-laypage-60"><a
+                                        href="javascript:;" class="layui-laypage-prev layui-disabled" data-page="0"><i
+                                            class="layui-icon"></i></a><span class="layui-laypage-curr"><em class="layui-laypage-em"></em><em>1</em></span><a
+                                        href="javascript:;" class="layui-laypage-next layui-disabled" data-page="2"><i
+                                            class="layui-icon"></i></a><span class="layui-laypage-count">共 1 条</span><span
+                                        class="layui-laypage-skip">到第<input type="text" min="1" value="1" class="layui-input">页<button
+                                            type="button" class="layui-laypage-btn">确定</button></span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+
+    <script>
+        layui.use(['admin', 'form'], function () {
+            var $ = layui.$,
+                admin = layui.admin,
+                view = layui.view,
+                setter = layui.setter,
+                form = layui.form,
+                laydate = layui.laydate,
+                upload = layui.upload;
+
+            $(function () {
+                //点击返回
+                $(document).on('click', '#back', function () {
+                    admin.closeThisTabs();
+                });
+
+            });
+        });
+    </script>

@@ -1,0 +1,241 @@
+<style>
+    .wrapper .layui-input-inline {
+            margin-bottom: 12px;
+    }
+    .btn-bar {
+        background: #f7f8fa;
+        padding: 4px 10px;
+    }
+    </style>
+<title>签单结账</title>
+<div class='wrapper layui-fluid full-height '>
+    <div class='layui-card full-height over-auto'>
+        <!-- //上面的head，标题 -->
+        <div class="layui-card-header">签单结账</div>
+        <!-- //content身体部分 -->
+        <div class='layui-card-body'>
+            <fieldset class="layui-elem-field">
+                <legend>搜索条件</legend>
+                <div class="layui-form">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <div class="layui-input-inline">
+                                <script type="text/html" template lay-url="{{layui.setter.baseUrl}}/system/site/campuses"
+                                    lay-done="layui.data.done(d)">
+
+                                        <select name="campus_id" id="" lay-filter="campus">
+                                            <option value="" disabled selected>请选择校区</option>
+                                            {{#
+                                            layui.each(d.data, function(index, item){
+                                            }}
+                                            <option value="{{item.id}}">{{item.name}}</option>
+                                            {{# }) }}
+                                        </select>
+                                    </script>
+                            </div>
+                            <div class="layui-input-inline">
+                                <script type="text/html" template lay-url="{{layui.setter.baseUrl}}/system/site/units?withoutPage=1"
+                                    lay-done="layui.data.done(d)">
+
+                                    <select name="sign_unit_id" id="" lay-filter="campus">
+                                        <option value="" disabled selected>请选择签单单位</option>
+                                        {{#
+                                        layui.each(d.data, function(index, item){
+                                        }}
+                                        <option value="{{item.id}}">{{item.name}}</option>
+                                        {{# }) }}
+                                    </select>
+                                </script>
+                            </div>
+                            <div class="layui-input-inline">
+                                <select name="pay_status" id="" lay-filter="campus">
+                                    <option value="" disabled selected>请选择支付状态</option>
+                                    <option value="1">未支付</option>
+                                    <option value="2">已支付</option>
+                                </select>
+                            </div>
+                            <div class="layui-input-inline">
+                                <input type="text" class="layui-input time" id="signBilldate" placeholder="请选择开始时间和结束时间">
+                                <input type="hidden" name="start_time" id="signStartTime" value="">
+                                <input type="hidden" name="end_time" id="signEndTime" value="">
+                            </div>
+                            <div class="layui-input-inline">
+                                <input type="text" name="name_or_mobile" class="layui-input" placeholder="请输入姓名/手机号">
+                            </div>
+                            <div class="layui-input-inline">
+                                <button class="layui-btn" lay-submit lay-filter="search">查询</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+
+            <!-- 小按钮栏 -->
+            <div class="m-b-10 btn-bar">
+                <button class="layui-btn layui-btn-sm" id="applyCheckout">批量申请结账</button>
+                <button class="layui-btn layui-btn-sm" id="SuccessfulCheckout">批量成功结账</button>
+            </div>
+            <!-- 数据表格 -->
+            <table id="signOrderTable" lay-filter="signOrderTable"></table>
+            <script type="text/html" id="toolbar">
+                <a class="layui-btn layui-btn-xs" lay-event="detail">详情</a>
+            </script>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    layui.data.done = function (d) {
+        layui.use(['admin', 'form', 'laydate', 'table'], function () {
+            var $ = layui.$,
+                admin = layui.admin,
+                table = layui.table,
+                view = layui.view,
+                setter = layui.setter,
+                form = layui.form,
+                laydate = layui.laydate,
+                upload = layui.upload;
+                //批量操作
+                function getMemberId(name) {
+                    var parameter = [];
+                    var checkStatus = table.checkStatus('signOrderTable'), data = checkStatus.data;
+                    for (var i in data) {
+                        parameter.push(data[i][name]);
+                    }
+                    return parameter;
+                }
+
+
+                form.render();
+
+                laydate.render({
+                    elem: '#signBilldate',
+                    type: 'date',
+                    range: '-',
+                    done: function (value, date, endDate) {
+                        console.log(value);
+                        var beginTime = value.split(' - ')[0];
+                        var endTime = value.split(' - ')[1];
+                        $('#signStartTime').val(beginTime);
+                        $('#signEndTime').val(endTime);
+                    }
+                });
+
+
+
+                //获取表格数据
+                var cols = [[
+                    { type: 'checkbox', fixed: 'left' },
+                    {
+                        field: 'repast_date', title: '时间', templet: function (d) {
+                            if (d.created_at == null) {
+                                return ''
+                            } else {
+                                return d.created_at.split(' ')[0]
+                            }
+                        }
+                    },
+                    { field: 'order_sn', title: '单号' },
+                    { field: 'sign_unit_name', title: '签单单位' },
+                    { field: 'meal_type_name', title: '餐别' },
+                    { field: 'sign_name', title: '签单人' },
+                    { field: 'discount_price', title: '签单金额' },
+                    { field: 'status_name', title: '订单状态' },
+                    { field: 'pay_status_name', title: '支付状态' },
+                    { title: '操作', align: 'center', toolbar: '#toolbar' }
+                ]];
+                getRtable();
+                function getRtable() {
+                    table.render({
+                        elem: '#signOrderTable',
+                        url: setter.baseUrl + '/order/sign-list',
+                        response: setter.responseTable,
+                        page: setter.pageTable,
+                        loading: false,
+                        defaultToolbar: [],
+                        cols: cols
+                    });
+                }
+                //点击编辑
+                table.on('tool(signOrderTable)', function (obj) {
+                    var payState = $(this).parent().parent().prev().text();
+                    console.log(payState);
+                    layui.data('orderId', {
+                        key: 'id',
+                        value: obj.data.id
+                    });
+                    layui.data('payState', {
+                        key: 'id',
+                        value: payState
+                    });
+                    console.log(obj);
+                    var layEvent = obj.event;
+                    if (layEvent === 'detail') {
+                        window.location.hash = '#/order/manage/orderDetailsign';
+                    }
+                })
+                // 批量成功结账
+                $(document).off('click', '#SuccessfulCheckout');
+                $(document).on('click', '#SuccessfulCheckout', function () {
+                    var order_ids = getMemberId('id');
+                    console.log(order_ids);
+                    if (order_ids.length > 0) {
+                        admin.req({
+                            //请求接口
+                            url: setter.baseUrl + '/order/batch-sign-pay',
+                            type: 'put',
+                            data: { 'order_ids': order_ids },
+                            done: function (res) {
+                                view('old_mobile')
+                                layer.msg(res.message, { icon: 1, time: 2000 });
+                                layer.close(admin.popup.index);//关闭右侧面板
+                                getRtable();
+                            }
+                        });
+                    } else {
+                        layer.msg('请选择订单', { icon: 5, time: 1000 });
+                    }
+                })
+
+
+
+
+
+
+                //批量申请结账
+                $(document).off('click', '#applyCheckout');
+                $(document).on('click', '#applyCheckout', function () {
+                    var order_ids = getMemberId('id');
+                    console.log(order_ids);
+                    if (order_ids.length > 0) {
+                        admin.req({
+                            //请求接口
+                            url: setter.baseUrl + '/order/batch-sign-notified',
+                            type: 'get',
+                            data: { 'order_ids': order_ids },
+                            done: function (res) {
+                                layer.msg(res.message, { icon: 1, time: 2000 });
+                                layer.close(admin.popup.index);//关闭右侧面板
+                                getRtable();
+                            }
+                        });
+                    } else {
+                        layer.msg('请选择订单', { icon: 5, time: 1000 });
+                    }
+                })
+
+                //点击搜索订单
+                form.on('submit(search)', function (obj) {
+                    console.log(obj);
+                    table.reload('signOrderTable', {
+                        url: setter.baseUrl + '/order/sign-list',
+                        response: setter.responseTable,
+                        page: setter.pageTable,
+                        cols: cols,
+                        where: obj.field
+                    });
+                });
+        });
+    }
+</script>

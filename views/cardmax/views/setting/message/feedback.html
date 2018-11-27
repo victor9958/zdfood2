@@ -1,0 +1,111 @@
+<title>意见反馈</title>
+<div class="layui-fluid full-height role">
+    <div class="layui-row full-height">
+        <div class="layui-card layui-border-box full-height flex flex-v">
+            <div class="layui-card-header">意见反馈</div>
+            <div class="layui-card-body flex flex-v flex-1">
+                <fieldset class="layui-elem-field site-demo-button">
+                    <legend>搜索条件</legend>
+                    <div class="layui-form">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <div class="layui-input-inline">
+                                    <script type="text/html" template
+                                            lay-url="{{layui.setter.baseUrl}}/auth/operators"
+                                            lay-done="{{layui.form.render()}}">
+                                        <select class="role" name="operatorId" lay-search>
+                                            <option value="">请选择运营商</option>
+                                            {{# layui.each(d.data,function(index,item){ }}
+                                            <option value="{{ item.id }}">{{ item.name }}</option>
+                                            {{# }) }}
+                                        </select>
+                                    </script>
+                                </div>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="time" id="feedback-time"
+                                           placeholder="请选择时间段" autocomplete="off" class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <button class="layui-btn" lay-submit lay-filter="search-feedbackList">搜索</button>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <div class="flex-1 over-auto">
+                    <div class="layui-table" id="table-feedback" lay-filter="feedbackList"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script type="text/html" id="feedbackOption">
+    <a class="layui-btn layui-btn-xs layui-btn-primary" lay-event="detail">详情</a>
+</script>
+<script type="text/html" id="isVisit">
+    {{#  if(!d.read_at){ }}
+    <span class="layui-badge-dot" id="dot-{{d.id}}" style="margin-right:10px;"></span>
+    {{#  } }}
+</script>
+
+<script>
+    layui.use(['setting/message', 'table', 'form', 'laydate'], function () {
+        var $ = layui.$,
+            form = layui.form,
+            view = layui.view,
+            admin = layui.admin,
+            table = layui.table,
+            laydate = layui.laydate,
+            message = layui.admin.message;
+
+        $(function () {
+            var col = [{type: 'numbers', title: '序号', width: 60}
+                , {width: 16, templet: '#isVisit'}
+                , {field: 'content', title: '反馈内容'}
+                , {field: 'contact_phone', title: '提交人号码'}
+                , {field: 'operatorName', title: '运营商'}
+                , {field: 'created_at', title: '提交时间'}
+                , {title: '操作', width: 100, toolbar: '#feedbackOption'}];
+
+            laydate.render({
+                elem: '#feedback-time'
+                , type: 'datetime'
+                , range: '至'
+            });
+            form.render();
+            message.tableData('table-feedback', '/system-set/news/feedback/list', {}, col)
+
+            form.on('submit(search-feedbackList)', function (obj) {
+                var time = obj.field.time.split('至')
+                if(time.length > 1){
+                    obj.field.beginTime = time[0];
+                    obj.field.endTime = time[1];
+                }else{
+                    obj.field.beginTime = '';
+                    obj.field.endTime = '';
+                }
+                delete obj.field.time;
+                message.tableData('table-feedback', '/system-set/news/feedback/list', obj.field, col)
+            });
+
+            table.on('tool(feedbackList)', function (obj) {
+                var data = obj.data;
+                layui.data('temporary', {key: 'temporary', value: data.id});
+                admin.popupCenter({
+                    id: 'LAY_feedbackDetail'
+                    , title: '详情'
+                    , area: ['430px', '420px']
+                    , success: function () {
+                        view(this.id).render('setting/message/feedback/detail');
+                    }
+                });
+            });
+
+
+            message.feedbackExport()
+
+        })
+    });
+</script>

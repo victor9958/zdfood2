@@ -1,0 +1,255 @@
+<!-- 区域管理 -->
+<title>区域负责人分配</title>
+<body>
+<!-- 会员列表 -->
+<div class='layui-fluid full-height '>
+    <div class='layui-card full-height flex flex-v'>
+        <!-- //上面的head，标题  -->
+        <div class="layui-card-header">区域负责人分配</div>
+        <!-- //content身体部分  -->
+        <div class='layui-card-body full-height flex-1 flex'>
+            <!-- //设置-webkit-box-flex: 1;  -->
+            <div class='flex-1 over-auto'>
+                <fieldset class="layui-elem-field site-demo-button">
+                    <legend>搜索条件</legend>
+                    <div class="layui-form" lay-filter="search-for-examine">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <div class="layui-input-inline">
+                                    <script type="text/html" template
+                                            lay-url="{{layui.setter.baseUrl}}/system/site/campuses"
+                                            lay-done="{{layui.form.render()}}">
+                                        <select name="campusId" id="campus" lay-filter="campus">
+                                            <option value="" disabled selected>请选择校区</option>
+                                            {{# layui.each(d.data, function(index, item){ }}
+                                            <option value="{{item.id}}">{{item.name}}</option>
+                                            {{# }); }}
+                                        </select>
+                                    </script>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <button class="layui-btn" lay-submit="" lay-filter="LAY-search-area">查询</button>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+                <div class="layui-form-item btn-bar">
+                    <button class="layui-btn layui-btn-sm" id="addArea">新增区域</button>
+                </div>
+                <table class="layui-hide" id="cantArea" lay-filter="cantArea"></table>
+                <script type="text/html" id="toolarea">
+                    <a class="layui-btn layui-btn-xs" lay-event="changepsy">更换配送员</a>
+                    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="delpsy">删除配送员</a>
+                    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑区域</a>
+                    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除区域</a>
+                </script>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+
+<script>
+    layui.use(['admin', 'form', 'table'], function () {
+        var $ = layui.$,
+            admin = layui.admin,
+            view = layui.view,
+            setter = layui.setter,
+            form = layui.form,
+            table = layui.table;
+
+        $(function () {
+            areaTable();
+
+            //表格数据
+            function areaTable() {
+                table.render(
+                    {
+                        id: 'cantArea'
+                        , elem: '#cantArea'
+                        , url: setter.baseUrl + '/system/site/areas'
+                        , response: setter.responseTable
+                        , page: setter.pageTable
+                        , cellMinWidth: 80
+                        , limit: setter.limit
+                        , cols: [[ //表头
+                            {type: 'checkbox', fixed: 'left'}
+                            , {type: 'numbers', title: '序号', width: 60}
+                            , {field: 'name', title: '区域'}
+                            , {field: 'adminName', title: '配送员'}
+                            , {title: '操作', width: 340, align: 'center', toolbar: '#toolarea'}
+                        ]]
+                    }
+                );
+            }
+
+            //点击搜索订单
+            form.on('submit(LAY-search-area)', function (obj) {
+                // var campus_Id =
+                table.reload('cantArea', {
+                    url: setter.baseUrl + '/system/site/areas'
+                    , where: obj.field
+                });
+            });
+
+            // 监听工具条的点击事件
+            table.on('tool(cantArea)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+                var data = obj.data; //获得当前行数据
+                var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+                var tr = obj.tr; //获得当前行 tr 的DOM对象
+
+                if (layEvent === 'changepsy') { //更换配送员
+                    layui.data('temporary', {
+                        key: 'areaId'
+                        , value: data.id
+                    });
+                    layui.data('temporary', {
+                        key: 'campusId'
+                        , value: data.campusId
+                    });
+                    admin.popupCenter({
+                        id: 'LAY_editDistributor'
+                        , title: '更换配送员'
+                        , area: ['400px', '260px']
+                        , success: function () {
+
+                            view(this.id).render('setting/system/area/edit');
+                        }
+                    });
+                } else if (layEvent === 'delpsy') {//删除配送员
+                    var campusId = data.campusId;
+                    var deleteData = {};
+                    deleteData.campusId = campusId;
+                    deleteData.adminId = 0;
+                    layer.confirm('确定要删除配送员?', {icon: 1, title: '提示'}, function (index) {
+                        admin.req({
+                            url: setter.baseUrl + '/system/site/area/' + layui.data('temporary').areaId + '/admin'
+                            , type: 'PUT'
+                            , data: deleteData
+                            , done: function (res) {
+                                //关闭右侧面板
+                                layer.close(admin.popup.index);
+                                table.reload('cantArea', {
+                                    url: setter.baseUrl + '/system/site/areas'
+                                });
+                                layer.msg(res.message, {icon: 1, time: 2000});
+                            }
+                        });
+                    })
+
+                } else if (layEvent === 'edit') {///编辑
+                    layui.data('temporary', {
+                        key: 'areaId'
+                        , value: data.id
+                    });
+                    layui.data('temporary', {
+                        key: 'areaName'
+                        , value: data.name
+                    });
+                    admin.popupCenter({
+                        id: 'LAY_editArea'
+                        , title: '编辑区域'
+                        , area: ['400px', '260px']
+                        , success: function () {
+                            view(this.id).render('setting/system/area/editArea');
+                        }
+                    });
+                } else if (layEvent === 'del') {// 删除
+                    layer.confirm('确定要删除区域?', {icon: 1, title: '提示'}, function (index) {
+                        var idList = [];
+                        idList.push(data.id);
+                        deleteArea(idList);
+                    })
+                }
+            });
+
+            //点击新增区域
+            $(document).off('click', '#addArea');
+            $(document).on('click', '#addArea', function () {
+                admin.popupCenter({
+                    id: 'LAY_addArea'
+                    , title: '新增区域'
+                    , area: ['400px', '360px']
+                    , success: function () {
+                        view(this.id).render('setting/system/area/add');
+                    }
+                });
+            });
+
+            //新增区域
+            form.on('submit(LAY-add-dept-submit)', function (obj) {
+                admin.req({
+                    url: setter.baseUrl + '/system/site/area'
+                    , type: 'POST'
+                    , data: obj.field
+                    , done: function (res) {
+                        //关闭右侧面板
+                        layer.close(admin.popup.index);
+                        table.reload('cantArea', {
+                            url: setter.baseUrl + '/system/site/areas'
+                        });
+                        layer.msg(res.message, {icon: 1, time: 2000});
+                    }
+                });
+            });
+            //编辑区域
+            form.on('submit(LAY-edit-area-submit)', function (obj) {
+                admin.req({
+                    url: setter.baseUrl + '/system/site/area/' + layui.data('temporary').areaId
+                    , type: 'PUT'
+                    , data: obj.field
+                    , done: function (res) {
+                        //关闭右侧面板
+                        layer.close(admin.popup.index);
+                        table.reload('cantArea', {
+                            url: setter.baseUrl + '/system/site/areas'
+                        });
+                        layer.msg(res.message, {icon: 1, time: 2000});
+                    }
+                });
+            });
+            //更换配送员
+            form.on('submit(LAY-edit-dept-submit)', function (obj) {
+                admin.req({
+                    url: setter.baseUrl + '/system/site/area/' + layui.data('temporary').areaId + '/admin'
+                    , type: 'PUT'
+                    , data: obj.field
+                    , done: function (res) {
+                        //关闭右侧面板
+                        layer.close(admin.popup.index);
+                        table.reload('cantArea', {
+                            url: setter.baseUrl + '/system/site/areas'
+                        });
+                        layer.msg(res.message, {icon: 1, time: 2000});
+                    }
+                });
+            });
+
+            //删除区域
+            function deleteArea(idList) {
+                admin.req({
+                    url: setter.baseUrl + '/system/site/areas'
+                    , type: 'delete'
+                    , data: {'idList': idList}
+                    , done: function (res) {
+                        //关闭右侧面板
+                        layer.close(admin.popup.index);
+                        table.reload('cantArea', {
+                            url: setter.baseUrl + '/system/site/areas'
+                        });
+                        layer.msg(res.message, {icon: 1, time: 2000});
+                    }
+                });
+            }
+
+            //关闭弹窗
+            $(document).off('click', '#cancel');
+            $(document).on('click', '#cancel', function () {
+                layer.close(admin.popup.index);
+            })
+        });
+    });
+</script>

@@ -1,0 +1,86 @@
+<div class="centerLayer" id="mess_import">
+    <p class="layui-form-item">导入会覆盖原有的消息模板，如需更新已存在的消息模板，请导出后在表格中修改再上传</p>
+    <div class="layui-form-item">
+        <p>1、下载全部消息模板，添加消息模板</p>
+    </div>
+    <script type="text/html" template>
+        <div class="layui-form-item">
+            <a href="{{layui.setter.baseUrl}}/templet/download-excel-template" class="layui-btn layui-btn-normal" style="margin-left: 22px;"><i class="layui-icon layui-icon-download-circle"></i>下载模版</a>
+        </div>
+    </script>
+    <div class="layui-form-item">
+        <p>2、上传填写好的消息模板</p>
+    </div>
+    <div class="layui-form-item">
+        <button class="layui-btn layui-btn-normal pull-left upload" style="margin-left: 22px;"><i class="layui-icon layui-icon-uploading"></i>上传文件</button>
+        <div class="layui-input-block hide" style="margin-left: 150px;">
+            <div class="layui-input">
+                <svg class="icon ft-green" aria-hidden="true" style="margin-top: 9px;">
+                    <use xlink:href="#icon-Excel"></use>
+                </svg>
+                <span id="file_name" class="ft-green p-l-10"></span>
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item p-t-10 ft-center">
+        <button class="layui-btn import">导入</button>
+        <button class="layui-btn layui-btn-primary cancel">取消</button>
+    </div>
+    <input id="excelPath" value="" hidden/>
+</div>
+<script>
+    layui.use('upload', function(){
+        var $ = layui.$,
+            upload = layui.upload,
+            setter = layui.setter,
+            admin = layui.admin;
+
+        $(function(){
+            //upload file
+            var excelPath = '',load;
+            upload.render({
+                elem: '#mess_import .upload' //绑定元素
+                ,headers: {'Authorization':layui.data(setter.tableName)[setter.request.tokenName]}
+                ,url: setter.baseUrl + '/templet/excel-upload' //上传接口
+                ,accept: 'file' //允许上传的文件类型
+                ,before: function(obj){
+                    load = layer.load(); //上传loading
+                    obj.preview(function(index, file, result){
+                        $('#file_name').html(file.name).parents('.layui-input-block').show(); //得到文件对象
+                    });
+                }
+                ,done: function(res){
+                    layer.close(load);
+                    layer.msg(res.message, {icon: 1, time: 2000});
+                    $('#excelPath').val(res.data.filePath);
+                    $('#mess_import .upload').html('<i class="layui-icon layui-icon-uploading"></i>重新上传');
+                    //导入
+                    $(document).off('click','#mess_import .import');
+                    $(document).on('click','#mess_import .import',function(){
+                        admin.req({
+                            url: setter.baseUrl + '/templet/import-member'
+                            , type: 'POST'
+                            ,data:{'excelPath':res.data.filePath}
+                            , done: function (res) {
+                                layer.close(admin.popup.index);
+                                layer.msg(res.message, {icon: 1, time: 2000});
+                                setTimeout(function(){
+                                    window.parent.location.reload();
+                                },2000);
+                            }
+                        });
+                    });
+                }
+                ,error: function(){
+                    //请求异常回调
+                    layer.close(admin.popup.index);
+                }
+            });
+        });
+        //取消
+        $(document).off('click','#mess_import .cancel');
+        $(document).on('click','#mess_import .cancel',function(){
+            layer.close(admin.popup.index);
+        });
+    });
+</script>

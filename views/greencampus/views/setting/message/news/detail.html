@@ -1,0 +1,66 @@
+<script type="text/html" template lay-url="{{layui.setter.baseUrl + '/news-center/'+ layui.data('temporary').temporary.type +'/'+ layui.data('temporary').temporary.news_id}}">
+    <div class="layui-form centerLayer full-height over-auto" lay-filter="form-detail">
+        <div class="layui-form-item">
+            <label class="layui-form-label left">{{layui.data('temporary').temporary.type === 'notice'?'待办时间':'公告时间'}}</label>
+            <div class="layui-input-block">
+                <p class="layui-form-mid">{{d.data.created_at}}</p>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label left">{{layui.data('temporary').temporary.type === 'notice'?'待办标题':'公告标题'}}</label>
+            <div class="layui-input-block">
+                <p class="layui-form-mid">{{d.data.title}}</p>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label left">{{layui.data('temporary').temporary.type === 'notice'?'待办内容':'公告内容'}}</label>
+            <div class="layui-input-block">
+                <p class="layui-form-mid">{{d.data.content}}</p>
+            </div>
+        </div>
+        {{# if(layui.data('temporary').temporary.type === 'todo'){ }}
+            <div class="layui-form-item p-t-10 ft-center">
+                <button class="layui-btn" id="">去审核</button>
+                <button class="layui-btn layui-btn-primary" id="cancel">取消</button>
+            </div>
+        {{# } }}
+    </div>
+    {{# layui.$('#dot-'+layui.data('temporary').temporary.news_id).remove(); }}
+</script>
+<script>
+    layui.use('admin',function () {
+        var $ = layui.$,
+            admin = layui.admin;
+
+        $(function () {
+            if(layui.data('temporary').temporary.type === 'notice'){
+                count_('notice');
+            }else if(layui.data('temporary').temporary.type === 'upgrade'){
+                count_('upgrade');
+            }else if(layui.data('temporary').temporary.type === 'todo'){
+                count_('backlog');
+            }
+
+            function count_(elem){
+                var count = Number($('#'+elem +' .layui-badge').html());
+                console.log(count)
+                if(count>0){
+                    count --;
+                    $('#'+elem +' .layui-badge').html(count);
+                    layui.data('message', {
+                        key:elem,
+                        value: count
+                    })
+                    if(count == 0){
+                        $('#'+elem +' .layui-badge').remove();
+                    }
+                }
+            }
+            $(document).off('click', '#cancel');
+            $(document).on('click', '#cancel', function () {
+                layer.close(admin.popup.index);
+            })
+        })
+    });
+</script>
+

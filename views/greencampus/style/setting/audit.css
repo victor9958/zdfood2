@@ -1,0 +1,39 @@
+.audit .layui-form-switch {
+  margin-top: 0;
+  margin-left: 20px;
+}
+.audit .content .layui-card {
+  border: 1px solid #e6e6e6;
+}
+.audit .content .role {
+  width: 300px;
+  margin-bottom: 0;
+  margin-right: 20px;
+}
+.audit .content .layui-form-label {
+  text-align: left;
+  padding-left: 0;
+}
+.audit .content .layui-form-item:last-of-type {
+  margin-bottom: 0;
+}
+.audit .lists .list-item {
+  position: relative;
+  padding: 4px 6px;
+  line-height: 30px;
+  display: flex;
+  justify-content: space-between;
+  cursor: pointer;
+}
+.audit .lists .list-item .icon {
+  margin-left: 8px;
+}
+.audit .lists .list-item .goto {
+  display: none;
+}
+.audit .lists .list-item.active {
+  background: #f7f8fa;
+}
+.audit .lists .list-item.active .goto {
+  display: block;
+}

@@ -1,0 +1,211 @@
+<script type="text/html" template>
+    <link rel="stylesheet" href="{{ layui.setter.base }}style/setting/mess.css?v={{ layui.admin.v }}-1" media="all">
+    <link rel="stylesheet" href="{{ layui.setter.base }}style/plugcss/zTreeStyle.css?v={{ layui.admin.v }}-1" media="all">
+</script>
+<title>消息模板配置</title>
+<script type="text/html" template lay-url="{{layui.setter.baseUrl + '/templet/detail/'+ layui.data('mess').mess.templetId}}" lay-done="layui.data.done(d)">
+<div class="layui-fluid layui-border-box full-height wechat_detail">
+    <div class="layui-card full-height flex flex-v">
+        <div class="layui-card-header">微信端配置</div>
+        <div class="layui-card-body">
+            <div class="modal_mess layui-tab-content layui-form">
+                <p class="public_title">
+                    <i></i>
+                    <span>模板信息</span>
+                </p>
+                <div class="layui-form-pane">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">应用模板</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="model_name" autocomplete="off" value="{{d.data[0].model_name || ' '}}"  class="layui-input layui-disabled">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">模块位置</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="model_position" value="{{d.data[0].model_position || ' '}}" autocomplete="off"  class="layui-input layui-disabled">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">推送量</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="movement_num" value="{{d.data[0].movement_num || ' '}}" autocomplete="off"  class="layui-input layui-disabled">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">点击率</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="click_num" value="{{d.data[0].click_num || ' '}}" autocomplete="off" class="layui-input layui-disabled">
+                        </div>
+                    </div>
+                    <!--<div class="layui-inline">
+                        <label class="layui-form-label">转换率(1)</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="title" value="{{d.data[0].model_name}}" autocomplete="off" placeholder="请输入转换率" class="layui-input layui-disabled">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">转换率(2)</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="title" value="{{d.data[0].model_name}}" autocomplete="off" placeholder="请输入转换率" class="layui-input layui-disabled">
+                        </div>
+                    </div>-->
+                    <div class="layui-inline">
+                        <label class="layui-form-label">公众号名称</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="wechat_name" value="{{d.data[0].wechat_name || ' '}}" autocomplete="off"  class="layui-input layui-disabled">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">模板ID</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="templet_id" value="{{d.data[0].templet_id || ' '}}" autocomplete="off"  class="layui-input layui-disabled">
+                        </div>
+                    </div>
+                </div>
+                <p class="public_title" style="margin: 15px 0;">
+                    <i></i>
+                    <span>模板信息</span>
+                </p>
+                <div class="mess_set layui-form-pane">
+                    <div class="layui-inline">
+                        <div class="layui-inline set_list">
+                            <label class="layui-form-label">标题文案</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="title" value="{{d.data[0].title || ' '}}" autocomplete="off" placeholder="如：订餐成功提醒" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline set_list">
+                            <label class="layui-form-label modal-content">模板内容</label>
+                            <div class="layui-input-block">
+                                <textarea name="content" placeholder="请输入内容" class="layui-textarea">{{d.data[0].content}}</textarea>
+                            </div>
+                        </div>
+                        <div class="layui-inline set_list">
+                            <label class="layui-form-label">模板颜色</label>
+                            <div class="layui-input-block">
+                                <a href="javascript:;" class="color-check">
+                                    <span class="color-result"></span>
+                                    <input type="hidden" value="{{d.data[0].content_color}}" name="content_color" class="color-result layui-input layui-disabled">
+                                    <div class="color-box">
+                                        <div class="color-position">
+                                            <table class="color-list">
+                                                <tr>
+                                                    <td class="color-li color-1"></td>
+                                                    <td class="color-li color-2"></td>
+                                                    <td class="color-li color-3"></td>
+                                                    <td class="color-li color-4"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="color-li color-5"></td>
+                                                    <td class="color-li color-6"></td>
+                                                    <td class="color-li color-7"></td>
+                                                    <td class="color-li color-8"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="color-li color-9"></td>
+                                                    <td class="color-li color-10"></td>
+                                                    <td class="color-li color-11"></td>
+                                                    <td class="color-li color-12"></td>
+                                                </tr>
+                                            </table>
+                                            <div class="color-triangle"></div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="layui-inline set_list">
+                            <label class="layui-form-label">跳转链接</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="jump_url" value="{{d.data[0].jump_url || ' '}}" autocomplete="off" placeholder="请输入跳转链接" class="layui-input">
+                            </div>
+                        </div>
+                        <input type="hidden" name="id" value="{{layui.data('mess').mess.templetId}}">
+                    </div>
+                    <div class="layui-inline">
+                        <img src="/greencampus/style/res/mess.jpg" alt="">
+                    </div>
+                </div>
+                <div class="layui-tab function">
+                    <button class="layui-btn save" lay-submit lay-filter="mess-detailSave">保存</button>
+                    <button class="layui-btn return" lay-submit lay-filter="mess-detailReturn">返回</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+</script>
+<script>
+    layui.data.done = function(d) {
+        layui.use(['admin', 'upload', 'form'], function () {
+            var $ = layui.$,
+                admin = layui.admin,
+                setter = layui.setter,
+                upload = layui.upload,
+                form = layui.form;
+            form.render();
+            var banner_id=layui.data('mess').mess.templetId;
+            //颜色替换
+            var color=$('input[name="content_color"]').val();
+            $('.color-check > span.color-result').css('background',color)
+            //颜色
+            $(document).off('click','.color-check');
+            $(document).on('click','.color-check',function(e){
+                if($('.color-check .color-box').hasClass('color-show')){
+                    if($(e.target).hasClass('color-check')||$(e.target).hasClass('color-result')){
+                        $('.color-check .color-box').removeClass('color-show');
+                    }else{
+                        if($(e.target).hasClass('color-li')){
+                            var color=$(e.target).css('background-color');
+                            color=rgb2hex(color);
+                            function zero_fill_hex(num, digits) {
+                                var s = num.toString(16);
+                                while (s.length < digits)
+                                    s = "0" + s;
+                                return s;
+                            }
+                            function rgb2hex(rgb) {
+
+                                if (rgb.charAt(0) == '#')
+                                    return rgb;
+
+                                var ds = rgb.split(/\D+/);
+                                var decimal = Number(ds[1]) * 65536 + Number(ds[2]) * 256 + Number(ds[3]);
+                                return "#" + zero_fill_hex(decimal, 6);
+                            }
+                            $('span.color-result').css('background',color);
+                            $('input[name="content_color"]').val(color);
+                            $('.color-check .color-box').removeClass('color-show');
+                        }else{
+                            return false;
+                        }
+                    }
+
+                }else{
+                    $('.color-check .color-box').addClass('color-show');
+                }
+            });
+            //提交
+            form.on('submit(mess-detailSave)', function (data) {
+                admin.req({
+                    url: setter.baseUrl + '/templet/updateTempletDetail'
+                    , type: 'GET'
+                    ,data:data.field
+                    , done: function (res) {
+                        layer.msg(res.message, {icon: 1, time: 2000});
+                        setTimeout(function(){
+                            window.parent.location.reload();
+                        },2000);
+                    }
+                });
+            })
+            //返回
+            form.on('submit(mess-detailReturn)', function (data) {
+                //console.log('aaa')
+                location.href="/#/setting/mess/wechat";
+            });
+        })
+    }
+</script>

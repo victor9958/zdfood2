@@ -1,0 +1,250 @@
+<style>
+    .btn-bar {
+      background: #f7f8fa;
+      padding: 4px 10px;
+  }
+  .ml {
+      margin-left: 10px;
+  }
+</style>
+<!-- 营业汇总 -->
+<title>营业汇总</title>
+<div class="layui-fluid full-height">
+    <div class="layui-card full-height over-auto">
+        <div class="layui-card-header">营业汇总</div>
+        <div class="layui-card-body">
+            <fieldset class="layui-elem-field">
+                <legend>搜索条件</legend>
+                <div class="layui-form">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <!-- 下拉列表模板渲染 -->
+                            <div class="layui-input-inline">
+                                <script type="text/html" template lay-url="{{layui.setter.baseUrl}}/system/site/campuses"
+                                    lay-done="layui.data.done(d)">
+                                    <select name="
+                                    campus_id" id="campus" lay-filter="campus">
+                                        <option value="" disabled selected>请选择校区</option>
+                                        {{# layui.each(d.data, function(index, item){ }}
+                                        <option value="{{item.id}}">{{item.name}}</option>
+                                        {{# }); }}
+                                    </select>
+                                </script>
+                            </div>
+                            <div class="layui-input-inline">
+                                <select name="canteen_id" id="canteen_somc" lay-filter="canteen">
+                                    <option value="" disabled selected>请选择食堂</option>
+                                </select>
+                            </div>
+                            <div class="layui-input-inline">
+                                <input type="text" class="layui-input time" id="orderListdate-collect" placeholder="请选择开始时间和结束时间">
+                                <input type="hidden" name="start_time" id="orderListStartTime-collect" value="">
+                                <input type="hidden" name="end_time" id="orderListEndTime-collect" value="">
+                            </div>
+                            <div class="layui-input-inline pull-right">
+                                <button class="layui-btn" lay-submit lay-filter="search">查询</button>
+                                <!-- <script type="text/html" template>
+                                    <a href="{{layui.setter.baseUrl}}/finance/export?Authorization={{layui.data('layuiAdmin').Authorization}}"
+                                    class="layui-btn ml">导出</a>
+                                </script> -->
+                                <a href="javascript:;" class="layui-btn layui-btn-normal" lay-submit lay-filter="LAY-report-collect">导出Excel</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+            <!-- <div class="m-b-10 btn-bar">
+                
+            </div> -->
+            <!-- 财务报表详情 -->
+            <table class="layui-hide" id="repCountt" lay-filter="repCountt"></table>
+        </div>
+    </div>
+</div>
+
+<script>
+    layui.data.done = function (d) {
+        layui.use(['admin', 'form', 'table', 'laydate'], function () {
+            var $ = layui.$,
+                admin = layui.admin,
+                view = layui.view,
+                setter = layui.setter,
+                form = layui.form,
+                laydate = layui.laydate,
+                table = layui.table,
+                upload = layui.upload,
+                laydate = layui.laydate;
+
+            var cols = [[ //表头
+                {
+                    field: 'repast_at', title: '日期', templet: function (d) {
+                        if (d.created_at == null) {
+                            return ''
+                        } else {
+                            return d.created_at.split(' ')[0]
+                        }
+                    }
+                }
+                , { field: 'meal_type_name', title: '餐别' }
+                , { field: 'order_count', title: '订单数' }
+                , { field: 'order_meal_count', title: '订餐数量' }
+                , { field: 'electronic_pay_count', title: '电子支付金额' }
+                , { field: 'sign_pay_count', title: '签单支付金额' }
+                , { field: 'day_pay_count', title: '总支付金额' }
+            ]];
+            form.render();
+            table.render(
+                {
+                    elem: '#repCountt'
+                    , url: setter.baseUrl + '/finance/list'
+                    , response: setter.responseTable
+                    , page: setter.pageTable
+                    , cols: cols,
+                    // totalRow:true
+                    done: function (res, curr, count) {
+
+                        layuiRowspan('repast_at', 1)
+                    }
+
+                }
+            );
+
+
+
+
+            var execRowspan = function (fieldName, index, flag) {
+                // 1为不冻结的情况，左侧列为冻结的情况
+                let fixedNode = index == "1" ? $(".layui-table-body")[index - 1] : (index == "3" ? $(".layui-table-fixed-r") : $(".layui-table-fixed-l"));
+                // 左侧导航栏不冻结的情况
+                let child = $(fixedNode).find("td");
+                let childFilterArr = [];
+                // 获取data-field属性为fieldName的td
+                for (let i = 0; i < child.length; i++) {
+                    if (child[i].getAttribute("data-field") == fieldName) {
+                        childFilterArr.push(child[i]);
+                    }
+                }
+                // 获取td的个数和种类
+                let childFilterTextObj = {};
+                for (let i = 0; i < childFilterArr.length; i++) {
+                    let childText = flag ? childFilterArr[i].innerHTML : childFilterArr[i].textContent;
+                    if (childFilterTextObj[childText] == undefined) {
+                        childFilterTextObj[childText] = 1;
+                    } else {
+                        let num = childFilterTextObj[childText];
+                        childFilterTextObj[childText] = num * 1 + 1;
+                    }
+                }
+                let canRowspan = true;
+                let maxNum;//以前列单元格为基础获取的最大合并数
+                let finalNextIndex;//获取其下第一个不合并单元格的index
+                let finalNextKey;//获取其下第一个不合并单元格的值
+                for (let i = 0; i < childFilterArr.length; i++) {
+                    (maxNum > 9000 || !maxNum) && (maxNum = $(childFilterArr[i]).prev().attr("rowspan") && fieldName != "8" ? $(childFilterArr[i]).prev().attr("rowspan") : 9999);
+                    let key = flag ? childFilterArr[i].innerHTML : childFilterArr[i].textContent;//获取下一个单元格的值
+                    let nextIndex = i + 1;
+                    let tdNum = childFilterTextObj[key];
+                    let curNum = maxNum < tdNum ? maxNum : tdNum;
+                    if (canRowspan) {
+                        for (let j = 1; j <= curNum && (i + j < childFilterArr.length);) {//循环获取最终合并数及finalNext的index和key
+                            finalNextKey = flag ? childFilterArr[i + j].innerHTML : childFilterArr[i + j].textContent;
+                            finalNextIndex = i + j;
+                            if ((key != finalNextKey && curNum > 1) || maxNum == j) {
+                                canRowspan = true;
+                                curNum = j;
+                                break;
+                            }
+                            j++;
+                            if ((i + j) == childFilterArr.length) {
+                                finalNextKey = undefined;
+                                finalNextIndex = i + j;
+                                break;
+                            }
+                        }
+                        childFilterArr[i].setAttribute("rowspan", curNum);
+                        if ($(childFilterArr[i]).find("div.rowspan").length > 0) {//设置td内的div.rowspan高度适应合并后的高度
+                            $(childFilterArr[i]).find("div.rowspan").parent("div.layui-table-cell").addClass("rowspanParent");
+                            $(childFilterArr[i]).find("div.layui-table-cell")[0].style.height = curNum * 38 - 10 + "px";
+                        }
+                        canRowspan = false;
+                    } else {
+                        childFilterArr[i].style.display = "none";
+                    }
+                    if (--childFilterTextObj[key] == 0 | --maxNum == 0 | --curNum == 0 | (finalNextKey != undefined && nextIndex == finalNextIndex)) {//||(finalNextKey!=undefined&&key!=finalNextKey)
+                        canRowspan = true;
+                    }
+                }
+            }
+            //合并数据表格行
+            var layuiRowspan = function (fieldNameTmp, index, flag) {
+                let fieldName = [];
+                if (typeof fieldNameTmp == "string") {
+                    fieldName.push(fieldNameTmp);
+                } else {
+                    fieldName = fieldName.concat(fieldNameTmp);
+                }
+                for (let i = 0; i < fieldName.length; i++) {
+                    execRowspan(fieldName[i], index, flag);
+                }
+
+            }
+
+
+
+            // 时间控件
+            laydate.render({
+                elem: '#orderListdate-collect' //指定元素
+                , type: 'date'
+                , range: '-'
+                , done: function (value, date, endDate) {
+                    console.log(value);
+                    // 获取到的日期格式进行分割2018-10-09 - 2018-11-21
+                    var beginTime = value.split(' - ')[0];
+                    var endTime = value.split(' - ')[1];
+                    $('#orderListStartTime-collect').val(beginTime);
+                    $('#orderListEndTime-collect').val(endTime);
+                }
+            });
+            //获取食堂
+            form.on('select(campus)', function (data) {
+                var campusId = data.value;
+                admin.req({
+                    url: setter.baseUrl + '/system/site/canteens',
+                    type: 'get',
+                    data: { campusId: campusId },
+                    done: function (res) {
+                        var _html = '<option value="" disabled selected>请选择食堂</option>';
+                        $.each(res.data, function (i, k) {
+                            _html += '<option value="' + k.id + '">' + k.name + '</option>'
+                        })
+                        $('#canteen_somc').html(_html)
+                        form.render();
+                    }
+                });
+            });
+            //点击搜索订单
+            form.on('submit(search)', function (obj) {
+                console.log(obj);
+                table.reload('repCountt', {
+                    url: setter.baseUrl + '/finance/list',
+                    response: setter.responseTable,
+                    page: setter.pageTable,
+                    cols: cols,
+                    where: obj.field
+                });
+            });
+
+            function deviceExport(filter, url, deviceType) {
+                form.on(filter, function (obj) {
+                    console.log(obj);
+                    var href = setter.baseUrl + url + '?Authorization=' + layui.data('layuiAdmin').Authorization + '&campus_id=' +
+                        obj.field.campus_id + '&canteen_id=' + obj.field.canteen_id + '&start_time=' + obj.field.start_time + '&end_time=' +
+                        obj.field.end_time;
+                    window.location.href = href;
+
+                });
+            };
+            deviceExport('submit(LAY-report-collect)', '/finance/export', 3);
+        });
+    }
+</script>

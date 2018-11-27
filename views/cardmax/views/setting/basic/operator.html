@@ -1,0 +1,102 @@
+<title>运营商管理</title>
+<div class="layui-fluid full-height role">
+    <div class="layui-row full-height">
+        <div class="layui-card layui-border-box full-height flex flex-v">
+            <div class="layui-card-header">运营商管理</div>
+            <div class="layui-card-body flex flex-v flex-1">
+                <fieldset class="layui-elem-field site-demo-button">
+                    <legend>搜索条件</legend>
+                    <div class="layui-form" lay-filter="search-for-examine">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <div class="layui-input-inline">
+                                    <input type="text" name="queryString" autocomplete="off" placeholder="请输入运营商名称/编号"
+                                           class="layui-input">
+                                </div>
+                                <div class="layui-input-inline">
+                                    <select class="role" name="" lay-filter="role" lay-search>
+                                        <option value="">请选择设备状态</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <button class="layui-btn" lay-submit lay-filter="LAY-search-users">搜索</button>
+                                <a href="javascript:;" class="layui-btn layui-btn-normal" lay-submit
+                                   lay-filter="LAY-export">导出数据</a>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+                <div class="m-b-10">
+                    <button class="layui-btn" id="addOperator">添加运营商</button>
+                    <button class="layui-btn layui-btn-primary" id="deleteOperator">删除运营商</button>
+                    <button class="layui-btn" id="setDept">启用</button>
+                    <button class="layui-btn layui-btn-danger" id="importUser">停用</button>
+                </div>
+
+                <div class="flex-1 over-auto">
+                    <div class="layui-table" id="users" lay-filter="usersTable"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script type="text/html" id="userOption">
+    <a class="layui-btn layui-btn-xs" lay-event="detail">修改备注</a>
+</script>
+<script type="text/html" id="is_admin">
+    {{ d.name }}
+    {{#  if(d.is_admin == 1){ }}
+    <span class="layui-badge">主管理员</span>
+    {{#  } }}
+</script>
+
+<script>
+    layui.use(['table', 'form'], function () {
+        var $ = layui.$,
+            view = layui.view,
+            table = layui.table,
+            setter = layui.setter,
+            form = layui.form,
+            admin = layui.admin;
+
+        $(function () {
+            form.render();
+            table.render({
+                id: 'bathList'
+                , elem: '#bathList'
+                , url: setter.baseUrl + '/news-center/notice' //模拟接口
+                , page: setter.pageTable
+                , cellMinWidth: 100
+                , loading: false
+                , limit: setter.limit
+                , response: setter.responseTable
+                , cols: [[
+                    {type: 'numbers', title: '序号', width: 60}
+                    , {width: 16, templet: '#isVisit'}
+                    , {field: 'title', title: '公告标题'}
+                    , {field: 'created_at', title: '时间', width: 240}
+                    , {title: '操作', width: 180, toolbar: '#notice_option'}
+                ]]
+                , skin: 'line'
+            });
+
+            table.on('tool(notice_)', function (obj) {
+                var data = obj.data;
+                layui.data('temporary', {
+                    key: 'temporary'
+                    , value: {'news_id': data.id, type: 'notice'}
+                });
+                admin.popupCenter({
+                    id: 'LAY_adminPopupNewsDetail'
+                    , title: '详情'
+                    , area: ['430px', '520px']
+                    , success: function () {
+                        view(this.id).render('setting/message/news/detail');
+                    }
+                });
+            });
+        })
+    });
+</script>

@@ -1,0 +1,78 @@
+<div class="layui-form full-height centerLayer" style="padding-bottom: 50px">
+    <div class="full-height over-auto">
+        <div class="layui-form-item">
+            <label class="layui-form-label left">名称</label>
+            <div class="layui-input-block">
+                <input type="text" name="title" lay-verify="required" autocomplete="off" placeholder="请输入填写项名称" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item" style="margin-bottom: 10px;">
+            <label class="layui-form-label left">单选框</label>
+            <div class="layui-input-block">
+                <input type="radio" name="option_type" value="1" title="单行文本" lay-filter="radio" checked>
+                <input type="radio" name="option_type" value="2" title="多行文本域" lay-filter="radio">
+                <input type="radio" name="option_type" value="3" title="单选下拉框" lay-filter="radio">
+            </div>
+        </div>
+        <div class="handle" style="margin-left: 100px;">
+            <div class="option-box"></div>
+
+            <div>
+                <a href="javascript:;" class="addoption"><span class="layui-icon layui-icon-tianjia"></span> 添加选项</a>
+                <span class="pull-right ft-gray" style="padding-top: 10px;">最多可填写5个选项</span>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label left">提示</label>
+            <div class="layui-input-block">
+                <textarea placeholder="请输入提示内容" lay-verify="required" name="prompt" class="layui-textarea" rows="3" style="resize: none;"></textarea>
+            </div>
+        </div>
+    </div>
+    <div class="ft-center fixed-btn">
+        <button class="layui-btn" lay-submit lay-filter="LAY-add-option-submit">确定</button>
+        <button class="layui-btn layui-btn-primary" id="cancel">取消</button>
+    </div>
+</div>
+<script>
+    layui.use(['admin', 'form'], function(){
+        var $ = layui.$
+            ,admin = layui.admin
+            ,form = layui.form;
+
+        form.render();
+
+        var count_ = $('.option-box .option-item').length;
+        $(document).off('click','.addoption');
+        $(document).on('click','.addoption',function(){
+            if(count_ < 4){
+                count_ ++;
+                var html = '<div class="layui-form-item option-item layui-clear relative_"><div class="layui-input-block">' +
+                    '<input type="text" name="option_set[]" lay-verify="required" autocomplete="off" value="" placeholder="请输入填写项" class="layui-input"></div>' +
+                    '<svg class="icon" aria-hidden="true" id="delete-item"><use xlink:href="#icon-delete"></use></svg></div>';
+                $('.option-box').append(html);
+            }else{
+                layer.alert('最多只能添加4个哦', {icon: 5});
+            }
+        })
+
+        $(document).off('click','#delete-item');
+        $(document).on('click','#delete-item',function(){
+                count_ --;
+                $(this).parents('.option-item').remove();
+        })
+
+        form.on('radio(radio)', function(data){
+            if(data.value == 3){
+                var html = '<div class="layui-form-item option-item layui-clear relative_"><div class="layui-input-block">' +
+                    '<input type="text" name="option_set[]" lay-verify="required" value="" autocomplete="off" placeholder="请输入填写项" class="layui-input"></div></div>';
+                $('.option-box').prepend(html);
+                $('.centerLayer .handle').show();
+            }else{
+                $('.centerLayer .handle').hide();
+                $('.option-box').html('');
+            }
+        });
+    });
+</script>
+

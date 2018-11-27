@@ -1,0 +1,192 @@
+<style>
+    .btn-bar {
+        background: #f7f8fa;
+        padding: 4px 10px;
+    }
+    .ml {
+        margin-left: 10px;
+    }
+</style>
+<!-- 食堂汇总 -->
+<title>堂食汇总</title>
+<div class="layui-fluid full-height ">
+    <div class="layui-card full-height over-auto">
+        <div class="layui-card-header">堂食汇总</div>
+        <div class="layui-card-body over-auto">
+            <fieldset class="layui-elem-field">
+                <legend>搜索条件</legend>
+                <div class="layui-form">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <!-- 下拉列表模板渲染  -->
+                            <div class="layui-input-inline">
+                                <script type="text/html" template lay-url="{{layui.setter.baseUrl}}/system/site/campuses"
+                                lay-done="layui.data.done(d)">
+                                    <select name="campus_id" id="campus" lay-filter="campus">
+                                        <option value="" disabled selected>请选择校区</option>
+                                        {{# layui.each(d.data, function(index, item){ }}
+                                        <option value="{{item.id}}">{{item.name}}</option>
+                                        {{# }); }}
+                                    </select>
+                                </script>
+                            </div>
+                            <div class="layui-input-inline">
+                                    <select name="meal_type" id="second">
+                                        <option value="" disabled selected>请选择餐次</option>
+                                        <option value="2">中餐</option>
+                                        <option value="3">晚餐</option>
+                                    </select>
+                                </div>
+                            <div class="layui-input-inline">
+                                <input type="text" class="layui-input time" id="orderListdate-in" placeholder="请选择开始时间和结束时间">
+                                <input type="hidden" name="start_time" id="orderListStartTime-in" value="">
+                                <input type="hidden" name="end_time" id="orderListEndTime-in" value="">
+                            </div>
+                            <div class="layui-inline ">
+                                <button class="layui-btn " lay-submit lay-filter="LAY-coollect-search">查询</button>
+                                <!-- <script type="text/html" template>
+                                    <a href="{{layui.setter.baseUrl}}/finance/order-rate-export?eat_type=2?Authorization={{layui.data('layuiAdmin').Authorization}}"
+                                    class="layui-btn ml">导出</a>
+                                </script> -->
+                            </div>
+                            <div class="layui-inline">
+                                <a href="javascript:;" class="layui-btn layui-btn-normal" lay-submit lay-filter="LAY-data-eatin-export">导出Excel</a>
+                            </div>
+                            <!-- <script type="text/html" template>
+                                <a href="{{layui.setter.baseUrl}}/finance/order-rate-print?eat_type=2?Authorization={{layui.data('layuiAdmin').Authorization}}"
+                                class="layui-btn ml">打印</a>
+                            </script> -->
+                            <div class="layui-inline">
+                                <a href="javascript:;" class="layui-btn layui-btn-normal" lay-submit lay-filter="LAY-data-eatin-print">打印</a>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+            <!-- <div class="m-b-10 btn-bar">
+                
+            </div> -->
+            <!-- 财务报表详情 -->
+            <table class="layui-hide" id="repLect-in" lay-filter="repLect-in"></table>
+            <script type="text/html" id="orderOperate-in">
+                <a class="layui-btn layui-btn-xs " lay-event="readPig-in">查看图表</a>
+            </script>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    layui.data.done = function (d) {
+    layui.use(['admin', 'form', 'table', 'laydate'], function () {
+        var $ = layui.$,
+            admin = layui.admin,
+            view = layui.view,
+            setter = layui.setter,
+            form = layui.form,
+            laydate = layui.laydate,
+            table = layui.table,
+            upload = layui.upload,
+            laydate = layui.laydate;
+            var cols = [[ //表头
+                { field: 'campus_name', title: '校区' }
+                , { field: 'order_count', title: '堂食订单数' }
+                , { field: 'already_num', title: '完成取餐' }
+                , { field: 'price_count', title: '金额' }
+                , { field: 'already_portion', title: '进度' }
+                , { title: '操作', align: 'center', toolbar: '#orderOperate-in' }
+            ]];
+            table.render(
+                {
+                    elem: '#repLect-in'
+                    , url: setter.baseUrl + '/finance/order-rate?eat_type=2'
+                    , response: setter.responseTable
+                    , page: setter.pageTable
+                    , cols: cols
+                }
+            );
+            // 时间控件
+            laydate.render({
+                elem: '#orderListdate-in' //指定元素
+                , type: 'date'
+                , range: '-'
+                , done: function (value, date, endDate) {
+                    console.log(value);
+                    // 获取到的日期格式进行分割2018-10-09 - 2018-11-21
+                    var beginTime = value.split(' - ')[0];
+                    var endTime = value.split(' - ')[1];
+                    $('#orderListStartTime-in').val(beginTime);
+                    $('#orderListEndTime-in').val(endTime);
+                }
+            });
+            //点击搜索订单
+            var object = {};
+            form.on('submit(LAY-coollect-search)', function (obj) {
+                 object = obj.field;
+                table.reload('repLect-in', {
+                    url: setter.baseUrl + '/finance/order-rate?eat_type=2',
+                    // data:{eat_type:2},
+                    response: setter.responseTable,
+                    page: setter.pageTable,
+                    cols: cols,
+                    where: obj.field
+                });
+            });
+            // 监听工具条的点击事件
+            table.on('tool(repLect-in)', function (obj) {
+                var data = obj.data;
+                console.log(data);
+                var layEvent = obj.event;
+                var tr = obj.tr; //获得当前行 tr 的DOM对象
+                if (layEvent == 'readPig-in') { //查看图表
+                    // alert('wwww');
+                    layui.data('campus_id', {
+                        key: 'id',
+                        value: obj.data.campus_id
+                    });
+                    layui.data('meal_type', {
+                        key: 'id',
+                        value: object.meal_type
+                    });
+                    layui.data('end_time', {
+                        key: 'id',
+                        value: object.end_time
+                    });
+                    layui.data('start_time', {
+                        key: 'id',
+                        value: object.start_time
+                    });
+
+                    admin.popupCenter({
+                        id: 'In-chart'
+                        , title: '堂食汇总图表'
+                        , area: ['500px', '440px']
+                        , success: function () {
+                            view(this.id).render('/finance/report/In-chart');
+                        }
+                    });
+                }
+            });
+
+            
+
+            function deviceExport(filter, url, deviceType) {
+                form.on(filter, function (obj) {
+                    console.log(obj);
+                    var href = setter.baseUrl +url+'?eat_type=2&Authorization=' + layui.data('layuiAdmin').Authorization + '&campus_id=' +
+                        obj.field.campus_id + '&meal_type=' + obj.field.meal_type + '&start_time=' + obj.field.start_time + '&end_time=' +
+                        obj.field.end_time ;
+                    window.location.href = href;
+                    // console.log(href);/
+                });
+            };
+            // 导出
+            deviceExport('submit(LAY-data-eatin-export)', '/finance/order-rate-export', 3);
+            // 打印
+            deviceExport('submit(LAY-data-eatin-print)', '/finance/order-rate-print', 3);
+
+
+    });
+}
+</script>

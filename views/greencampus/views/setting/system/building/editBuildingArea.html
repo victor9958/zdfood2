@@ -1,0 +1,32 @@
+<div class="layui-form centerLayer">
+		<script type="text/html" template lay-url="{{layui.setter.baseUrl}}/system/site/areas?campusId={{layui.data('buildingId').campusId}}&withoutPage=0" lay-done="layui.data.done(d)">
+        <div class="layui-form-item">
+            <label class="layui-form-label left">区域名称</label>
+            <div class="layui-input-block">
+                <select name="areaId" id="building_area" lay-filter="building_area">
+                    <option value="" disabled selected>请选择区域</option>
+                    {{# layui.each(d.data, function(index, item){ }}
+                    <option value="{{item.id}}">{{item.name}}</option>
+                    {{# }); }}
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item p-t-10 ft-center">
+            <button class="layui-btn" lay-submit lay-filter="LAY-edit-buildingArea">确定</button>
+            <button class="layui-btn layui-btn-primary" id="cancel">取消</button>
+        </div>
+    </script>
+</div>
+
+<script>
+	layui.data.done = function(d) {
+        layui.use(['admin','form','view'], function () {
+            var $ = layui.$,
+                admin = layui.admin,
+                view = layui.view,
+                form = layui.form;
+			form.render();
+			
+        });
+    }
+</script>

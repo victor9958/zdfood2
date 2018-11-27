@@ -1,0 +1,243 @@
+<!-- 会员列表 -->
+<title>会员列表</title>
+<style>
+    .btn-bar {
+        background: #f7f8fa;
+        padding: 4px 10px;
+    }
+
+    .exprot {
+        margin-left: 10px;
+    }
+</style>
+
+<body>
+    <div class='layui-fluid full-height '>
+        <div class='layui-card full-height over-auto'>
+            <div class="layui-card-header">会员列表</div>
+            <div class='layui-card-body flex-1 flex'>
+                <div class='flex-1 over-auto'>
+                    <fieldset class="layui-elem-field site-demo-button">
+                        <legend>搜索条件</legend>
+                        <div class="layui-form" lay-filter="search-for-examine">
+                            <div class="layui-form-item">
+                                <div class="layui-inline">
+                                    <div class="layui-input-inline">
+                                        <input type="text" name="mobile" autocomplete="off" placeholder="请输入手机号" class="layui-input">
+                                    </div>
+                                    <div class="layui-input-inline">
+                                        <input type="text" name="username" autocomplete="off" placeholder="请输入姓名" class="layui-input">
+                                    </div>
+                                    <div class="layui-input-inline">
+                                        <input type="text" name="cardNo" autocomplete="off" placeholder="请输入卡号" class="layui-input">
+                                    </div>
+                                </div>
+                                <div class="layui-inline">
+                                    <button class="layui-btn" lay-submit lay-filter="LAY-manage-demand">查询</button>
+                                    <!-- <a href="javascript:;" class="layui-btn layui-btn-normal" lay-submit lay-filter="LAY-export-data">导出数据</a> -->
+                                    <!-- <script type="text/html" template>
+                                    <a href="{{layui.setter.baseUrl}}/users/export?Authorization={{layui.data('layuiAdmin').Authorization}}&mobile= &username=2222&cardNo= "
+                                       class="layui-btn exprot">导出表格</a>
+                                </script> -->
+                                    <a href="javascript:;" class="layui-btn layui-btn-normal" lay-submit lay-filter="LAY-exportWaterExcel">导出Excel</a>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                    <!-- 小按钮栏 -->
+                    <div class="m-b-10 btn-bar">
+                        <button class="layui-btn layui-btn-sm layui-btn-danger" id="batch-delete">批量删除</button>
+                        <button class="layui-btn layui-btn-sm" lay-submit lay-filter="LAY-add-whiteList">新增白名单</button>
+                    </div>
+
+                    <!-- 数据表格 -->
+                    <table class="layui-hide" id="manageList" lay-filter="manageList"></table>
+                    <!-- 数据表格右工具栏 -->
+                    <script type="text/html" id="tool-manageList">
+                    <div class="layui-btn-container">
+                        </button>
+                        {{#
+                        if(d.status==1){
+                        }}
+                        <button class="layui-btn layui-btn-xs layui-btn-danger" lay-event="blacklist">加入黑名单</button>
+                        {{# } }}
+                        {{#
+                        if(d.status==0){
+                        }}
+                        <button class="layui-btn layui-btn-xs" lay-event="offbound">移除黑名单</button>
+                        {{# } }}
+                    </div>
+                </script>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        layui.use(['admin', 'form', 'laydate', 'table'], function () {
+            //引入需要的组件
+            var $ = layui.$,
+                admin = layui.admin,
+                table = layui.table,
+                view = layui.view,
+                setter = layui.setter,
+                form = layui.form,
+                laydate = layui.laydate,
+                upload = layui.upload;
+            //数据表格表头声明
+            var cols = [[
+                //批量删除选择框
+                { type: 'checkbox', fixed: 'left' }
+                , { type: 'numbers', title: '序号', width: 60 }
+                , { field: 'student_num', title: '学工/学号' }
+                , { field: 'name', title: '姓名' }
+                , { field: 'nickname', title: '微信昵称' }
+                , { field: 'card_no', title: '卡号' }
+                , { field: 'sexTitle', title: '性别' }
+                , { field: 'isAuthTitle', title: '身份' }
+                , { field: 'mobile', title: '手机号' }
+                // , {field: 'bindTitle', title: '绑定状态'}
+                , { field: 'created_at', title: '注册时间', width: '12%' }
+                , { title: '操作', align: 'center', toolbar: '#tool-manageList', width: '15%', fixed: 'right' }
+            ]]
+            //初始加载数据表格
+            getRtable();
+
+            function getRtable() {
+                table.render({
+                    elem: '#manageList',
+                    url: setter.baseUrl + '/users',
+                    response: setter.responseTable,
+                    page: setter.pageTable,
+                    cellMinWidth: 100,
+                    loading: false,
+                    cols: cols,
+                });
+            }
+
+            // 点击查询按钮
+            form.on('submit(LAY-manage-demand)', function (obj) {
+                console.log(obj);
+                table.reload('manageList', {
+                    url: setter.baseUrl + '/users',
+                    data: obj.data,
+                    response: setter.responseTable,
+                    page: setter.pageTable,
+                    cols: cols,
+                    where: obj.field
+                });
+            });
+            //点击导出数据
+
+            //批量操作
+            function getMemberId(name) {
+                var parameter = [];
+                var checkStatus = table.checkStatus('manageList'), data = checkStatus.data;
+                for (var i in data) {
+                    parameter.push(data[i][name]);
+                }
+                return parameter;
+            }
+
+            //新增白名单        
+            form.on('submit(LAY-add-whiteList)', function (obj) {
+                admin.popupCenter({
+                    id: 'Key-list'
+                    , title: '新增白名单'
+                    , area: ['456px', '420px']
+                    , success: function () {
+                        view(this.id).render('/member/manage/addwhite');
+                    }
+                });
+            });
+
+            //批量删除
+            $(document).off('click', '#batch-delete');
+            $(document).on('click', '#batch-delete', function () {
+                var idList = getMemberId('id');
+                if (idList.length <= 0) {
+                    layer.msg('请选择要删除的会员', { icon: 2, time: 2000 });
+                } else {
+                    layer.confirm('是否确定要删除该会员?', { icon: 1, title: '提示' }, function (index) {
+                        admin.req({
+                            //请求接口
+                            url: setter.baseUrl + '/users',
+                            type: 'delete',
+                            data: { 'idList': idList },
+                            done: function (res) {
+                                view('old_mobile')
+                                layer.msg(res.message, { icon: 1, time: 2000 });
+                                layer.close(admin.popup.index);//关闭右侧面板
+                                getRtable();
+                            }
+                        });
+                    });
+                }
+            })
+
+            //右边的操作
+            table.on('tool(manageList)', function (obj) {
+                var data = obj.data;
+                // var jobNoList = data.student_num;
+                var objevent = obj.event;
+                var idList = data.id;
+                if (objevent === 'blacklist') {  //加入黑名单
+                    layer.confirm('是否确定要加入黑名单?', { icon: 1, title: '提示' }, function (index) {
+                        admin.req({
+                            url: setter.baseUrl + '/user/status',
+                            type: 'PUT',
+                            data: { 'userIdList': [idList], 'status': 0 },
+                            done: function (res) {
+                                view('old_mobile')
+                                layer.msg(res.message, { icon: 1, time: 2000 });
+                                layer.close(admin.popup.index);//关闭右侧面板
+                                getRtable();
+                            }
+                        });
+                    })
+                } else if (objevent === 'offbound') { //移除黑名单
+                    layer.confirm('是否确定要移除黑名单?', { icon: 1, title: '提示' }, function (index) {
+                        admin.req({
+                            url: setter.baseUrl + '/user/status',
+                            type: 'PUT',
+                            data: { 'userIdList': [idList], 'status': 1 },
+                            done: function (res) {
+                                view('old_mobile')
+                                layer.msg(res.message, { icon: 1, time: 2000 });
+                                layer.close(admin.popup.index);//关闭右侧面板
+                                getRtable();
+                            }
+                        });
+                    })
+                }
+            });
+
+            function deviceExport(filter, url, deviceType) {
+                form.on(filter, function (obj) {
+                    console.log(obj);
+                    var href = setter.baseUrl + url + '?Authorization='
+                        + layui.data('layuiAdmin').Authorization + '&mobile=' + obj.field.mobile + '&username='
+                        + obj.field.username + '&cardNo=' + obj.field.cardNo;
+                    window.location.href = href;
+                });
+            };
+
+            deviceExport('submit(LAY-exportWaterExcel)', '/users/export', 3);
+
+            $(document).off('click', '#LAY-man-list-con');
+            $(document).on('click', '#LAY-man-list-con', function () {
+                var jobNoList = $('.jobNoList').val();
+                admin.req({
+                    //请求接口
+                    url: setter.baseUrl + '/users-limit',
+                    type: 'post',
+                    data: { 'jobNoList': [jobNoList], 'type': 1 },
+                    done: function (res) {
+                        view('old_mobile')
+                        layer.msg(res.message, { icon: 1, time: 2000 });
+                        layer.close(admin.popup.index);//关闭右侧面板
+                        getRtable();
+                    }
+                });
+            });
+        });
+    </script>

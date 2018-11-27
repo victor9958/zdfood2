@@ -1,0 +1,178 @@
+<title>运营商列表</title>
+<div class="layui-fluid full-height role">
+    <div class="layui-row full-height">
+        <div class="layui-card layui-border-box full-height flex flex-v">
+            <div class="layui-card-header">运营商列表</div>
+            <div class="layui-card-body flex flex-v flex-1">
+                <fieldset class="layui-elem-field site-demo-button">
+                    <legend>搜索条件</legend>
+                    <div class="layui-form" lay-filter="search-for-examine">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <div class="layui-input-inline">
+                                    <select class="role" name="status" lay-search>
+                                        <option value="">请选择状态</option>
+                                        <option value="1">已启用</option>
+                                        <option value="0">已禁用</option>
+                                    </select>
+                                </div>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="queryString" autocomplete="off" placeholder="请输入运营商名称/编号"
+                                           class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <button class="layui-btn" lay-submit lay-filter="search-operator">搜索</button>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+                <div class="m-b-10 btn-bar">
+                    <script type="text/html" template>
+                        {{#if(JSON.stringify(layui.data('userNode').menu).indexOf(JSON.stringify({rule: 'system-set/operator-on', method: 'put'})) > 0){ }}
+                        <button class="layui-btn layui-btn-sm" id="operator-on">启用</button>
+                        {{# }else{ }}
+                        <button class="layui-btn layui-btn-sm layui-btn-disabled" title="没有该权限，若需要请联系管理员">启用</button>
+                        {{# } }}
+
+                        {{#if(JSON.stringify(layui.data('userNode').menu).indexOf(JSON.stringify({rule: 'system-set/operator-off', method: 'put'})) > 0){ }}
+                        <button class="layui-btn layui-btn-sm layui-btn-danger" id="operator-off">停用</button>
+                        {{# }else{ }}
+                        <button class="layui-btn layui-btn-sm layui-btn-disabled" title="没有该权限，若需要请联系管理员">停用</button>
+                        {{# } }}
+
+                        {{#if(JSON.stringify(layui.data('userNode').menu).indexOf(JSON.stringify({rule: 'system-set/operator', method: 'post'})) > 0){ }}
+                        <button class="layui-btn layui-btn-sm layui-btn-primary" id="operator-add">添加运营商</button>
+                        {{# }else{ }}
+                        <button class="layui-btn layui-btn-sm layui-btn-disabled" title="没有该权限，若需要请联系管理员">添加运营商</button>
+                        {{# } }}
+
+                        {{#if(JSON.stringify(layui.data('userNode').menu).indexOf(JSON.stringify({rule: 'system-set/operators', method: 'delete'})) > 0){ }}
+                        <button class="layui-btn layui-btn-sm layui-btn-danger" id="operator-delete">删除运营商</button>
+                        {{# }else{ }}
+                        <button class="layui-btn layui-btn-sm layui-btn-disabled" title="没有该权限，若需要请联系管理员">删除运营商</button>
+                        {{# } }}
+
+                        <button class="layui-btn layui-btn-sm layui-btn-primary" id="operator-authority">权限设置</button>
+                    </script>
+
+                </div>
+
+                <div class="flex-1 over-auto">
+                    <div class="layui-table" id="table-operator" lay-filter="operatorList"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script type="text/html" id="operatorOption">
+    <a class="layui-btn layui-btn-xs layui-btn-primary" lay-event="edit">编辑</a>
+</script>
+
+<script>
+    layui.use(['setting/operator', 'admin', 'table', 'form'], function () {
+        var $ = layui.$,
+            form = layui.form,
+            admin = layui.admin,
+            table = layui.table,
+            view = layui.view,
+            operator = layui.admin.operator;
+
+        $(function () {
+            var globalQuery = {}
+            var col = [
+                {type: 'checkbox', fixed: 'left'}
+                , {type: 'numbers', title: '序号', width: 60}
+                , {field: 'name', title: '运营商名称'}
+                , {field: 'operator_no', title: '运营商编号'}
+                , {field: 'statusTitle', title: '状态'}
+                , {field: 'remark', title: '备注'}
+                , {title: '操作', width: 100, toolbar: '#operatorOption'}]
+            form.render();
+            operator.tableData('table-operator', '/system-set/operators', {}, col)
+
+            form.on('submit(search-operator)', function (obj) {
+                globalQuery = obj.field;
+                operator.tableData('table-operator', '/system-set/operators', globalQuery, col)
+            });
+
+            $(document).off('click', '#operator-authority');
+            $(document).on('click', '#operator-authority', function () {
+                var idList = operator.getCheckList('table-operator')
+                console.log(idList)
+                if (idList.length > 0) {
+                    layui.data('temporary', {key: 'temporary', value: idList});
+                    admin.popupRight({
+                        id: 'LAY_operatorAuthority'
+                        , title: '运营商权限管理'
+                        , area: '80%'
+                        , closeBtn: 1
+                        , success: function () {
+                            view(this.id).render('setting/operator/operator/authority');
+                        }
+                    });
+                } else {
+                    layer.alert('请选择要操作的记录！', {icon: 5});
+                }
+            })
+
+            $(document).off('click', '#operator-add');
+            $(document).on('click', '#operator-add', function () {
+                admin.popupCenter({
+                    id: 'LAY_AddOperator'
+                    , title: '添加运营商'
+                    , area: ['400px', '340px']
+                    , success: function () {
+                        view(this.id).render('setting/operator/operator/addOperator');
+                    }
+                });
+            })
+
+            $(document).off('click', '#operator-delete')
+            $(document).on('click', '#operator-delete', function () {
+                var idList = operator.getCheckList('table-operator')
+                if (idList.length > 0) {
+                    operator.confirm('确认删除选中的运营商？', '/system-set/operators', 'delete', {idList: idList}, function () {
+                        operator.tableData('table-operator', '/system-set/operators', globalQuery, col)
+                    })
+                } else {
+                    layer.alert('请选择要操作的记录！', {icon: 5});
+                }
+                console.log(idList)
+            })
+
+            $(document).off('click', '#operator-on')
+            $(document).on('click', '#operator-on', function () {
+                var idList = operator.getCheckList('table-operator')
+                if (idList.length > 0) {
+                    operator.confirm('确认启用选中的运营商？', '/system-set/operator-on', 'put', {idList: idList}, function () {
+                        operator.tableData('table-operator', '/system-set/operators', globalQuery, col)
+                    })
+                } else {
+                    layer.alert('请选择要操作的记录！', {icon: 5});
+                }
+                console.log(idList)
+            })
+
+            $(document).off('click', '#operator-off')
+            $(document).on('click', '#operator-off', function () {
+                var idList = operator.getCheckList('table-operator')
+                if (idList.length > 0) {
+                    operator.confirm('确认禁用选中的运营商？', '/system-set/operator-off', 'put', {idList: idList}, function () {
+                        operator.tableData('table-operator', '/system-set/operators', globalQuery, col)
+                    })
+                } else {
+                    layer.alert('请选择要操作的记录！', {icon: 5});
+                }
+                console.log(idList)
+            })
+
+            table.on('tool(operatorList)', function (obj) {
+                var data = obj.data;
+                layui.data('temporary', {key: 'temporary', value: data.id});
+                location.hash = "/setting/operator/operator/editOperator";
+            });
+        })
+    });
+</script>

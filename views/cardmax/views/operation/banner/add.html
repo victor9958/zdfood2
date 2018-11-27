@@ -1,0 +1,162 @@
+<style>
+    .device-setting .banner_img {
+        width: 351px;
+        height: 98px;
+        margin-right: 10px;
+        border-radius: 4px;
+        border: 1px solid #e6e6e6;
+    }
+
+    .device-setting .layui-form-pane .not-pane-label {
+        float: left;
+        display: block;
+        padding: 9px 15px;
+        padding-left: 0;
+        width: 80px;
+        font-weight: 400;
+        line-height: 20px;
+    }
+
+    .device-setting .layui-form-pane .layui-form-item[pane] .not-pane-inline {
+        margin-left: 0;
+        background: #FBFBFB;
+    }
+
+    .device-setting .layui-form-pane .layui-form-item[pane] .not-pane-inline .layui-form-mid {
+        float: none;
+        text-align: center;
+    }
+
+    .device-setting .layui-form-pane .layui-form-item[pane] .not-pane-inline .layui-input {
+        border-radius: 4px;
+    }
+</style>
+<title>广告位配置</title>
+<div class="layui-fluid full-height device-setting">
+    <div class="layui-row full-height">
+        <div class="layui-card full-height flex flex-v">
+            <div class="layui-card-header">新增</div>
+            <div class="layui-card-body flex-1 over-auto">
+                <div class="layui-form layui-form-pane full-height flex flex-v">
+                    <div class="layui-clear flex-1">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">标题</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="title" required="" lay-verify="required"
+                                       placeholder="请输入标题" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">所属运营商</label>
+                            <div class="layui-input-block">
+                                <script type="text/html" template
+                                        lay-url="{{layui.setter.baseUrl}}/auth/operators"
+                                        lay-done="{{layui.form.render()}}">
+                                    <select class="role" name="operatorId" lay-search>
+                                        <option value="">请选择运营商</option>
+                                        {{# layui.each(d.data,function(index,item){ }}
+                                        <option value="{{ item.id }}">{{ item.name }}</option>
+                                        {{# }) }}
+                                    </select>
+                                </script>
+                            </div>
+                        </div>
+                        <div class="layui-form-item" pane="">
+                            <label class="layui-form-label">上传图片</label>
+                            <div class="layui-input-block block-blank">
+                                <div class="m-b-10">
+                                    <img class="banner_img" src="/cardmax/style/res/banner_default.png">
+                                </div>
+                                <div class="m-b-10">
+                                    <button class="layui-btn upload_img">上传图片</button>
+                                </div>
+                                <p class="ft-gray">建议图片大小不超过2M</p>
+                                <input type="hidden" name="content" lay-verify="required" value=""
+                                       class="layui-input content">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">跳转链接</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="url" required="" lay-verify="required"
+                                       placeholder="请输入跳转链接" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item" pane="">
+                            <label class="layui-form-label">是否开启链接</label>
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="isUrLJump"
+                                       lay-skin="switch" lay-text="开启|关闭">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">使用时段</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="time" id="banner-time" lay-verify="required"
+                                       placeholder="请选择使用时间段" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item" pane="">
+                            <label class="layui-form-label">是否开启广告</label>
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="status"
+                                       lay-skin="switch" lay-text="开启|关闭">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item p-t-10">
+                        <button class="layui-btn" lay-submit lay-filter="addBanner-save">保存</button>
+                        <button class="layui-btn layui-btn-primary" id="back">返回</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    layui.use(['operation/operation', 'form', 'laydate'], function () {
+        var $ = layui.$,
+            form = layui.form,
+            laydate = layui.laydate,
+            operation = layui.admin.operation;
+
+        $(function () {
+            laydate.render({
+                elem: '#banner-time'
+                ,type: 'datetime'
+                , range: '至'
+            });
+
+            form.render();
+            operation.uploadImg();
+
+            form.on('submit(addBanner-save)', function (obj) {
+                var time = obj.field.time.split('至');
+                obj.field.beginTime = time[0];
+                obj.field.endTime = time[1];
+
+                if(obj.field.isUrLJump === 'on'){
+                    obj.field.isUrLJump = 1
+                }else{
+                    obj.field.isUrLJump = 0
+                }
+                if(obj.field.status === 'on'){
+                    obj.field.status = 1
+                }else{
+                    obj.field.status = 0
+                }
+
+                delete obj.field.time;
+                delete obj.field.file;
+                console.log(obj.field)
+                operation.formSubmit('/operate-manage/placard','post',obj.field)
+            })
+
+            $(document).off('click', '#back')
+            $(document).on('click', '#back', function () {
+                window.history.go(-1);
+            })
+        })
+    });
+
+</script>

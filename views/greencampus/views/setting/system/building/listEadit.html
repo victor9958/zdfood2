@@ -1,0 +1,120 @@
+<style>
+        .wrapper {
+            overflow: auto;
+        }
+    
+        .wrapper .header {
+            padding-left: 10px;
+            border-left: 4px solid #06ccc5;
+            line-height: 1;
+            color: #999;
+        }
+    
+        .wrapper .information {
+            margin-top: 10px;
+            line-height: 2;
+            padding-left: 12px;
+        }
+    
+        .wrapper .information .left_txt {
+            width: 120px;
+            color: #333;
+        }
+    
+        .wrapper .Foods {
+            padding-top: 20px;
+        }
+    
+        .wrapper .layui-form-item {
+            margin-top: 40px;
+        }
+    
+        .wrapper .layui-card-body {
+            background-color: #fff;
+        }
+    
+    </style>
+    <title>详情</title>
+    <div class='wrapper layui-fluid full-height '>
+        <div class='layui-card full-height over-auto'>
+    
+            <!-- //上面的head，标题 -->
+            <div class="layui-card-header">详情</div>
+            <!-- //content身体部分 -->
+            <div class='layui-card-body'>
+                <!-- //设置-webkit-box-flex: 1; -->
+                <script type="text/html" template
+                        lay-url="{{layui.setter.baseUrl}}/system/site/building/{{layui.data('buildingId').id}}"
+                        id="orderDetail">
+                    <div class="layui-form-item">
+                        <p class="header">楼幢分配详情</p>
+                        <div class="information layui-clear">
+                            <div class="layui-col-md5 pull-left flex">
+                                <div class="left_txt">楼宇</div>
+                                <div class="flex-1">{{d.data.name}}</div>
+                            </div>
+                            <div class="layui-col-md7 pull-left flex">
+                                <div class="left_txt">所在区域</div>
+                                <div class="flex-1">{{# if(d.data.areaName){}}
+                                    {{d.data.areaName}}    
+                                    {{#}else{}}
+                                            未分配
+                                        {{# } }}
+                                </div>
+                            </div>
+                            <div class="layui-col-md5 pull-left flex">
+                                <div class="left_txt">配送员</div>
+                                <div class="flex-1">{{# if(d.data.adminName){}}
+                                   {{d.data.adminName}}    
+                                   {{#}else{}}
+                                        未分配
+                                    {{# } }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </script>
+                <div class="layui-form-item">
+                    <button class="layui-btn" lay-submit="" id="Key-floor-back">确定</button>
+                </div>
+    
+            </div>
+        </div>
+    
+    </div>
+    
+    <script>
+        layui.use(['admin', 'form', 'table'], function () {
+            var $ = layui.$,
+                admin = layui.admin,
+                view = layui.view,
+                setter = layui.setter,
+                form = layui.form,
+                table = layui.table,
+                laydate = layui.laydate,
+                upload = layui.upload;
+    
+            $(function () {
+                var cols = [[
+                    {field: 'goods_name', title: '菜品'},
+                    {field: 'num', title: '数量'},
+                    {field: 'price_count', title: '金额'},
+    
+                ]];
+                table.render({
+                    elem: '#orderDetailTable',
+                    url: setter.baseUrl + '/order/carts-detail/' + layui.data('orderId').id,
+                    response: setter.responseTable,
+                    page: false,
+                    loading: false,
+                    cols: cols
+                });
+                //点击返回
+                $(document).on('click', '#Key-floor-back', function () {
+                    // admin.closeThisTabs();
+                    window.location.hash = "#/setting/system/building/list";
+                });
+            });
+        });
+    </script>
+    

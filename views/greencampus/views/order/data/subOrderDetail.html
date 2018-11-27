@@ -1,0 +1,122 @@
+<style>
+    .wrapper {
+        overflow: auto;
+    }
+
+    .wrapper .information {
+        margin-top: 10px;
+        line-height: 2;
+        padding-left: 12px;
+    }
+
+    .wrapper .information .left_txt {
+        width: 86px;
+        color: #333;
+    }
+
+    .wrapper .layui-form-item {
+        margin-top: 40px;
+    }
+
+    .wrapper .layui-card-body {
+        background-color: #fff;
+    }
+
+</style>
+<title>详情</title>
+<div class='wrapper layui-fluid full-height '>
+    <div class='layui-card full-height over-auto'>
+
+        <!-- //上面的head，标题 -->
+        <div class="layui-card-header">详情</div>
+        <!-- //content身体部分 -->
+        <div class='layui-card-body'>
+            <!-- //设置-webkit-box-flex: 1; -->
+            <script type="text/html" template
+                    lay-url="{{layui.setter.baseUrl}}/data/appointment-order-detail?serialize_str={{layui.data('serialize_str').id}}"
+                    lay-done="layui.data.done(d)"
+                    id="orderDetail">
+                <input type="hidden" id="eat_type" value="{{d.eat_type}}">
+                <div class="layui-form-item">
+                    <div class="information layui-clear">
+                        <div class="layui-col-md4 pull-left flex">
+                            <div class="left_txt">就餐时间</div>
+                            <div class="flex-1">{{d.repast_date}}</div>
+                        </div>
+                        <div class="layui-col-md4 pull-left flex">
+                            <div class="left_txt">就餐方式</div>
+                            <div class="flex-1">{{d.eat_type_name}}</div>
+                        </div>
+                        <div class="layui-col-md4 pull-left flex">
+                            <div class="left_txt">校区</div>
+                            <div class="flex-1">{{d.campus_name}}</div>
+                        </div>
+                        <div class="layui-col-md4 pull-left flex">
+                            <div class="left_txt">食堂</div>
+                            <div class="flex-1">{{d.canteen_name}}</div>
+                        </div>
+                        <div class="layui-col-md4 pull-left flex">
+                            <div class="left_txt">就餐餐次</div>
+                            <div class="flex-1">{{d.meal_type_name}}</div>
+                        </div>
+                    </div>
+                </div>
+
+            </script>
+            <table id="suborderDetailTable" lay-filter="suborderDetailTable"></table>
+            <div class="layui-form-item">
+                <button class="layui-btn" lay-submit="" id="back">确定</button>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<script>
+    layui.data.done = function (d) {
+        layui.use(['admin', 'form', 'table'], function () {
+            var $ = layui.$,
+                admin = layui.admin,
+                view = layui.view,
+                setter = layui.setter,
+                form = layui.form,
+                table = layui.table,
+                laydate = layui.laydate,
+                upload = layui.upload;
+
+            $(function () {
+                form.render();
+                var eat_type = $('#eat_type').val();
+                var cols;
+                if (eat_type == 1) {
+                    cols = [[
+                        {field: 'name', title: '类型'},
+                        {field: 'value', title: '外卖'},
+                        {field: 'value', title: '合计'}
+                    ]];
+                } else if (eat_type == 2) {
+                    cols = [[
+                        {field: 'name', title: '类型'},
+                        {field: 'value', title: '自取'},
+                        {field: 'value', title: '合计'}
+                    ]];
+                }
+
+
+                table.render({
+                    elem: '#suborderDetailTable',
+                    url: setter.baseUrl + '/data/appointment-order-detail?serialize_str=' + layui.data('serialize_str').id,
+                    response: setter.responseTable,
+                    page: false,
+                    loading: false,
+                    cols: cols
+                });
+                //点击返回
+                $(document).on('click', '#back', function () {
+                    admin.closeThisTabs();
+                });
+            });
+        });
+    }
+</script>

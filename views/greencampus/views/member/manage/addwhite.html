@@ -1,0 +1,68 @@
+<!-- 添加用户 -->
+
+<!-- 标准的弹框案例 -->
+<style>
+    .center {
+        margin: 10% 10% 10% 5%;
+        height: 100%;
+    }
+    .center_lay {
+        height: 70%;
+    }
+    .layui-form-label {
+        float: left;
+    display: block;
+    padding: 9px 15px;
+    width: 160px;
+    font-weight: 400;
+    line-height: 20px;
+    text-align: right;
+    }
+    .layui-input-block {
+        margin-left: 190px
+    }
+</style>
+<div class="layui-form center">
+    <div class="center_lay">
+        <div class="layui-form-item">
+            <label class="layui-form-label left">请输入白名单工号/学号：</label>
+            <div class="layui-input-block">
+                <input type="text" name="jobNoList" lay-verify="required" autocomplete="off" placeholder="请输入白名单工号/学号" class="layui-input jobNoList">
+            </div>
+        </div>
+
+        <!-- <div class="layui-form-item">
+            <label class="layui-form-label left">请输入白名单工号/学号：</label>
+            <div class="layui-input-block">
+                <input type="text" name="username" lay-verify="required" autocomplete="off" placeholder="请输入姓名" class="layui-input">
+            </div>
+        </div> -->
+    </div>
+
+
+
+
+    <div class="layui-form-item p-t-10 ft-center">
+        <button class="layui-btn" lay-submit id="LAY-man-list-con">确定</button>
+        <button class="layui-btn layui-btn-primary" id="cancel-man-list-call">取消</button>
+    </div>
+</div>
+<script>
+    layui.use(['admin', 'form', 'laydate', 'table'], function () {
+    //引入需要的组件
+    var $ = layui.$,
+        admin = layui.admin,
+        table = layui.table,
+        view = layui.view,
+        setter = layui.setter,
+        form = layui.form,
+        laydate = layui.laydate,
+        upload = layui.upload;
+        $(document).off('click','#cancel-man-list-call');
+        $(document).on('click','#cancel-man-list-call',function(){
+             layer.closeAll();
+        });
+       
+    });   
+</script>
+

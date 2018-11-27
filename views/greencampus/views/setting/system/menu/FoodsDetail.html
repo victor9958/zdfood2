@@ -1,0 +1,261 @@
+<style>
+    .agency-detail-wrapper {
+        padding-top: 50px;
+        padding-left: 40px;
+    }
+
+    .agency-detail-wrapper .layui-form-item {
+        margin-bottom: 15px;
+    }
+
+    .agency-detail-wrapper .layui-form-item label {
+        width: 85px;
+        line-height: 24px;
+        margin-right: 8px;
+        padding: 7px 0;
+        text-align: left;
+        color: #444;
+    }
+
+    .agency-detail-wrapper .layui-form-item .layui-input-inline {
+        width: auto;
+        margin-right: 11px;
+    }
+
+    .agency-detail-wrapper .layui-form-item input[type='text'] {
+        width: 209px;
+    }
+
+    .agency-detail-wrapper .layui-form-item textarea {
+        width: 209px;
+        height: 119px;
+    }
+
+    .agency-detail-wrapper .layui-form-item.btns {
+        margin-top: 40px;
+    }
+
+    .wrapper {
+        background: #fff;
+    }
+
+    .image_url {
+        width: 200px;
+        height: 200px;
+    }
+
+</style>
+
+<title>菜肴详情</title>
+<div class="layui-fluid full-height">
+    <div class="wrapper full-height over-auto">
+        <div class="layui-card">
+            <div class="layui-card-body">
+                <div class="agency-detail-wrapper layui-form layui-clear" id="add-agency" lay-filter="FoodsDetail">
+                    <div class="left layui-col-md6 pull-left">
+                        <!--<input type="hidden" id="oldId" name="oldId" value="">-->
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">校区</label>
+                            <div class="layui-input-inline">
+                                <input type="text" disabled name="campusName" class="layui-input" placeholder=""
+                                       value="">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">菜品名称</label>
+                            <div class="layui-input-inline">
+                                <input type="text" disabled name="name" class="layui-input" placeholder=""
+                                       value="">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">库存</label>
+                            <div class="layui-input-inline">
+                                <input type="text" disabled name="stock" class="layui-input" placeholder=""
+                                       value="">
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">就餐类型</label>
+                            <div class="layui-input-inline">
+                                <select name="take_out_type" lay-verify="required">
+                                    <option value="1">个人餐</option>
+                                    <option value="2">团餐</option>
+                                    <option value="3">个人餐+团餐</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">就餐方式</label>
+                            <div class="layui-input-inline">
+                                <input type="text" disabled name="eatTypeTitle" class="layui-input" placeholder=""
+                                       value="">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">起购</label>
+                            <div class="layui-input-inline">
+                                <input type="text" disabled name="less_limit" class="layui-input" placeholder=""
+                                       value="">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">菜品简介</label>
+                            <div class="layui-input-inline">
+                                <textarea name="describe" class="layui-textarea" id="" cols="30" disabled
+                                          rows="10" placeholder=""></textarea>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">菜品详情</label>
+                            <div class="layui-input-inline">
+                                <textarea name="detail" class="layui-textarea" id="" cols="30" disabled
+                                          rows="10" placeholder=""></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="right layui-col-md6 pull-left">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">食堂</label>
+                            <div class="layui-input-inline">
+                                <input type="text" disabled name="canteenName" class="layui-input" placeholder=""
+                                       value="">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">单价</label>
+                            <div class="layui-input-inline">
+                                <input type="text" disabled name="price" class="layui-input" placeholder=""
+                                       value="">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">菜品类型</label>
+                            <div class="layui-input-inline">
+                                <input type="text" disabled name="typeTitle" class="layui-input" placeholder=""
+                                       value="">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">就餐餐次</label>
+                            <div class="layui-input-inline">
+                                <select name="meal_type" lay-verify="required">
+                                    <option value="0">未分配</option>
+                                    <option value="2">中餐</option>
+                                    <option value="3">晚餐</option>
+                                    <option value="5">中餐+晚餐</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">限购</label>
+                            <div class="layui-input-inline">
+                                <input type="text" disabled name="order_limit" class="layui-input" placeholder=""
+                                       value="">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">是否热销</label>
+                            <div class="layui-input-inline">
+                                <select name="isHot" id="agencyStatus" lay-verify="required">
+                                    <option value="1">是</option>
+                                    <option value="0">否</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">可售日期</label>
+                            <div class="layui-input-inline">
+                                <input type="text" disabled name="sale_date" class="layui-input" placeholder=""
+                                       value="">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">菜肴图片</label>
+                            <div class="layui-input-inline">
+                                <img class="image_url" src="" alt="">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item btns">
+                        <button class="layui-btn" lay-submit lay-filter="DetailConfirm">确定</button>
+                        <button class="layui-btn layui-btn-danger" id="cancelEdit">取消</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    layui.use(['admin', 'table', 'form', 'laydate'], function () {
+        var $ = layui.$,
+            admin = layui.admin,
+            table = layui.table,
+            setter = layui.setter,
+            laydate = layui.laydate,
+            view = layui.view,
+            form = layui.form;
+
+        $(function () {
+            form.render();
+
+            getDefaulVal()
+
+            function getDefaulVal() {
+                var id = layui.data('menuFoodsId').id
+                admin.req({
+                    url: setter.baseUrl + '/system/goods/' + id,
+                    type: 'GET',
+                    data: {},
+                    done: function (res) {
+                        //表单初始赋值
+                        form.val('FoodsDetail', {
+                            "name": res.data.name,
+                            "order_limit": res.data.order_limit,
+                            "stock": res.data.stock,
+                            "campusName": res.data.campusName,
+                            "canteenName": res.data.canteenName,
+                            "price": res.data.price,
+                            "typeTitle": res.data.typeTitle,
+                            "meal_type": res.data.meal_type,
+                            "less_limit": res.data.less_limit,
+                            "take_out_type": res.data.take_out_type,
+                            "detail": res.data.detail,
+                            "describe": res.data.describe,
+                            "sale_date": res.data.sale_date,
+                            "eatTypeTitle": res.data.eatTypeTitle,
+                            "isHot": res.data.is_hot
+
+                        })
+                        $('.image_url').attr('src', res.data.image_url)
+                    }
+                });
+            }
+
+            form.on('submit(DetailConfirm)', function (obj) {
+                var id = layui.data('menuFoodsId').id
+                admin.req({
+                    url: setter.baseUrl + '/system/goods/' + id,
+                    type: 'PUT',
+                    data: obj.field,
+                    done: function (res) {
+                        layer.msg('保存成功', {icon: 1, time: 2000},function () {
+                            getDefaulVal()
+                        });
+
+                      /*  location.hash='#/setting/system/menu/list'*/
+                    }
+                })
+            })
+            $(document).off('click','#cancelEdit');
+            $(document).on('click','#cancelEdit',function(){
+                location.hash='#/setting/system/menu/list'
+            });
+
+
+        });
+    })
+    ;
+</script>

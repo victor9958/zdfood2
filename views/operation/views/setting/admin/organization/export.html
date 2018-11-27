@@ -1,0 +1,50 @@
+<style>
+    .layui-elem-field{
+        height: 442px;
+    }
+    .layui-elem-field{
+        padding: 10px 10px 0 10px;
+    }
+    .export-tree{
+        /*height: 364px;有搜索*/
+        height: 400px;
+        overflow: auto;
+    }
+</style>
+<div class="centerLayer">
+    <div class="layui-col-xs12 allDept">
+        <fieldset class="layui-elem-field site-demo-button">
+            <legend>选择部门</legend>
+            <!--<div class="layui-form" lay-filter="component-form-element">
+                <div class="layui-form-item">
+                    <select name="city" lay-verify="required" lay-search>
+                        &lt;!&ndash;<script type="text/html" template>&ndash;&gt;
+                            <option value="">可搜索部门</option>
+                            <option value="1">layer</option>
+                            <option value="2">form</option>
+                            <option value="3">layim</option>
+                        &lt;!&ndash;</script>&ndash;&gt;
+                    </select>
+                </div>
+            </div>-->
+            <!--组织架构树-->
+            <div class="export-tree">
+            </div>
+        </fieldset>
+    </div>
+
+
+    <div class="layui-form-item p-t-10 ft-center">
+        <a href="javascript:;" target="_blank" class="layui-btn" id="submit-export">确定</a>
+        <a href="javascript:;" class="layui-btn layui-btn-primary" id="cancel">取消</a>
+    </div>
+</div>
+<script>
+    layui.use(['admin', 'form'], function(){
+        var $ = layui.$
+            ,admin = layui.admin
+            ,form = layui.form;
+
+        form.render(null, 'component-form-element');
+    });
+</script>

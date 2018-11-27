@@ -1,0 +1,223 @@
+<title>运营商详情</title>
+<div class="layui-fluid full-height device-setting">
+    <div class="layui-row full-height">
+        <div class="layui-card full-height">
+            <div class="layui-card-body full-height">
+                <div class="layui-tab full-height flex flex-v">
+                    <ul class="layui-tab-title">
+                        <li class="layui-this">基础配置</li>
+                        <li>支付配置</li>
+                        <li>管理员设置</li>
+                    </ul>
+                    <div class="layui-tab-content flex-1 over-auto">
+                        <script type="text/html" template
+                                lay-url="{{layui.setter.baseUrl}}/system-set/operator/detail"
+                                lay-data="{operatorId:layui.data('temporary').temporary}">
+                            <div class="layui-tab-item layui-show full-height">
+                                <div class="layui-form layui-form-pane full-height flex flex-v">
+                                    <div class="layui-clear flex-1 over-auto">
+                                        <div class="layui-form-item">
+                                            <label class="layui-form-label">运营商名称</label>
+                                            <div class="layui-input-block">
+                                                <input type="text" name="name" value="{{d.data.name}}"
+                                                       lay-verify="required"
+                                                       placeholder="请输入标题" autocomplete="off" class="layui-input">
+                                            </div>
+                                        </div>
+                                        <div class="layui-form-item" pane>
+                                            <label class="layui-form-label">备注</label>
+                                            <div class="layui-input-block">
+                                                <textarea placeholder="请输入备注内容" name="remark"
+                                                          class="layui-textarea">{{d.data.remark}}</textarea>
+                                            </div>
+                                        </div>
+                                        <div class="layui-form-item">
+                                            <label class="layui-form-label">运营商编号</label>
+                                            <div class="layui-input-block">
+                                                <input type="text" name=""
+                                                       value="{{d.data.operator_no}}" autocomplete="off"
+                                                       class="layui-input" readonly>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="btn-box">
+                                        <button class="layui-btn" lay-submit lay-filter="LAY-operator-save">保存</button>
+                                        <button class="layui-btn layui-btn-primary" id="back">返回</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </script>
+                        <script type="text/html" template
+                                lay-url="{{layui.setter.baseUrl}}/system-set/operator/wechat" lay-data="{operatorId:layui.data('temporary').temporary}">
+                            <div class="layui-tab-item full-height">
+                                <div class="layui-form layui-form-pane full-height flex flex-v">
+                                    <div class="layui-clear flex-1 over-auto">
+                                        <fieldset class="layui-elem-field layui-field-title site-title">
+                                            <legend><a name="">微信支付配置</a></legend>
+                                        </fieldset>
+                                        <div class="layui-form-item">
+                                            <label class="layui-form-label">公众号名称</label>
+                                            <div class="layui-input-block">
+                                                <input type="text" name="name"
+                                                       value="{{d.data != null && d.data.name?d.data.name:''}}"
+                                                       lay-verify="required"
+                                                       placeholder="请输入公众号名称" autocomplete="off" class="layui-input">
+                                            </div>
+                                        </div>
+                                        <div class="layui-form-item">
+                                            <label class="layui-form-label">app ID</label>
+                                            <div class="layui-input-block">
+                                                <input type="text" name="appId"
+                                                       value="{{d.data != null && d.data.app_id?d.data.app_id:''}}"
+                                                       lay-verify="required"
+                                                       placeholder="请输入app ID" autocomplete="off" class="layui-input">
+                                            </div>
+                                        </div>
+                                        <div class="layui-form-item">
+                                            <label class="layui-form-label">app_secret</label>
+                                            <div class="layui-input-block">
+                                                <input type="text" name="appSecret"
+                                                       value="{{d.data != null && d.data.app_secret?d.data.app_secret:''}}"
+                                                       lay-verify="required"
+                                                       placeholder="请输入app_secret" autocomplete="off" class="layui-input">
+                                            </div>
+                                        </div>
+                                        <div class="layui-form-item">
+                                            <label class="layui-form-label">商户ID</label>
+                                            <div class="layui-input-block">
+                                                <input type="text" name="mchId"
+                                                       value="{{d.data != null && d.data.mch_id?d.data.mch_id:''}}"
+                                                       lay-verify="required"
+                                                       placeholder="请输入商户ID" autocomplete="off" class="layui-input">
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="btn-box">
+                                        <button class="layui-btn" lay-submit lay-filter="LAY-pay-save">保存</button>
+                                        <button class="layui-btn layui-btn-primary" id="back">返回</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </script>
+                        <div class="layui-tab-item full-height">
+                            <div class="m-b-10">
+                                <button class="layui-btn" id="add-manager">添加管理员</button>
+                                <button class="layui-btn layui-btn-danger" id="delete-manager">删除管理员</button>
+                                <button class="layui-btn layui-btn-primary" id="manager-authority">权限设置</button>
+                            </div>
+
+                            <div class="flex-1 over-auto">
+                                <div class="layui-table" id="table-manager" lay-filter="adminList"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/html" id="adminOption">
+    <a class="layui-btn layui-btn-xs layui-btn-primary" lay-event="edit">编辑</a>
+</script>
+<script>
+    layui.use(['setting/operator', 'admin', 'form', 'table'], function () {
+        var $ = layui.$,
+            form = layui.form,
+            admin = layui.admin,
+            view = layui.view,
+            table = layui.table,
+            operator = layui.admin.operator;
+
+        $(function () {
+            var col = [{type: 'checkbox', fixed: 'left'}
+                , {type: 'numbers', title: '序号', width: 60}
+                , {field: 'name', title: '姓名'}
+                , {field: 'mobile', title: '手机号'}
+                , {field: 'remark', title: '备注'}
+                , {title: '操作', width: 100, toolbar: '#adminOption'}]
+            form.render();
+
+            operator.tableData('table-manager', '/system-set/operator/admins', {operatorId: layui.data('temporary').temporary}, col)
+
+            form.on('submit(LAY-operator-save)', function (obj) {
+                operator.formSubmit('/system-set/operator', 'put', obj.field, function () {
+                    operator.tableData('table-operator', '/system-set/operators', {}, col)
+                })
+            })
+            form.on('submit(LAY-pay-save)', function (obj) {
+                obj.field.operatorId = layui.data('temporary').temporary;
+                console.log(obj.field)
+                operator.formSubmit('/system-set/operator/wechat', 'put', obj.field, function () {
+                    operator.tableData('table-operator', '/system-set/operators', {}, col)
+                })
+            })
+
+            $(document).off('click', '#manager-authority');
+            $(document).on('click', '#manager-authority', function () {
+                var idList = operator.getCheckList('table-manager')
+                console.log(idList)
+                if (idList.length > 0) {
+                    layui.data('temporary', {key: 'adminIdList', value: idList});
+                    admin.popupRight({
+                        id: 'LAY_managerAuthority'
+                        , title: '成员权限管理'
+                        , area: '80%'
+                        , closeBtn: 1
+                        , success: function () {
+                            view(this.id).render('setting/operator/admin/authority');
+                        }
+                    });
+                } else {
+                    layer.alert('请选择要操作的记录！', {icon: 5});
+                }
+            })
+
+            $(document).off('click', '#add-manager');
+            $(document).on('click', '#add-manager', function () {
+                admin.popupCenter({
+                    id: 'LAY_adminPopupAddMember'
+                    , title: '添加成员'
+                    , area: ['400px', '400px']
+                    , success: function () {
+                        view(this.id).render('setting/operator/admin/addMember');
+                    }
+                });
+            })
+
+            $(document).off('click', '#delete-manager')
+            $(document).on('click', '#delete-manager', function () {
+                var idList = operator.getCheckList('table-manager')
+                if (idList.length > 0) {
+                    operator.confirm('确认删除选中的成员？', '/system-set/operator/admins', 'delete', {idList: idList}, function () {
+                        operator.tableData('table-manager', '/system-set/operator/admins', {operatorId: layui.data('temporary').temporary}, col)
+                    })
+                } else {
+                    layer.alert('请选择要操作的记录！', {icon: 5});
+                }
+                console.log(idList)
+            })
+
+            table.on('tool(adminList)', function (obj) {
+                var data = obj.data;
+                console.log(data)
+                layui.data('temporary', {key: 'manager', value: data});
+                admin.popupCenter({
+                    id: 'LAY_adminPopupAddMember'
+                    , title: '编辑成员信息'
+                    , area: ['400px', '400px']
+                    , success: function () {
+                        view(this.id).render('setting/operator/admin/editMember');
+                    }
+                });
+            });
+
+            $(document).off('click', '#back')
+            $(document).on('click', '#back', function () {
+                window.history.go(-1);
+            })
+        })
+    });
+
+</script>

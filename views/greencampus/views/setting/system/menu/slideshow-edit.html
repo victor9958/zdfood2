@@ -1,0 +1,176 @@
+<style>
+    .clearfix::after {
+        display: block;
+        content: '';
+        clear: both;
+    }
+
+    .edit-slideshow-wrapper {
+        padding: 30px 20px;
+    }
+
+    .edit-slideshow-wrapper .line {
+        margin-bottom: 10px;
+        height: 38px;
+        line-height: 38px;
+        position: relative;
+    }
+
+    .edit-slideshow-wrapper .line.mb-20 {
+        margin-bottom: 20px;
+    }
+
+    .edit-slideshow-wrapper .line.imgupload {
+        height: 108px;
+        line-height: 108px;
+    }
+
+    .edit-slideshow-wrapper .line.imgupload .long {
+        height: 108px;
+        line-height: 108px;
+    }
+
+    .edit-slideshow-wrapper .line.imgupload .long .add-img {
+        box-sizing: border-box;
+        width: 80px;
+        height: 80px;
+        line-height: 80px;
+        margin-top: 14px;
+        margin-right: 12px;
+        border: 1px solid #e6e6e6;
+        text-align: center;
+    }
+
+    .edit-slideshow-wrapper .line.imgupload .long .add-img img {
+        width: 100%;
+        height: 100%;
+        vertical-align: top;
+        cursor: pointer;
+    }
+
+    .edit-slideshow-wrapper .line.imgupload .long .add-img .icon {
+        width: 40px;
+        height: 40px;
+        margin-top: 20px;
+        color: #999;
+    }
+
+    .edit-slideshow-wrapper .line.imgupload .long .tips {
+        margin-top: 14px;
+        color: #999;
+    }
+
+    .edit-slideshow-wrapper .line.imgupload .long .tips p {
+        line-height: 23px;
+    }
+
+    .edit-slideshow-wrapper .line .title {
+        width: 118px;
+        text-align: center;
+        color: #666;
+        background: #fbfbfb;
+        border: 1px solid #e6e6e6;
+    }
+
+    .edit-slideshow-wrapper .line .long {
+        width: 572px;
+        height: 38px;
+        line-height: 38px;
+        padding-left: 10px;
+        border: 1px solid #e6e6e6;
+    }
+
+    .edit-slideshow-wrapper .line .long input {
+        border: none;
+    }
+
+    .edit-slideshow-wrapper .btns {
+        margin-top: 40px;
+    }
+</style>
+
+<script type="text/html" template
+        lay-url="{{layui.setter.baseUrl}}/system/placard/{{layui.data('currentSlideshow').id}}"
+        lay-done="{{layui.form.render();layui.data.slideshowUpload()}}">
+    <div class="edit-slideshow-wrapper layui-form">
+        <!--<input name="id" type="hidden" value="{{layui.data('currentSlideshow').id}}">-->
+        <div class="line clearfix">
+            <div class="title pull-left">名称</div>
+            <div class="long layui-inline">
+                <input name="name" type="text" class="layui-input" value="{{d.data.name}}" placeholder="例如：上线宣传"
+                       lay-verify="required">
+            </div>
+        </div>
+        <div class="line clearfix">
+            <div class="title pull-left">排序</div>
+            <div class="long layui-inline">
+                <input name="sort" type="text" class="layui-input" placeholder="升序排序" value="{{d.data.sort}}"
+                       lay-verify="required">
+            </div>
+        </div>
+        <div class="line clearfix mb-20">
+            <div class="title pull-left">状态</div>
+            <div class="long layui-inline">
+                <input name="status" type="radio" class="layui-input" value="1" title="启动" lay-verify="required"
+                       {{d.data.status===1?'checked':''}}>
+                <input name="status" type="radio" class="layui-input" value="0" title="禁用" lay-verify="required"
+                       {{d.data.status===0?'checked':''}}>
+            </div>
+        </div>
+        <div class="line clearfix imgupload">
+            <div class="title pull-left">图片</div>
+            <div class="long layui-inline clearfix">
+                <div class="add-img pull-left" id="editImg">
+                    <img src="{{d.data.image_url}}" alt="">
+                </div>
+                <div class="tips pull-left">
+                    <p>图片大小:2M以内</p>
+                    <p>建议尺寸:640*360px</p>
+                </div>
+            </div>
+        </div>
+        <div class="line clearfix">
+            <div class="title pull-left">链接</div>
+            <div class="long layui-inline">
+                <input name="jumpUrl" type="text" class="layui-input" value="{{d.data.jump_url}}" placeholder="添加跳转链接地址">
+            </div>
+        </div>
+        <input type="hidden" name="imageUrl" id="editSlideImg" value="{{d.data.image_url}}">
+        <div class="layui-form-item ft-center btns">
+            <button class="layui-btn" lay-submit lay-filter="edit-slideshow">确定</button>
+            <button class="layui-btn layui-btn-primary" id="cancel">取消</button>
+        </div>
+    </div>
+</script>
+
+<script>
+    layui.use(['admin', 'form', 'laydate', 'upload'], function () {
+        var $ = layui.$,
+            admin = layui.admin,
+            table = layui.table,
+            setter = layui.setter,
+            laydate = layui.laydate,
+            view = layui.view,
+            distpicker = layui.distpicker,
+            upload = layui.upload,
+            form = layui.form;
+
+        $(function () {
+            form.render();
+
+            layui.data.slideshowUpload = function () {
+                upload.render({
+                    elem: '#editImg',
+                    url: setter.baseUrl + '/public/oss-upload',
+                    done: function (res) {
+                        console.log(res);
+                        $('#editSlideImg').val(res.data.ossUrl);
+                        var img = '<img src="' + res.data.ossUrl + '">';
+                        $('.add-img').html(img);
+                    }
+                });
+            }
+
+        });
+    });
+</script>

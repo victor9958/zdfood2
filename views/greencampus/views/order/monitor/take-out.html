@@ -1,0 +1,242 @@
+<!-- 外卖监控 -->
+<style>
+    .btn-bar {
+        background: #f7f8fa;
+        padding: 4px 10px;
+    }
+</style>
+<title>外卖监控</title>
+<div class="layui-fluid full-height">
+    <div class="layui-card full-height over-auto">
+        <div class="layui-card-header">外卖监控</div>
+        <div class="layui-card-body">
+            <fieldset class="layui-elem-field">
+                <legend>搜索条件</legend>
+                <div class="layui-form">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <!-- 下拉列表模板渲染  -->
+                            <div class="layui-input-inline">
+                                <script type="text/html" template lay-url="{{layui.setter.baseUrl}}/system/site/campuses"
+                                    lay-done="{{layui.form.render()}}">
+                                    <select name="campus_id" id="campus" lay-filter="campus">
+                                        <option value="" disabled selected>请选择校区</option>
+                                        {{# layui.each(d.data, function(index, item){ }}
+                                        <option value="{{item.id}}">{{item.name}}</option>
+                                        {{# }); }}
+                                    </select>
+                                </script>
+                            </div>
+                            <div class="layui-input-inline">
+                                <select name="canteen_id" id="canteen_out" lay-filter="canteen">
+                                    <option value="" disabled selected>请选择食堂</option>
+                                </select>
+                            </div>
+                            <div class="layui-input-inline">
+                                <select name="meal_type" id="second" lay-filter="second ">
+                                    <!-- <option value="" disabled selected>请选择校区</option> -->
+                                    <option value="2" selected>中餐</option>
+                                    <option value="3" selected>晚餐</option>
+                                </select>
+                            </div>
+                            <div class="layui-input-inline pull-right">
+                                <button class="layui-btn" lay-submit lay-filter="search">查询</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+            <!-- <div class="layui-form-item">
+                <div class="layui-inline  pull-right">
+                    <button class="layui-btn" id='showTv' lay-filter='showTv'>电视显示</button>
+                </div>
+            </div> -->
+            <div class="m-b-10 btn-bar">
+                <button class="layui-btn layui-btn-sm " id='showTv' lay-filter='showTv'>电视显示</button>
+            </div>
+            <!-- 财务报表详情 -->
+            <table class="layui-hide" id="monOut" lay-filter="monOut"></table>
+        </div>
+    </div>
+</div>
+
+<script type="text/html" id="orderOperate">
+    <a class="layui-btn layui-btn-xs layui-btn-primary" lay-event="detail">详情</a>
+</script>
+
+<script>
+    //    layui.define(function (exports) {
+    layui.use(['admin', 'form', 'table', 'laydate'], function () {
+        var $ = layui.$,
+            admin = layui.admin,
+            view = layui.view,
+            setter = layui.setter,
+            form = layui.form,
+            laydate = layui.laydate,
+            table = layui.table,
+            upload = layui.upload,
+            laydate = layui.laydate;
+
+        $(function () {
+            var cols = [[ //表头
+                {
+                    field: 'goods_name', title: '菜品', 
+                }
+                , { field: 'all_num', title: '订单量', totalRow: true }
+                , { field: 'yes_num', title: '已生产', totalRow: true }
+                , { field: 'no_num', title: '待生产' }
+            ]];
+            table.render(
+                {
+                    elem: '#monOut'
+                    , totalRow: true
+                    // , height: 312
+                    , url: setter.baseUrl + '/monitor/real-monitor-list'
+                    , response: setter.responseTable
+                    , page: true //开启分页
+                    , cols: cols
+                }
+            );
+            // table.render({
+            //     elem: '#repCount',
+            //     url: setter.baseUrl + '/finance/list',
+            //     response: setter.responseTable,
+            //     page: setter.pageTable,
+            //     loading: false,
+            //     cols:  [[
+            //     {field: 'user_name', title: '姓名'},
+            //     {field: 'user_moblie', title: '手机号'},
+            //     {field: 'discount_price', title: '金额'},
+            //     {
+            //         field: 'repast_at', title: '就餐日期', templet: function (d) {
+            //             if (d.created_at == null) {
+            //                 return ''
+            //             } else {
+            //                 return d.created_at.split(' ')[0]
+            //             }
+            //         }
+            //     },
+            //     {field: 'meal_type_name', title: '就餐餐次'},
+            //     {field: 'eat_type_name', title: '就餐方式'},
+            //     {field: 'campus_name', title: '校区'},
+            //     {field: 'build_name', title: '楼幢'},
+            //     {field: 'canteen_name', title: '食堂'},
+            //     {field: 'pay_type_name', title: '支付方式'},
+            //     {field: 'pay_status_name', title: '支付状态'},
+            //     {field: 'status_name', title: '发货状态'},
+            //     {title: '操作', align: 'center', toolbar: '#toolbar'}
+            // ]]
+            // });
+
+            // 时间控件
+            laydate.render({
+                elem: '#orderListdate' //指定元素
+                , type: 'date'
+                , range: '-'
+                , done: function (value, date, endDate) {
+                    console.log(value);
+                    // 获取到的日期格式进行分割2018-10-09 - 2018-11-21
+                    var beginTime = value.split(' - ')[0];
+                    var endTime = value.split(' - ')[1];
+                    $('#orderListStartTime').val(beginTime);
+                    $('#orderListEndTime').val(endTime);
+                }
+                // , trigger: 'click' //采用click弹出
+                // , mark: {
+                //     '0-10-14': '生日'
+                //     , '0-12-31': '跨年' //每年12月31日
+                //     , '0-0-10': '工资' //每个月10号
+                //     , '2017-8-15': '' //具体日期
+                //     , '2017-8-20': '预发' //如果为空字符，则默认显示数字+徽章
+                //     , '2017-8-21': '发布'
+                // }
+                // , done: function (value, date) {
+                //     if (date.year === 2017 && date.month === 8 && date.date === 15) { //点击2017年8月15日，弹出提示语
+                //         ins1.hint('中国人民抗日战争胜利72周年');
+                //     }
+                // }
+                , ready: function (date) {
+                    console.log(date); //得到初始的日期时间对象：{year: 2017, month: 8, date: 18, hours: 0, minutes: 0, seconds: 0}
+                    // alert(date.year);  //获取初始化年
+                }
+
+                // 默认的获取时间的函数
+                , done: function (value, date, endDate) {
+                    console.log(value);
+                    var beginTime = value.split(' - ')[0];
+                    var endTime = value.split(' - ')[1];
+                    $('#orderListStartTime').val(beginTime);
+                    $('#orderListEndTime').val(endTime);
+
+                }
+            });
+            //点击编辑或取消订单
+            // table.on('tool(repCount)', function (obj) {
+            //     console.log(obj.data.id);
+            //     layui.data('orderId', {
+            //         key: 'id',
+            //         value: obj.data.id
+            //     });
+            //     var layEvent = obj.event;
+            //     if (layEvent === 'detail') {
+            //         window.location.hash = '#/order/manage/orderDetail';
+            //     } else if (layEvent === 'del') {
+            //     }
+            // })
+
+            form.on('select(campus)', function (data) {
+                var campusId = data.value;
+                admin.req({
+                    url: setter.baseUrl + '/system/site/canteens',
+                    type: 'get',
+                    data: { campusId: campusId },
+                    done: function (res) {
+                        var _html = '<option value="" disabled selected>请选择食堂</option>';
+                        $.each(res.data, function (i, k) {
+                            _html += '<option value="' + k.id + '">' + k.name + '</option>'
+                        })
+                        $('#canteen_out').html(_html)
+                        form.render();
+                    }
+                });
+            });
+
+            //点击搜索订单
+            form.on('submit(search)', function (obj) {
+                console.log(obj);
+                table.reload('monOut', {
+                    url: setter.baseUrl + '/monitor/real-monitor-list',
+                    response: setter.responseTable,
+                    page: setter.pageTable,
+                    cols: cols,
+                    where: obj.field
+                });
+            });
+            // // 监听工具条的点击事件
+            // table.on('tool(test)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+            //     var data = obj.data; //获得当前行数据
+            //     var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+            //     var tr = obj.tr; //获得当前行 tr 的DOM对象
+
+            //     if (layEvent === 'detail') { //查看
+            //         //do somehing
+            //     } else if (layEvent === 'del') { //删除
+            //         layer.confirm('真的删除行么', function (index) {
+            //             obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
+            //             layer.close(index);
+            //             //向服务端发送删除指令
+            //         });
+            //     } else if (layEvent === 'edit') { //编辑
+            //         //do something
+
+            //         //同步更新缓存对应的值
+            //         obj.update({
+            //             username: '123'
+            //             , title: 'xxx'
+            //         });
+            //     }
+            // });
+        });
+    });
+// });
+</script>

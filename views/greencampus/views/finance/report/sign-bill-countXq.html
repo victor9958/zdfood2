@@ -1,0 +1,116 @@
+<!-- 签单支付统计详情 -->
+<style>
+    .btn-bar {
+        background: #f7f8fa;
+        padding: 4px 10px;
+    }
+    .ml {
+        margin-left: 10px;
+    }
+</style>
+<title>详情</title>
+<div class="layui-fluid full-height">
+    <div class="layui-card full-height over-auto">
+        <div class="layui-card-header">详情</div>
+        <div class="layui-card-body">
+            <script type="text/html" template lay-url="{{layui.setter.baseUrl}}/finance/sign-statistics-detail/{{layui.data('orderIdd').id}}"
+            id="reportTxq">
+                <div class="layui-form-item">
+                    <!-- 签单笔数 -->
+                    <div class="layui-block layui-form-item ">
+                        <div class="layui-inline">
+                            <div class="layui-inline">签单笔数：</div>
+                            <div class="layui-inline">{{d.count}}</div>
+                        </div>
+                        <div class="layui-inline">
+                            <div class="layui-inline">已付金额：</div>
+                            <div class="layui-inline">{{d.yse_pay_count}}</div>
+                        </div>
+                        <div class="layui-inline">
+                            <div class="layui-inline">单签金额：</div>
+                            <div class="layui-inline">{{d.pay_count}}</div>
+                        </div>
+                        <div class="layui-inline">
+                            <div class="layui-inline">未付金额：</div>
+                            <div class="layui-inline">{{d.no_pay_count}}</div>
+                        </div>
+                        <div class="layui-inline">
+                            <div class="layui-inline">单位：</div>
+                            <div class="layui-inline">{{d.sign_unit_name}}</div>
+                        </div>
+                    </div>
+                </div>
+            </script>
+            <div class="m-b-10 btn-bar">
+                <script type="text/html" template>
+                    <a href="{{layui.setter.baseUrl}}/finance/sign-statistics-detail-export/{{layui.data('orderIdd').id}}?Authorization={{layui.data('layuiAdmin').Authorization}}"
+                    class="layui-btn layui-btn-sm ml">导出</a>
+                </script>
+                <!-- <script type="text/html" template>
+                    <a href="{{layui.setter.baseUrl}}/finance/sign-statistics-detail-print/{{layui.data('orderIdd').id}}?Authorization={{layui.data('layuiAdmin').Authorization}}"
+                    class="layui-btn layui-btn-sm ml">打印</a>
+                </script> -->
+                <a href="javascript:;" class="layui-btn layui-btn-sm" lay-submit lay-filter="LAY-manage-sign-bill-countXq-print">打印</a>
+            </div>
+            <!-- 财务报表详情 -->
+            <table class="layui-hide" id="repTxq" lay-filter="repTxq"></table>
+            <script type="text/html" id="orderOperate">
+                <a class="layui-btn layui-btn-xs layui-btn-primary" lay-event="detail">详情</a>
+            </script>
+        </div>
+    </div>
+</div>
+<script>
+    layui.use(['admin', 'form', 'table', 'laydate'], function () {
+        var $ = layui.$,
+            admin = layui.admin,
+            view = layui.view,
+            setter = layui.setter,
+            form = layui.form,
+            laydate = layui.laydate,
+            table = layui.table,
+            upload = layui.upload,
+            laydate = layui.laydate;
+
+            table.render(
+                {
+                    elem: '#repTxq'
+                    , url: setter.baseUrl + '/finance/sign-statistics-detail/' + layui.data('orderIdd').id
+                    , response: setter.responseTable
+                    , page: setter.pageTable
+                    , cols: [[ //表头
+                        {
+                            field: 'repast_at', title: '日期', templet: function (d) {
+                                if (d.created_at == null) {
+                                    return ''
+                                } else {
+                                    return d.created_at.split(' ')[0]
+                                }
+                            }
+                        },
+                        { field: 'order_sn', title: '单号' }
+                        , { field: 'meal_type_name', title: '餐别' }
+                        , { field: 'user_name', title: '签单人' }
+                        , { field: 'not_pay', title: '职位' }
+                        , { field: 'user_mobile', title: '手机' }
+                        , { field: 'discount_price', title: '签单金额' }
+                        , { field: 'pay_status_name', title: '用餐备注' }
+                        , { field: 'pay_status_name', title: '付款情况' }
+                    ]],
+                }
+            );
+
+            
+        function deviceExport(filter, url, deviceType) {
+                form.on(filter, function (obj) {
+                    console.log(obj);
+                    var href = setter.baseUrl + url+'/'+layui.data('orderIdd').id + '?Authorization='
+                        + layui.data('layuiAdmin').Authorization ;
+                         console.log(href);
+                    window.location.href = href;
+                   
+                });
+            };
+            deviceExport('submit(LAY-manage-sign-bill-countXq-print)', '/finance/sign-pay-statistics-detail-print', 3);
+        });
+</script>

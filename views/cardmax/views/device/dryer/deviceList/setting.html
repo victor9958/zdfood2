@@ -1,0 +1,151 @@
+<style>
+    .device-setting .imgbox {
+        width: 100px;
+        height: 100px;
+        border-radius: 4px;
+        border: 1px solid #e6e6e6;
+    }
+    .device-setting .imgbox.default {
+        background: #ebebf2;
+    }
+
+    .device-setting .imgbox .icon {
+        width: 30px;
+        height: 30px;
+    }
+
+    .device-setting .layui-form-pane .not-pane-label {
+        float: left;
+        display: block;
+        padding: 9px 15px;
+        padding-left: 0;
+        width: 80px;
+        font-weight: 400;
+        line-height: 20px;
+    }
+
+    .device-setting .layui-form-pane .layui-form-item[pane] .not-pane-inline {
+        margin-left: 0;
+        background: #FBFBFB;
+    }
+
+    .device-setting .layui-form-pane .layui-form-item[pane] .not-pane-inline .layui-form-mid {
+        float: none;
+        text-align: center;
+    }
+
+    .device-setting .layui-form-pane .layui-form-item[pane] .not-pane-inline .layui-input {
+        border-radius: 4px;
+    }
+    .device-setting .hide{
+        display: none;
+    }
+</style>
+<title>设备参数配置</title>
+<div class="layui-fluid full-height device-setting">
+    <div class="layui-row full-height">
+        <div class="layui-card full-height flex flex-v">
+            <div class="layui-card-header">基础设置</div>
+            <script type="text/html" template
+                    lay-url="{{layui.setter.baseUrl}}/device-manage/blowers/param"
+                    lay-data="{deviceIdList:layui.data('temporary').temporary}"
+                    lay-done="{{layui.form.render();layui.admin.device.uploadImg();}}">
+                <div class="layui-card-body layui-show flex-1 over-auto">
+                    <div class="layui-form layui-form-pane full-height">
+                        <div class="layui-form-item" pane="">
+                            <label class="layui-form-label">上传图片</label>
+                            <div class="layui-input-block block-blank">
+                                <div class="m-b-10 ft-gray">
+                                    <img class="imgbox {{d.data != null && d.data.icon_url != ''?'':'hide'}} img_{{ layui.data('temporary').temporary.length === 1? layui.data('temporary').temporary:0}}"
+                                         src="{{d.data != null && d.data.icon_url != ''?d.data.icon_url:''}}">
+                                    <div class="imgbox default {{ d.data == null || (d.data != null && d.data.icon_url== '') ?'':'hide'}} flex flex-v flex-align-center flex-pack-center">
+                                        <svg class="icon ft-gray" aria-hidden="true">
+                                            <use xlink:href="#icon-tupian"></use>
+                                        </svg>
+                                        100 X 100px
+                                    </div>
+                                    <input type="hidden" value="{{d.data != null && d.data.icon_url != ''?d.data.icon_url:''}}"
+                                           class="layui-input icon_url content_{{ layui.data('temporary').temporary.length === 1? layui.data('temporary').temporary:0}}">
+                                </div>
+                                <div class="m-b-10">
+                                    <button class="layui-btn upload_img"
+                                            data-id="{{ layui.data('temporary').temporary.length === 1? layui.data('temporary').temporary:0}}">
+                                        上传图片
+                                    </button>
+                                </div>
+                                <p class="ft-gray">建议图片大小不超过1M</p>
+                            </div>
+                        </div>
+                        <div class="layui-form-item" pane>
+                            <label class="layui-form-label">扣费设置</label>
+                            <div class="layui-input-block block-blank">
+                                <div class="layui-clear m-b-10">
+                                    <div class="layui-input-inline not-pane-inline">
+                                        <p class="layui-form-mid">模式</p>
+                                    </div>
+                                    <div class="layui-input-inline not-pane-inline">
+                                        <p class="layui-form-mid">金额（元）</p>
+                                    </div>
+                                </div>
+                                {{# for(var i=0;i < 4;i++){ }}
+                                <div class="layui-clear m-b-10 cost_set_dryer">
+                                    <div class="layui-input-inline not-pane-inline">
+                                        <input type="text" value="{{i===0?'5分钟':(i === 1?'10分钟':(i===2?'15分钟':'20分钟'))}}"
+                                               class="layui-input duration ft-gray" readonly>
+                                    </div>
+                                    <div class="layui-input-inline not-pane-inline">
+                                        <input type="text"
+                                               value="{{d.data != null && d.data.cost_set != null && d.data.cost_set[i].price?d.data.cost_set[i].price:''}}"
+                                               lay-verify="required|number" placeholder="请输入金额"
+                                               autocomplete="off" class="layui-input price">
+                                    </div>
+                                </div>
+                                {{# } }}
+                            </div>
+
+                        </div>
+                        <div class="layui-form-item p-t-10">
+                            <button class="layui-btn" lay-submit lay-filter="base-save">保存</button>
+                            <button class="layui-btn layui-btn-primary" id="back">返回</button>
+                        </div>
+                    </div>
+                </div>
+            </script>
+        </div>
+    </div>
+</div>
+<script>
+    layui.use(['device/device', 'form'], function () {
+        var $ = layui.$,
+            form = layui.form,
+            device = layui.admin.device;
+
+        $(function () {
+            // 保存基础设置
+            form.on('submit(base-save)', function (obj) {
+                var field = {}, cost_set = [];
+                if (!$('.icon_url').val()) {
+                    layer.alert('请上传图片！', {icon: 5});
+                    return false;
+                } else {
+                    field.iconUrl = $('.icon_url').val();
+                }
+                $('.cost_set_dryer').each(function () {
+                    cost_set.push({
+                        price: $(this).find('.price').val(),
+                        duration: $(this).find('.duration').val(),
+                    })
+                })
+                field.costSet = cost_set;
+                field.idList = layui.data('temporary').temporary;
+                device.deviceSetting('/device-manage/blowers/param', field);
+            })
+            $(document).off('click', '#back')
+            $(document).on('click', '#back', function () {
+                window.history.go(-1);
+            })
+        })
+
+    });
+
+</script>

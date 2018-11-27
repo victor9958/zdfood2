@@ -1,0 +1,81 @@
+<style>
+    /*#LAY_adminPopupModifyDept{
+        overflow: visible!important;
+    }*/
+    .layui-elem-field {
+        height: 442px;
+    }
+
+    .layui-elem-field {
+        padding: 10px 10px 0 10px;
+    }
+
+    .tree-box, #selectedDept {
+        /*height: 364px;有搜索*/
+        height: 400px;
+        overflow: auto;
+    }
+
+    .deptname {
+        margin-bottom: 10px;
+    }
+</style>
+<div class="centerLayer">
+    <div class="layui-col-xs6 allDept">
+        <fieldset class="layui-elem-field site-demo-button">
+            <legend>选择部门</legend>
+            <!--<div class="layui-form" lay-filter="component-form-element">
+                <div class="layui-form-item">
+                    <select name="city" lay-verify="required" lay-search>
+                        &lt;!&ndash;<script type="text/html" template>&ndash;&gt;
+                            <option value="">可搜索部门</option>
+                            <option value="1">layer</option>
+                            <option value="2">form</option>
+                            <option value="3">layim</option>
+                        &lt;!&ndash;</script>&ndash;&gt;
+                    </select>
+                </div>
+            </div>-->
+            <!--组织架构树-->
+            <div class="tree-box">
+            </div>
+        </fieldset>
+    </div>
+
+    <script type="text/html" template>
+        <div class="layui-col-xs6 checkedDept">
+            <fieldset class="layui-elem-field site-demo-button">
+                <legend>已选部门</legend>
+                <div id="selectedDept">
+                    {{#
+                    var deptIdList = [];
+                    layui.each(layui.data('temporary').temporary, function(index, item){
+                    deptIdList.push(item.id);
+                    layui.data('temporary',{key:'temporary',value:deptIdList});
+                    }}
+                    <p class="deptname">{{item.name}}
+                        <svg class="icon pull-right" aria-hidden="true" id="deleteDept" data-id="{{item.id}}">
+                            <use xlink:href="#icon-delete"></use>
+                        </svg>
+                    </p>
+                    {{# }) }}
+                </div>
+            </fieldset>
+        </div>
+    </script>
+
+
+    <div class="layui-form-item p-t-10 ft-center">
+        <a href="javascript:;" class="layui-btn" id="submitModify">确定</a>
+        <a href="javascript:;" class="layui-btn layui-btn-primary" id="cancel">取消</a>
+    </div>
+</div>
+<script>
+    layui.use(['admin', 'form'], function () {
+        var $ = layui.$
+            , admin = layui.admin
+            , form = layui.form;
+
+        form.render(null, 'component-form-element');
+    });
+</script>

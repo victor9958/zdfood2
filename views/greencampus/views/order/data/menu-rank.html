@@ -1,0 +1,143 @@
+<!--数据管理没写 -->
+<style>
+    .layui-input-inline {
+        margin-bottom: 12px;
+    }
+
+    .layui-form-item {
+        margin-bottom: 3px;
+    }
+
+</style>
+<title>菜品排行</title>
+<div class="layui-fluid full-height">
+    <div class="layui-card full-height over-auto">
+        <div class="layui-card-header">菜品排行</div>
+        <div class="layui-card-body">
+            <fieldset class="layui-elem-field">
+                <legend>搜索条件</legend>
+                <div class="layui-form">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <!-- 下拉列表模板渲染  -->
+
+                            <div class="layui-input-inline">
+                                <select name="mealType" id="second">
+                                    <option value="" disabled selected>请选择餐次</option>
+                                    <option value="2">中餐</option>
+                                    <option value="3">晚餐</option>
+                                </select>
+                            </div>
+                            <div class="layui-input-inline">
+                                <script type="text/html" template lay-url="{{layui.setter.baseUrl}}/system/site/campuses"
+                                    lay-done="layui.data.done(d)">
+
+                                    <select name="campusId" lay-filter="campus">
+                                        <option value="" disabled selected>请选择校区</option>
+                                        {{# layui.each(d.data, function(index, item){ }}
+                                        <option value="{{item.id}}">{{item.name}}</option>
+                                        {{# }); }}
+                                    </select>
+                                </script>
+                            </div>
+                            <!--  <div class="layui-input-inline">
+                                  <select name="canteenId" id="canteen" lay-filter="canteen">
+                                      <option value="" disabled selected>请选择食堂</option>
+                                  </select>
+                              </div>-->
+                            <div class="layui-input-inline">
+                                <input type="text" class="layui-input time" id="menuRankdate" placeholder="请选择开始时间和结束时间">
+                                <input type="hidden" name="startDate" id="menuRankStartTime" value="">
+                                <input type="hidden" name="endDate" id="menuRankEndTime" value="">
+                            </div>
+                            <!-- <div class="layui-input-inline"> -->
+                                <div class="layui-inline">
+                                    <button class="layui-btn" lay-submit lay-filter="search">查询</button>
+                                </div>
+                                <!-- <script type="text/html" template>
+                                    <a href="{{layui.setter.baseUrl}}/order/goods-rank-export?Authorization={{layui.data('layuiAdmin').Authorization}}"
+                                       class="layui-btn">导出表格</a>
+                                </script> -->
+                                <div class="layui-inline">
+                                    <a href="javascript:;" class="layui-btn layui-btn-normal" lay-submit lay-filter="LAY-data-menu-rank">导出Excel</a>
+                                </div>
+                                
+                            <!-- </div> -->
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+            <!-- 财务报表详情 -->
+            <table class="layui-hide" id="menuRankTable" lay-filter="menuRankTable"></table>
+        </div>
+    </div>
+</div>
+
+<script>
+    layui.data.done = function (d) {
+        layui.use(['admin', 'form', 'table', 'laydate'], function () {
+            var $ = layui.$,
+                admin = layui.admin,
+                view = layui.view,
+                setter = layui.setter,
+                form = layui.form,
+                table = layui.table,
+                upload = layui.upload,
+                laydate = layui.laydate;
+
+            form.render();
+            laydate.render({
+                elem: '#menuRankdate',
+                type: 'date',
+                range: '-',
+                done: function (value, date, endDate) {
+                    console.log(value);
+                    var beginTime = value.split(' - ')[0];
+                    var endTime = value.split(' - ')[1];
+                    $('#menuRankStartTime').val(beginTime);
+                    $('#menuRankEndTime').val(endTime);
+                }
+            });
+
+            var cols = [[ //表头
+                {type: 'numbers', title: '序号', width: 60}
+                , { field: 'goodsName', title: '菜品名称', align: 'center' }
+                , { field: 'goodsPrice', title: '价格', align: 'center' }
+                , { field: 'count', title: '出售数量', align: 'center' }
+
+            ]];
+            table.render(
+                {
+                    elem: '#menuRankTable'
+                    , url: setter.baseUrl + '/order/goods-rank'
+                    , response: setter.responseTable
+                    , page: setter.pageTable
+                    , cols: cols
+                }
+            );
+            //点击搜索订单
+            form.on('submit(search)', function (obj) {
+                console.log(obj);
+                table.reload('menuRankTable', {
+                    url: setter.baseUrl + '/order/goods-rank',
+                    response: setter.responseTable,
+                    page: setter.pageTable,
+                    cols: cols,
+                    where: obj.field
+                });
+            });
+
+            function deviceExport(filter, url, deviceType) {
+                form.on(filter, function (obj) {
+                    console.log(obj);
+                    var href = setter.baseUrl + url + '?Authorization='
+                        + layui.data('layuiAdmin').Authorization + '&mealType=' + obj.field.mealType + '&campusId='
+                        + obj.field.campusId + '&startDate=' + obj.field.startDate + '&endDate=' + obj.field.endDate;
+                    window.location.href = href;
+                });
+            };
+            deviceExport('submit(LAY-data-menu-rank)', '/order/goods-rank-export', 3);
+
+        });
+    }
+</script>

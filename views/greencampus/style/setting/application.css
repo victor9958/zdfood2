@@ -1,0 +1,85 @@
+.application .layui-tab-title {
+  background: #fff;
+}
+.application .mobile {
+  width: 375px;
+  height: 607px;
+  overflow: hidden;
+  background: #EFEFF4;
+  box-sizing: border-box;
+}
+.application .mobile img {
+  width: 100%;
+}
+.application .mobile canvas {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+.application .module-item {
+  width: 130px;
+  height: 120px;
+  padding: 18px 0;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #e6e6e6;
+  position: relative;
+  float: left;
+}
+.application .module-item .icon-block {
+  width: 30px;
+  height: 30px;
+  margin: 0 auto 10px;
+  border-radius: 50%;
+}
+.application .module-item .icon-block .icon {
+  margin-top: 7px;
+  color: #fff;
+}
+.application .content-right {
+  margin-left: 400px;
+  height: 607px;
+}
+.application .layui-tab-content {
+  padding: 10px 0;
+}
+.application .layui-input-block .layui-inline {
+  margin-top: 10px;
+}
+.application .submit-btn {
+  margin-top: 40px;
+}
+.application .layui-card-header {
+  width: 100%;
+  box-sizing: border-box;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+.application .parent-content,
+.application .child-tab-content {
+  padding-top: 55px;
+}
+.application .parent-title {
+  width: 100%;
+  z-index: 100;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+.application .img-content {
+  padding: 10px;
+}
+.application .img-content .layui-btn {
+  margin: 10px 0;
+}
+.application .layui-upload-list {
+  display: inline;
+}
+.application .layui-upload-list img {
+  width: 351px;
+  height: 98px;
+  margin-right: 10px;
+  border-radius: 4px;
+  border: 1px solid #e6e6e6;
+}

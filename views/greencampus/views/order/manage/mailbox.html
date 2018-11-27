@@ -1,0 +1,242 @@
+<style>
+    .layui-form-label {
+        width: 90px;
+    }
+
+    .time {
+        width: 50px;
+        padding: 7px;
+        border: 1px solid #E6E6E6;
+        border-radius: 2px;
+        margin: 0 12px;
+    }
+
+    .btn {
+        padding: 4px 0;
+        width: 80px !important;
+    }
+
+    .hint {
+        padding-left: 100px;
+        font-size: 12px;
+        margin-bottom: 10px;
+        color: #999;
+    }
+
+    .email ,.peak_send_time ,.common_send_time{
+        margin-bottom: 0;
+    }
+
+    .wrapper {
+        min-height: 486px;
+    }
+
+    /*   .centerLayer{
+           min-height: 100%;
+       }*/
+</style>
+<div class="layui-form centerLayer" lay-filter="sendMail">
+    <div class="wrapper">
+        <div class="layui-form-item email">
+            <div class="layui-inline">
+                <label class="layui-form-label left">邮箱账号：</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="email" lay-verify="required" autocomplete="off" placeholder="请输入有效邮箱账号"
+                           class="layui-input">
+                </div>
+                <div class="layui-input-inline btn" id="addMail">
+                    <button class="layui-btn layui-btn-sm">新增邮箱</button>
+                </div>
+                <p class="hint">（最多可设置五个接收邮箱地址）</p>
+            </div>
+        </div>
+        <div class="layui-form-item peak_send_time">
+            <div class="layui-inline">
+                <label class="layui-form-label left">非高峰时期：</label>
+                <div class="layui-input-inline">
+                    <input type="text" value="" name="peak_start_time" class="layui-input start_time" id="start"
+                           placeholder="HH:mm:ss">
+                </div>
+                <div class="layui-input-inline">
+                    <input type="text" value="" name="peak_end_time" class="layui-input end_time" id="end"
+                           placeholder="HH:mm:ss">
+                </div>
+                <div class="layui-input-inline btn addTime addTime1">
+                    <button class="layui-btn layui-btn-sm">新增</button>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-inline">非高峰发送频次：每隔<input name="peak_interval" class="time peak_interval" type="text">分钟发送订单记录至邮箱</div>
+        </div>
+        <div class="layui-form-item common_send_time">
+            <div class="layui-inline">
+                <label class="layui-form-label left">高峰时期：</label>
+                <div class="layui-input-inline">
+                    <input type="text" value="" name="common_start_time" class="layui-input start_time" id="start1"
+                           placeholder="HH:mm:ss">
+                </div>
+                <div class="layui-input-inline">
+                    <input type="text" value="" name="common_end_time" class="layui-input end_time" id="end1"
+                           placeholder="HH:mm:ss">
+                </div>
+                <div class="layui-input-inline btn addTime">
+                    <button class="layui-btn layui-btn-sm">新增</button>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-inline">高峰发送频次：每隔<input name="common_interval" class="time common_interval" type="text">分钟发送订单记录至邮箱</div>
+        </div>
+        <div class="layui-form-item">
+            <p>（非高峰时间发送频次最低30分钟，高峰期发送频次最低1分钟）</p>
+        </div>
+
+    </div>
+    <div class="layui-form-item p-t-10 ft-center">
+        <button class="layui-btn" lay-submit lay-filter="LAY-add-Mail">保存</button>
+        <button class="layui-btn layui-btn-primary" id="cancel">取消</button>
+    </div>
+</div>
+<script>
+    layui.use(['admin', 'form', 'laydate'], function () {
+        var $ = layui.$,
+            admin = layui.admin,
+            table = layui.table,
+            view = layui.view,
+            setter = layui.setter,
+            form = layui.form,
+            laydate = layui.laydate;
+        //时间选择器
+        laydate.render({
+            elem: '#start'
+            , type: 'time',
+            done: function (value, date, endDate) {
+                console.log(value);
+                $('#start').attr('data-id', value)
+            }
+        });
+        laydate.render({
+            elem: '#end'
+            , type: 'time'
+            , done: function (value, date, endDate) {
+                // console.log(value);
+                $('#end').attr('data-id', value)
+            }
+        });
+        laydate.render({
+            elem: '#start1'
+            , type: 'time'
+            , done: function (value, date, endDate) {
+                // console.log(value);
+                $('#start1').attr('data-id', value)
+            }
+        });
+        laydate.render({
+            elem: '#end1'
+            , type: 'time'
+            , done: function (value, date, endDate) {
+                // console.log(value);
+                $('#end1').attr('data-id', value)
+            }
+        });
+        //核心方法
+        function timeAdd() {
+            lay('.datetime').each(function () {
+                var that = $(this)
+                laydate.render({
+                    elem: this,
+                    type: 'time',
+                    done: function (value, date, endDate) {
+                        that.attr('data-id', value);
+                        form.render()
+                    }
+                });
+            });
+        }
+        admin.req({
+            url: setter.baseUrl + '/order/email-list',
+            type: 'GET',
+            data: {},
+            done: function (res) {
+                //表单初始赋值
+                var data = res.data;
+                form.val('sendMail', {
+                    "email": data.email[0].email,
+                    "peak_start_time": data.peak_send_time[0].start_time,
+                    "peak_end_time": data.peak_send_time[0].end_time,
+                    "peak_interval": data.peak_send_time[0].interval,
+                    "common_start_time": data.common_send_time[0].start_time,
+                    "common_end_time": data.common_send_time[0].end_time,
+                    "common_interval": data.common_send_time[0].interval
+                });
+                $('#start').attr('data-id', data.peak_send_time[0].start_time)
+                $('#end').attr('data-id', data.peak_send_time[0].end_time)
+                $('#start1').attr('data-id', data.common_send_time[0].start_time)
+                $('#end1').attr('data-id', data.common_send_time[0].end_time)
+                if (data.peak_send_time.length > 1) {
+                    var new_peak_send_time = data.peak_send_time.slice(1, data.peak_send_time.length)
+                    var _html = ''
+                    $.each(new_peak_send_time, function (i, k) {
+                        _html += '  <div class="layui-inline timeBox time1">\n' +
+                            '        <label class="layui-form-label left">非高峰时期：</label>\n' +
+                            '        <div class="layui-input-inline">\n' +
+                            '            <input type="text" data-id="' + k.start_time + '" value="' + k.start_time + '" name="start_time" class="start_time layui-input datetime" placeholder="HH:mm:ss">\n' +
+                            '        </div>\n' +
+                            '        <div class="layui-input-inline">\n' +
+                            '            <input type="text" data-id="' + k.end_time + '" value="' + k.end_time + '" name="end_time"  class="end_time layui-input datetime" placeholder="HH:mm:ss">\n' +
+                            '        </div>\n' +
+                            '        <div class="layui-input-inline btn deleteTime">\n' +
+                            '            <button class="layui-btn layui-btn-sm">删除</button>\n' +
+                            '        </div>\n' +
+                            '    </div>'
+                    })
+                    $('.peak_send_time').append(_html);
+                    timeAdd()
+                }
+                if (data.common_send_time.length > 1) {
+                    var new_common_send_time = data.common_send_time.slice(1, data.common_send_time.length)
+                    var _html = ''
+                    $.each(new_common_send_time, function (i, k) {
+                        _html += '  <div class="layui-inline timeBox time2">\n' +
+                            '        <label class="layui-form-label left">高峰时期：</label>\n' +
+                            '        <div class="layui-input-inline">\n' +
+                            '            <input type="text" data-id="' + k.start_time + '" value="' + k.start_time + '" name="start_time" class="start_time layui-input datetime" placeholder="HH:mm:ss">\n' +
+                            '        </div>\n' +
+                            '        <div class="layui-input-inline">\n' +
+                            '            <input type="text" data-id="' + k.end_time + '" value="' + k.end_time + '" name="end_time"  class="end_time layui-input datetime" placeholder="HH:mm:ss">\n' +
+                            '        </div>\n' +
+                            '        <div class="layui-input-inline btn deleteTime">\n' +
+                            '            <button class="layui-btn layui-btn-sm">删除</button>\n' +
+                            '        </div>\n' +
+                            '    </div>'
+                    })
+                    $('.common_send_time').append(_html);
+                    timeAdd()
+                }
+                if (data.email.length > 1) {
+                    var new_email = data.email.slice(1, data.email.length)
+                    var _html = '';
+                    $.each(new_email, function (i, k) {
+                         _html = '  <div class="layui-inline mail">\n' +
+                            '            <label class="layui-form-label left">邮箱账号：</label>\n' +
+                            '            <div class="layui-input-inline">\n' +
+                            '                <input value="' + k.email + '" type="text" name="email" lay-verify="required" autocomplete="off" placeholder="请输入有效邮箱账号"\n' +
+                            '                       class="layui-input">\n' +
+                            '            </div>\n' +
+                            '   <div class="layui-input-inline btn" id="deleteMail">\n' +
+                            '    <button class="layui-btn layui-btn-sm">删除邮箱</button>\n' +
+                            '    </div>\n' +
+                            '    </div>';
+                    })
+                    $('.email').append(_html);
+                }
+            }
+        });
+
+
+    })
+</script>
+
+    
+    

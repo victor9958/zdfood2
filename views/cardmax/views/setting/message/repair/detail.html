@@ -1,0 +1,90 @@
+<style>
+    .centerLayer .textarea{
+        min-height: 80px;
+    }
+    .centerLayer .feedback_img{
+        width: 80px;
+        height: 80px;
+        float: left;
+        margin-right: 10px;
+        margin-bottom: 10px;
+    }
+    .centerLayer .feedback_img img{
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+    }
+</style>
+<script type="text/html" template lay-url="{{layui.setter.baseUrl + '/system-set/repair/'+ layui.data('temporary').temporary}}">
+    <div class="layui-form centerLayer full-height over-auto" lay-filter="form-detail">
+        <div class="layui-form-item">
+            <label class="layui-form-label left">报修时间</label>
+            <div class="layui-input-block">
+                <p class="layui-form-mid">{{d.data.created_at}}</p>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label left">设备编号</label>
+            <div class="layui-input-block">
+                <p class="layui-form-mid">{{d.data.device_name}}</p>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label left">设备类型</label>
+            <div class="layui-input-block">
+                <p class="layui-form-mid">{{d.data.device_title}}</p>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label left">运营商</label>
+            <div class="layui-input-block">
+                <p class="layui-form-mid">{{d.data.operatorName}}</p>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label left">设备位置</label>
+            <div class="layui-input-block">
+                <p class="layui-form-mid">{{d.data.device_site}}</p>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label left">报修人号码</label>
+            <div class="layui-input-block">
+                <p class="layui-form-mid">{{d.data.contact_phone}}</p>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label left">报修内容</label>
+            <div class="layui-input-block">
+                <p class="layui-form-mid">{{d.data.content}}</p>
+            </div>
+            <div class="layui-input-block layui-clear">
+                {{# layui.each(d.data.img,function(index,item){ }}
+                <div class="feedback_img"><img src="{{ item }}"/></div>
+                {{# }) }}
+            </div>
+        </div>
+    </div>
+    {{# layui.$('#dot-'+layui.data('temporary').temporary).remove(); }}
+</script>
+<script>
+    layui.use('admin',function () {
+        var $ = layui.$;
+
+        $(function () {
+            var count = Number($('#feedback .layui-badge').html());
+            if(count>0){
+                count --;
+                $('#feedback .layui-badge').html(count);
+                layui.data('message', {
+                    key:'feedback',
+                    value: count
+                })
+                if(count == 0){
+                    $('#feedback .layui-badge').remove();
+                }
+            }
+        })
+    });
+</script>

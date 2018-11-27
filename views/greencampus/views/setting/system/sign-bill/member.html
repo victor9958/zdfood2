@@ -1,0 +1,163 @@
+<!-- 签单人 -->
+<style>
+    .btn-bar {
+        background: #f7f8fa;
+        padding: 4px 10px;
+    }
+</style>
+<title>签单人</title>
+<div class="layui-fluid full-height">
+    <div class="layui-card full-height over-auto">
+        <div class="layui-card-header">签单人</div>
+        <div class="layui-card-body">
+            <fieldset class="layui-elem-field">
+                <legend>搜索条件</legend>
+                <div class="layui-form">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <!-- 下拉列表模板渲染 -->
+                            <div class="layui-input-inline">
+                                <script type="text/html" template
+                                        lay-url="{{layui.setter.baseUrl}}/system/site/campuses"
+                                        lay-done="{{layui.form.render()}}">
+
+                                    <select name="campus_id" id="campus" lay-filter="campus">
+                                        <option value="" disabled selected>请选择校区</option>
+                                        {{# layui.each(d.data, function(index, item){ }}
+                                        <option value="{{item.id}}">{{item.name}}</option>
+                                        {{# }); }}
+                                    </select>
+                                </script>
+                            </div>
+                            <div class="layui-input-inline">
+                                <script type="text/html" template
+                                        lay-url="{{layui.setter.baseUrl}}/system/site/units?withoutPage=1"
+                                        lay-done="{{layui.form.render()}}">
+
+                                    <select name="branch_id" id="branch" lay-filter="branch">
+                                        <option value="" disabled selected>请选择签单部门</option>
+                                        {{# layui.each(d.data, function(index, item){ }}
+                                        <option value="{{item.id}}">{{item.name}}</option>
+                                        {{# }); }}
+                                    </select>
+                                </script>
+                            </div>
+                            <div class="layui-inline">
+                                <div class="layui-input-inline">
+                                    <input type="text" name="query" class="layui-input" autocomplete="off"
+                                           placeholder="请输入关键字">
+                                </div>
+                            </div>
+                            <div class="layui-inline pull-right">
+                                <button class="layui-btn" lay-submit lay-filter="search">查询</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+
+
+            <div class="m-b-10 btn-bar">
+                <button class="layui-btn layui-btn-sm" id='key-addmember' lay-filter='key-addmember'>添加</button>
+            </div>
+            <!-- 财务报表详情 -->
+            <table class="layui-hide" id="repCount" lay-filter="repCount"></table>
+            <script type="text/html" id="handleber">
+                <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+                <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+            </script>
+        </div>
+    </div>
+</div>
+<script>
+    layui.use(['admin', 'form', 'table', 'laydate'], function () {
+        var $ = layui.$,
+            admin = layui.admin,
+            view = layui.view,
+            setter = layui.setter,
+            form = layui.form,
+            table = layui.table,
+            upload = layui.upload,
+            laydate = layui.laydate;
+
+        $(function () {
+
+
+            var col = [[ //表头
+                {type: 'numbers', title: '序号', width: 60}
+                , {field: 'name', title: '姓名'}
+                , {field: 'unitName', title: '签单单位'}
+                , {field: 'address', title: '地址'}
+                , {field: 'mobile', title: '联系电话'}
+                , {title: '操作', align: 'center', toolbar: '#handleber'}
+            ]]
+            getTable()
+
+            function getTable() {
+                table.render(
+                    {
+                        elem: '#repCount'
+                        // , height: 312
+                        , url: setter.baseUrl + '/system/site/sign-bill-users'
+                        , response: setter.responseTable
+                        , page: setter.pageTable
+                        , cols: col
+                    }
+                );
+            }
+
+
+            //点击搜索订单
+            form.on('submit(search)', function (obj) {
+                console.log(obj);
+                table.reload('repCount', {
+                    url: setter.baseUrl + '/system/site/sign-bill-users',
+                    response: setter.responseTable,
+                    page: setter.pageTable,
+                    cols: col,
+                    where: obj.field
+                });
+            });
+
+            // 添加签单人
+            $(document).off('click', '#key-addmember');
+            $(document).on('click', '#key-addmember', function () {
+                layui.data('userId', {
+                    key: 'id',
+                    value: ''
+                });
+                window.location.hash = '#/setting/system/sign-bill/memberadd';
+            });
+
+            // // 监听工具条的点击事件
+            table.on('tool(repCount)', function (obj) {
+                var layEvent = obj.event;
+                layui.data('userId', {
+                    key: 'id',
+                    value: obj.data.id
+                });
+
+                if (layEvent === 'edit') { //查看detail
+                    // 点击跳转到详情页面
+                    window.location.hash = '#/setting/system/sign-bill/memberadd';
+                } else if (layEvent === 'del') {
+                    layer.confirm('确定要删除签单人吗?', {icon: 1, title: '提示'}, function (index) {
+                        admin.req({
+                            url: setter.baseUrl + '/system/site/sign-bill-user/' + obj.data.id
+                            , type: 'delete'
+                            , data: {}
+                            , done: function (res) {
+                                layer.msg(res.message, {icon: 1, time: 2000});
+                                getTable()
+                            }
+                        });
+                    })
+                }
+            });
+
+
+        });
+
+
+    });
+</script>

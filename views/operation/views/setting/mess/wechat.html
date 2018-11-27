@@ -1,0 +1,67 @@
+<script type="text/html" template>
+    <link rel="stylesheet" href="{{ layui.setter.base }}style/setting/mess.css?v={{ layui.admin.v }}-1" media="all">
+    <link rel="stylesheet" href="{{ layui.setter.base }}style/plugcss/zTreeStyle.css?v={{ layui.admin.v }}-1" media="all">
+</script>
+<title>消息模板配置</title>
+<div class="layui-fluid layui-border-box full-height wechat">
+    <div class="layui-card full-height flex flex-v">
+        <div class="layui-card-header">微信端配置</div>
+        <div class="layui-card-body layui-clear flex-1 flex flex-v">
+            <fieldset class="layui-elem-field site-demo-button">
+                <legend>搜索条件</legend>
+                <div class="layui-form" lay-filter="search-for-examine">
+                    <div class="layui-form-item">
+                        <div class="layui-inline search_box">
+                            <div class="layui-input-inline">
+                                <input id="templet_id" type="text" value="" placeholder="请输入模板ID" class="layui-input">
+                            </div>
+
+                            <div class="layui-input-inline">
+                                <input id="jump_url" type="text" value="" placeholder="请输入URL" class="layui-input">
+                            </div>
+
+                            <div class="layui-input-inline">
+                                <input id="wechat_name" type="text" autocomplete="off" placeholder="请输入公众号名称" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline search_box">
+                            <div class="layui-input-inline">
+                                <input id="model_name" type="text" value="" placeholder="请输入应用模块" class="layui-input">
+                            </div>
+
+                            <div class="layui-input-inline">
+                                <input id="model_position" type="text"  value="" placeholder="请输入模板位置" class="layui-input">
+                            </div>
+                            <div class="layui-inline">
+                                <button class="layui-btn" id="search">查询</button>
+                                <a href="javascript:;" id="add" class="layui-btn layui-btn-primary  layui-bg-red" lay-submit>新增</a>
+                                <a href="javascript:;" id="import" class="layui-btn layui-btn-primary  layui-bg-gray" lay-submit>导入</a>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </fieldset>
+            <div class="layui-form layui-border-box layui-table-view" lay-filter="LAY-table-15" style="height: 100%;overflow: auto">
+                <div class="layui-table-box">
+                    <div class="layui-table-header">
+                        <table id="mess_list" lay-filter="mess_list" cellspacing="0" cellpadding="0" border="0" class="layui-table" lay-skin="line"></table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/html" id="mess_option">
+    <a class="layui-btn layui-btn-xs layui-btn-primary" lay-event="mess_detail">详情</a>
+    <a class="layui-btn layui-btn-xs" lay-event="mess_edit">修改</a>
+    {{#  if(d.status == 0 ){ }}
+    <a class="layui-btn layui-btn-xs layui-btn-primary layui-bg-red" status="0" lay-event="mess_block">停用</a>
+    {{#  } }}
+    {{#  if(d.status == 1 ){ }}
+    <a class="layui-btn layui-btn-xs layui-btn-primary layui-bg-red" status="1" lay-event="mess_block">启用</a>
+    {{#  } }}
+</script>
+<script>
+    layui.use('setting/mess', layui.factory('setting/mess'));
+</script>

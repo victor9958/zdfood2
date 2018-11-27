@@ -1,0 +1,70 @@
+<style>
+    .location-field {
+        height: 442px;
+    }
+
+</style>
+<script type="text/html" template>
+    <link rel="stylesheet" href="{{ layui.setter.base }}style/plugcss/zTreeStyle.css?v={{ layui.admin.v }}-1"
+          media="all">
+</script>
+<div class="centerLayer">
+    <div class="layui-col-xs12 allDept">
+        <fieldset class="layui-elem-field site-demo-button location-field">
+            <legend>选择位置</legend>
+            <ul class="ztree" id="location-tree"></ul>
+        </fieldset>
+    </div>
+
+    <div class="p-t-10 ft-center">
+        <a href="javascript:;" class="layui-btn" id="set-location">确定</a>
+        <a href="javascript:;" class="layui-btn layui-btn-primary" id="cancel">取消</a>
+    </div>
+</div>
+<script>
+    layui.use(['device/device', 'admin', 'zTree'], function () {
+        var $ = layui.$
+            , admin = layui.admin
+            , setter = layui.setter
+            , device = layui.admin.device;
+
+        $(function () {
+            getTree();
+
+            var siteId;
+
+            function getTree() {
+                admin.req({
+                    url: setter.baseUrl + '/system-set/site/child' //实际使用请改成服务端真实接口
+                    , done: function (res) {
+                        var setting = {
+                            async: {
+                                enable: true,
+                                type: 'get',
+                                url: setter.baseUrl + '/system-set/site/child',
+                                autoParam: ["id"]
+                            },
+                            callback: {
+                                onClick: zTreeOnClick,
+                            }
+                        };
+                        var zTreeObj = $.fn.zTree.init($('#location-tree'), setting, res);
+
+                        siteId = res[0].id;
+                        layui.data('temporary', {key: 'siteId', value: siteId})
+                        var param = zTreeObj.getNodeByParam('id', siteId, null);
+                        zTreeObj.selectNode(param);
+                    }
+                });
+            }
+
+            function zTreeOnClick(event, treeId, treeNode) {
+                siteId = treeNode.id;
+                layui.data('temporary', {key: 'siteId', value: siteId})
+            }
+
+
+
+        })
+    });
+</script>

@@ -1,0 +1,23 @@
+<style>
+    .account .layui-card-body{
+        padding: 20px 15px;
+    }
+    .account a:hover{
+        color: #FF9800;
+    }
+</style>
+<title>账号设置</title>
+<div class="layui-fluid account full-height">
+    <div class="layui-card full-height">
+        <div class="layui-card-header">登录账号</div>
+        <div class="layui-card-body lineHeight2">
+            <script type="text/html" id="old_mobile" template lay-url="{{layui.setter.baseUrl + '/u-center/account/detail'}}">
+                <div lay-templateid="old_mobile"><span class="layui-col-xs4 layui-col-sm3 layui-col-lg2">手机号码：{{ d.data.mobile }}</span> <a href="javascript:;" class="ft-orange" id="resetmobile">更换手机号</a></div>
+                <div><span class="layui-col-xs4 layui-col-sm3 layui-col-lg2">管理密码：******</span> <a href="javascript:;" class="ft-orange" id="reset">修改密码</a></div>
+            </script>
+        </div>
+    </div>
+</div>
+<script>
+    layui.use('setting/account', layui.factory('setting/account'));
+</script>
