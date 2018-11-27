@@ -1,8 +1,0 @@
-fodder => 素材配置
-mess =》 消息模板配置
-packet =》 红包配置
-advert =》 广告位配置
-applet =》 小程序配置
-completionover =》 支付完成页配置
-completionbill =》 支付账单配置
-tool =》 运营小工具

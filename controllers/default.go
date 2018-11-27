@@ -13,3 +13,9 @@ func (c *MainController) Get() {
 	c.Data["Email"] = "astaxie@gmail.com"
 	c.TplName = "index.tpl"
 }
+
+func (c *MainController) Index() {
+	a := "json"
+	c.Data["json"] = a
+	c.ServeJSON()
+}

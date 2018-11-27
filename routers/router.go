@@ -7,4 +7,5 @@ import (
 
 func init() {
     beego.Router("/", &controllers.MainController{})
+    beego.Router("/v1/admin/order/index", &controllers.MainController{},"get:Index")
 }
