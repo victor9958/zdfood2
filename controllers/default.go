@@ -1,11 +1,12 @@
 package controllers
 
 import (
-	"github.com/astaxie/beego"
+	"net/url"
+	"net/http"
 )
 
 type MainController struct {
-	beego.Controller
+	BaseController
 }
 
 func (c *MainController) Get() {
@@ -14,8 +15,20 @@ func (c *MainController) Get() {
 	c.TplName = "index.tpl"
 }
 
-func (c *MainController) Index() {
-	a := "json"
-	c.Data["json"] = a
-	c.ServeJSON()
+func (c *MainController) GetCode() {
+	u,_:= url.Parse("http://www.baidu.com")
+	q := u.Query()
+	u.RawQuery = q.Encode()
+	res,err := http.Get(u.String())
+	if err != nil {
+		c.Ctx.WriteString("0"+" err")
+		return
+	}
+	resCode :=res.StatusCode
+	res.Body.Close()
+	//if  {
+	//
+	//}
+
+	c.ReturnJson(200,resCode)
 }
