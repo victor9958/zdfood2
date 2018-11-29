@@ -7,6 +7,12 @@ type BaseController struct {
 	isLogin bool
 }
 
+type Page struct {
+	PageLimit int
+	PageOffest int
+	Count int
+}
+
 func (c *BaseController) Prepare()  {
 
 	//userLogin := c.GetSession("userLogin")
