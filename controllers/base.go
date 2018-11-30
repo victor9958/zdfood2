@@ -1,6 +1,8 @@
 package controllers
 
-import "github.com/astaxie/beego"
+import (
+	"github.com/astaxie/beego"
+)
 
 type BaseController struct {
 	beego.Controller
@@ -32,5 +34,14 @@ func(c *BaseController)ReturnJson(data interface{},status int){
 
 	c.Ctx.Output.Status=status
 	c.Ctx.Output.JSON(data,true,false)
+}
+
+
+func(c *BaseController)DisposeConditionStr(conditionArr... string)(string){
+	var conditionStr string
+	for _,v :=range conditionArr {
+		conditionStr += v+" AND "
+	}
+	return  string(conditionStr[0:len(conditionStr)-5])
 }
 
