@@ -11,4 +11,5 @@ func init() {
     beego.Router("/v1/admin/order/index", &order.OrderController{},"get:Index")
     beego.Router("/getcode", &controllers.MainController{},"get:GetCode")
     beego.Router("/ceshi", &order.OrderController{},"get:Ceshi")
+    beego.Router("/ceshi2", &order.OrderController{},"get:Ceshi2")
 }
