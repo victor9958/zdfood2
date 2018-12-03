@@ -14,8 +14,20 @@ type OrderController struct {
 func (this *OrderController)Index(){
 	var arr  []interface{}
 	var conditionStr []string
+	var page int =0
+	var err7 error
+	if pageStr :=this.GetString("page");pageStr!=""{
+		beego.Info(pageStr)
+		page,err7 = strconv.Atoi(pageStr)
+		if err7 !=nil {
 
-	engine := models.Engine.Limit(10)
+		}
+		beego.Info("strconv",page)
+		page  = (page-1)*10
+
+	}
+	beego.Info(page)
+	engine := models.Engine.Limit(10,page)
 
 	if campusId :=this.GetString("campus_id");campusId!=""{
 		beego.Info(campusId)
@@ -100,26 +112,73 @@ func (this *OrderController)Index(){
 	engineC := *engine
 	var orders []models.Order
 	var order models.Order
-	count,_ := engineC.Count(order)
+	count,_ := engineC.Count(&order)
 	err2 := engine.Find(&orders)
-	//
 	if err2 != nil {
 		//this.Ctx.WriteString("查询出错"+err2.Error())
 		this.ReturnJson(map[string]interface{}{"message":"查询出错"+err2.Error()},400)
 		//this.Ctx.WriteString(err2.Error())
 	}
+
+	//其他数据
+	var ordersNew []*models.OrderNew
+	//食堂
+	canteen ,err4 := models.Pluck(models.Engine.Table("canteen"),"name")
+	canteen[0] = "未知"
+	if err4 != nil{
+		this.ReturnJson(err4,400)
+	}
+	//校区
+	campus ,err5 := models.Pluck(models.Engine.Table("campus"),"name")
+	campus[0] = "未知"
+	if err5 != nil{
+		this.ReturnJson(err5,400)
+	}
+
+	//楼幢
+	building ,err6 := models.Pluck(models.Engine.Table("campus"),"name")
+	building[0] = "未知"
+	if err5 != nil{
+		this.ReturnJson(err6,400)
+	}
+
+	for _,v:= range orders{
+	//	ordern :=
+		ordersNew = append(ordersNew,&(models.OrderNew{v,(canteen[v.CanteenId]).(string),campus[v.CampusId].(string),building[v.BuildId].(string),models.EatType[v.EatType],models.MealType[v.MealType],models.PayStatus[v.PayStatus],models.Status[v.Status],models.PayType[v.PayType]}))
+	}
+
+
+	//
+
 	//
 
 
 	//this.Data["json"] = map[string]interface{}{"data":&orders}
 	//this.ServeJSON()
-	this.ReturnJson(map[string]interface{}{"data":orders,"count":count},200)
+	this.ReturnJson(map[string]interface{}{"data":ordersNew,"count":count},200)
 
 
 	//c.Data["json"] = order
 	//c.ServeJSON()
 
 
+
+}
+
+
+func(this *OrderController)Detail(){
+	//var goods []*models.Carts
+	//err := models.Engine.Limit(10).Find(&goods)
+	//if err != nil {
+	//	this.ReturnJson(err,200)
+	//}
+	//this.ReturnJson(map[string]interface{}{"data":goods},200)
+	var orderGoods []*models.OrderGoods
+	err := models.Engine.Join("INNER", "order", "order.id = carts.order_id").Limit(10).Find(&orderGoods)
+	if err != nil {
+		this.ReturnJson(err,200)
+	}
+	this.ReturnJson(map[string]interface{}{"data":orderGoods},200)
 
 }
 
@@ -139,20 +198,48 @@ func(this *OrderController)Ceshi(){
 	//}
 	//this.ReturnJson(map[string]interface{}{"data":orders,"count":count},200)
 
-	var canteen []models.Canteen
-	err := models.Engine.Select("id,name").Limit(10).Find(&canteen)
-	canteenData := make(map[int]string)
-	canteenData[78] = "vcitor"
-	for _,v := range canteen{
-		beego.Info(v.Id)
-		canteenData[int(v.Id)] = v.Name
-	}
+	//var canteen []models.Canteen
+	//err := models.Engine.Select("id,name").Limit(10).Find(&canteen)
+	//canteenData := make(map[int]string)
+	//canteenData[78] = "vcitor"
+	//for _,v := range canteen{
+	//	beego.Info(v.Id)
+	//	canteenData[int(v.Id)] = v.Name
+	//}
+	var canteenData []models.Canteen
+	//canteenData := make(map[int]string)
+	//var canteenData []string
+	//err := models.Engine.Cols("id").Limit(10).Find(&canteenData)
+	err := models.Engine.Table("canteen").Cols("name","id").Limit(10).Find(&canteenData)
+
+
+
 
 	if err != nil {
 		this.ReturnJson(err,200)
 	}
-	//beego.Info(canteen)
-	this.ReturnJson(map[string]interface{}{"data":canteenData},200)
+	//engine := models.Engine.Limit(10)
+	var names []string
+	err3 := models.Engine.Table("canteen").Cols("id").Limit(10).Find(&names)
+	if err3 != nil {
+		this.ReturnJson(err3,200)
+	}
+	res := make(map[int]interface{})
+
+	//for _,v := range names{
+	//	id,_ := strconv.Atoi(v)
+	//	res[id] = "sss"
+	//	//beego.Info(v)
+	//}
+
+
+	res ,err4 := models.Pluck(models.Engine.Table("canteen"),"name")
+	if err4 != nil{
+		this.ReturnJson(err4,200)
+	}
+
+
+	this.ReturnJson(map[string]interface{}{"columns":names,"data":res},200)
 }
 
 type Name struct {

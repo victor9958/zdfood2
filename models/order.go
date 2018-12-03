@@ -43,5 +43,63 @@ type Order struct {
 	UpdatedAt time.Time			`xorm:"VARCHAR(255)" json:"updated_at"`
 	Count int				`xorm:"not null INT(10)" json:"count"`
 	DeletedAt time.Time			`xorm:"VARCHAR(255)" json:"deleted_at"`
+	EatType int			`xorm:"TINYINT(1)" json:"eat_type"`
 
+}
+
+type OrderNew struct {
+	Order
+	CanteenName 	string `json:"canteen_name"`
+	CampusName 		string `json:"campus_name"`
+	BuildingName 	string `json:"building_name"`
+	EatTypeName 	string `json:"eat_type_name"`
+	MealTypeName 	string `json:"meal_type_name"`
+	PayStatusName 	string `json:"pay_status_name"`
+	StatusName 		string `json:"status_name"`
+	PayTypeName 	string `json:"pay_type_name"`
+}
+
+type OrderGoods struct {
+	Carts `xorm:"entends"`
+	Order
+}
+
+func(OrderGoods)TableName()string{
+	return "carts"
+}
+
+var EatType map[int]string = map[int]string{
+	0:"未知",
+	1:"外卖",
+	2:"堂食",
+}
+var MealType map[int]string = map[int]string{
+	0:"未知",
+	1:"早餐",
+	2:"中餐",
+	3:"晚餐",
+}
+var	PayStatus  map[int]string = map[int]string{
+	0:"未知",
+	1:"未支付",
+	2:"已支付",
+	3:"支付失败",
+}
+
+var	Status  map[int]string = map[int]string{
+	0:"未知",
+	1:"菜品生产中",
+	2:"待核销",
+	3:"已过期",
+	4:"已核销",
+	5:"带配送",
+	6:"配送中",
+	7:"配送完成",
+	8:"已取消",
+	//1菜品生产中  2待核销 3已过期  4已核销 5带配送 6配送中 7配送完成 8已取消
+}
+var	PayType  map[int]string = map[int]string{
+	0:"未知",
+	1:"一卡通",
+	2:"签单",
 }

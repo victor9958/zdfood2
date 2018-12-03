@@ -5,7 +5,11 @@ import (
 	"fmt"
 	"github.com/go-xorm/xorm"
 	"github.com/go-xorm/core"
+	"strconv"
 )
+type MyDb struct {
+	*xorm.Engine
+}
 var Engine *xorm.Engine
 
 func init(){
@@ -55,3 +59,33 @@ func init(){
 	Engine.SetTableMapper(core.SnakeMapper{})
 
 }
+
+
+func Pluck(db *xorm.Session,columnName string)(map[int]interface{}, error){
+	//两个数组
+	res := make(map[int]interface{})
+	var ids []string
+	var columns []string
+	db2 := *db
+	err := db.Cols("id").Find(&ids)
+	if err != nil {
+		return res,err
+	}
+	err2 := db2.Cols(columnName).Find(&columns)
+	if err != nil {
+		return res,err2
+	}
+	//循环对应产生一个map
+	for k,v := range ids{
+		id,_:= strconv.Atoi(v)
+		res[id] = columns[k]
+		//res = append(res,)
+
+
+	}
+
+
+
+	return res,nil
+}
+
