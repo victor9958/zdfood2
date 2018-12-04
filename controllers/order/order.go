@@ -144,7 +144,7 @@ func (this *OrderController)Index(){
 
 	for _,v:= range orders{
 	//	ordern :=
-		ordersNew = append(ordersNew,&(models.OrderNew{v,(canteen[v.CanteenId]).(string),campus[v.CampusId].(string),building[v.BuildId].(string),models.EatType[v.EatType],models.MealType[v.MealType],models.PayStatus[v.PayStatus],models.Status[v.Status],models.PayType[v.PayType]}))
+		ordersNew = append(ordersNew,&(models.OrderNew{v,(canteen[v.CanteenId]).(string),campus[v.CampusId].(string),building[v.BuildId].(string),"",models.EatType[v.EatType],models.MealType[v.MealType],models.PayStatus[v.PayStatus],models.Status[v.Status],models.PayType[v.PayType]}))
 	}
 
 
@@ -165,7 +165,9 @@ func (this *OrderController)Index(){
 
 }
 
-
+/*
+	订单详情
+ */
 func(this *OrderController)Detail(){
 	//var goods []*models.Carts
 	//err := models.Engine.Limit(10).Find(&goods)
@@ -173,13 +175,81 @@ func(this *OrderController)Detail(){
 	//	this.ReturnJson(err,200)
 	//}
 	//this.ReturnJson(map[string]interface{}{"data":goods},200)
-	var orderGoods []*models.OrderGoods
-	err := models.Engine.Join("INNER", "order", "order.id = carts.order_id").Limit(10).Find(&orderGoods)
-	if err != nil {
-		this.ReturnJson(err,200)
+	var order models.Order
+	var goods []*models.Carts
+	var id int = 0
+	//var err3 error
+	/*************************连表查询语句******************************************/
+	//err := models.Engine.Table("order").Join("INNER", "carts", "carts.order_id = order.id").Limit(10).Find(&orderGoods)
+	/*************************连表查询语句******************************************/
+	idStr := this.GetString("id")
+	if idStr == "" {
+		this.ReturnJson(map[string]string{"message":"请输入订单id"},400)
+	}else{
+		id,_ = strconv.Atoi(idStr)
 	}
-	this.ReturnJson(map[string]interface{}{"data":orderGoods},200)
 
+	res,err := models.Engine.Id(id).Get(&order)
+
+
+	if err != nil || !res {
+		if !res {
+			this.ReturnJson(map[string]string{"message":"订单不存在"},400)
+		}
+		this.ReturnJson(map[string]string{"message":err.Error()},400)
+	}
+
+	//其他数据
+	//食堂
+	var canteenName string = ""
+	if order.CanteenId != 0{
+		num ,_ := models.Engine.Table("canteen").Id(order.CanteenId).Cols("name").Get(&canteenName)
+		if !num  {
+			this.ReturnJson(map[string]string{"message":"无此食堂"},400)
+		}
+	}
+	//校区
+	var campusName string = ""
+	if order.CampusId != 0{
+		num ,_ := models.Engine.Table("campus").Id(order.CampusId).Cols("name").Get(&campusName)
+		if !num  {
+			this.ReturnJson(map[string]string{"message":"无此校区"},400)
+		}
+	}
+
+
+	//楼幢
+	var buildingName string = ""
+	if order.CampusId != 0{
+		num ,_ := models.Engine.Table("building").Id(order.BuildId).Cols("name").Get(&buildingName)
+		if !num  {
+			this.ReturnJson(map[string]string{"message":"无此楼撞"},400)
+		}
+	}
+
+
+	//区域
+	var areaName string = ""
+	if order.AreaId != 0{
+		num ,_ := models.Engine.Table("area").Id(order.AreaId).Cols("name").Get(&areaName)
+		if !num  {
+			this.ReturnJson(map[string]string{"message":"无此区域"},400)
+		}
+	}
+
+
+
+
+
+
+	//orderMap := controllers.StructToMap(order)
+	//beego.Info(orderMap)
+
+	err2 := models.Engine.Where("order_id = ?",id).Find(&goods)
+	if err2 != nil {
+		this.ReturnJson(map[string]string{"message":err2.Error()},400)
+	}
+	this.ReturnJson(map[string]interface{}{"data":models.OrderNew{order,canteenName,campusName,buildingName,areaName,models.EatType[order.EatType],models.MealType[order.MealType],models.PayStatus[order.PayStatus],models.Status[order.Status],models.PayType[order.PayType]},"goods":goods},200)
 }
 
 
@@ -206,11 +276,11 @@ func(this *OrderController)Ceshi(){
 	//	beego.Info(v.Id)
 	//	canteenData[int(v.Id)] = v.Name
 	//}
-	var canteenData []models.Canteen
-	//canteenData := make(map[int]string)
+	//var canteenData []models.Canteen
+	canteenData := make(map[int]interface{})
 	//var canteenData []string
 	//err := models.Engine.Cols("id").Limit(10).Find(&canteenData)
-	err := models.Engine.Table("canteen").Cols("name","id").Limit(10).Find(&canteenData)
+	err := models.Engine.Table("canteen").Limit(10).Find(&canteenData)
 
 
 
