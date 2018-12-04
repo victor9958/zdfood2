@@ -253,6 +253,16 @@ func(this *OrderController)Detail(){
 }
 
 
+/*
+ 取消订单
+ */
+ func(this *OrderController)Cancel(){
+	orderId:=this.GetString("id","0")
+	this.ReturnJson(orderId,200)
+ }
+
+
+
 func(this *OrderController)Ceshi(){
 
 
