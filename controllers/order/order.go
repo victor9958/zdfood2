@@ -462,3 +462,24 @@ func(this *OrderController)Ceshi2(){
 	//c.Data["json"] = order
 	//c.ServeJSON()
 }
+/*
+	取消订单
+ */
+ func(this *OrderController)cancel(){
+ 	var err error
+ 	var orderId int
+	 if orderIdStr := this.GetString("order_id");orderIdStr != "" {
+	 	orderId,err = strconv.Atoi(orderIdStr)
+		 if err != nil {
+			 this.ReturnJson(map[string]string{"message":"请输入正确的订单id"},200)
+		 }
+		 this.ReturnJson(map[string]string{"message":"请输入orderId"},200)
+	 }
+	 var order *models.Order
+	 res,err2 := models.Engine.Id(orderId).Get(&order)
+	 if err2 != nil {
+		 this.ReturnJson(map[string]string{"message":"订单不存在"},200)
+	 }
+
+
+ }
