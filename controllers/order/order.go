@@ -253,13 +253,6 @@ func(this *OrderController)Detail(){
 }
 
 
-/*
- 取消订单
- */
- func(this *OrderController)Cancel(){
-	orderId:=this.GetString("id","0")
-	this.ReturnJson(orderId,200)
- }
 
 
 
@@ -465,21 +458,63 @@ func(this *OrderController)Ceshi2(){
 /*
 	取消订单
  */
- func(this *OrderController)cancel(){
+ func(this *OrderController)Cancel(){
  	var err error
  	var orderId int
 	 if orderIdStr := this.GetString("order_id");orderIdStr != "" {
 	 	orderId,err = strconv.Atoi(orderIdStr)
 		 if err != nil {
-			 this.ReturnJson(map[string]string{"message":"请输入正确的订单id"},200)
+			 this.ReturnJson(map[string]string{"message":"请输入正确的订单id"},400)
 		 }
-		 this.ReturnJson(map[string]string{"message":"请输入orderId"},200)
+		 //this.ReturnJson(map[string]string{"message":"请输入orderId"},200)
 	 }
-	 var order *models.Order
+	 var order models.Order
 	 res,err2 := models.Engine.Id(orderId).Get(&order)
-	 if err2 != nil {
-		 this.ReturnJson(map[string]string{"message":"订单不存在"},200)
+	 if err2 != nil || !res{
+		 this.ReturnJson(map[string]string{"message":"订单不存在"},400)
+	 }
+	 if order.Status !=1 {
+		 this.ReturnJson(map[string]string{"message":"当前订单状态不可取消"},400)
+	 }
+	 if order.PayType !=1 {
+		 this.ReturnJson(map[string]string{"message":"只有一卡通才能取消订单"},400)
+	 }
+	 if order.PayStatus !=1 {
+		 this.ReturnJson(map[string]string{"message":"只有未支付订单才可取消订单"},400)
 	 }
 
+
+	 session := models.Engine.NewSession()
+	 defer session.Close()
+
+	 err3 := session.Begin()
+	 if err3 !=  nil {
+		 this.ReturnJson(map[string]string{"message":"只有未支付订单才可取消订单"},400)
+	 }
+	 _,err4 := session.Update(&order)
+	 if err4 != nil {
+	 	session.Rollback()
+		 this.ReturnJson(map[string]string{"message":"修改订单信息失败"},400)
+	 }
+	 var goods []*models.Carts
+	 err6 := models.Engine.Where("order_id = ?",order.Id).Find(&goods)
+	 if err6!=nil {
+		 this.ReturnJson(map[string]string{"message":"该订单的菜品信息错误"},400)
+	 }
+	 for k,_ := range goods{
+		 goods[k].Status = 3
+	 }
+
+	 num,err7 := session.Update(&goods)
+	 beego.Info(num)
+	 if err7 != nil {
+	 	session.Rollback()
+		 this.ReturnJson(map[string]string{"message":"修改菜品信息错误"},400)
+	 }
+
+	 err8 := session.Commit()
+	 if err8 != nil {
+		 this.ReturnJson(map[string]string{"message":"事务提交失败"},400)
+	 }
 
  }

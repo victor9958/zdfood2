@@ -13,5 +13,5 @@ func init() {
     beego.Router("/getcode", &controllers.MainController{},"get:GetCode")
     beego.Router("/ceshi", &order.OrderController{},"get:Ceshi")
     beego.Router("/ceshi2", &order.OrderController{},"get:Ceshi2")
-    beego.Router("/ceshi3/:id", &order.OrderController{},"get:Cancel")
+    beego.Router("/v1/admin/order/cancel", &order.OrderController{},"put:Cancel")
 }
