@@ -48,7 +48,7 @@ type Order struct {
 }
 
 type OrderNew struct {
-	Order
+	*Order
 	CanteenName 	string `json:"canteen_name"`
 	CampusName 		string `json:"campus_name"`
 	BuildingName 	string `json:"building_name"`

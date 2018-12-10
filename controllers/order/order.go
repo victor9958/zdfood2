@@ -2,7 +2,9 @@ package order
 
 import (
 	"github.com/astaxie/beego"
+	"github.com/go-xorm/xorm"
 	"strconv"
+	"time"
 	"zdfood2/controllers"
 	"zdfood2/models"
 )
@@ -10,10 +12,94 @@ import (
 type OrderController struct {
 	controllers.BaseController
 }
-
-func (this *OrderController)Index(){
+func(this *OrderController)condition(engine *xorm.Session){
 	var arr  []interface{}
 	var conditionStr []string
+		if campusId :=this.GetString("campus_id");campusId!=""{
+			beego.Info(campusId)
+			id ,_:= strconv.Atoi(campusId)
+			conditionStr = append(conditionStr,"campus_id = ?")
+			arr = append(arr,id)
+		}
+		if canteenId :=this.GetString("canteen_id");canteenId!=""{
+			beego.Info(canteenId)
+			id ,_:= strconv.Atoi(canteenId)
+			conditionStr = append(conditionStr,"canteen_id = ?")
+			arr = append(arr,id)
+		}
+		if eatType :=this.GetString("eat_type");eatType!=""{
+			beego.Info(eatType)
+			eatType ,_:= strconv.Atoi(eatType)
+			//condition["order.eat_type"] = eatType
+			conditionStr = append(conditionStr,"eat_type = ?")
+			arr = append(arr,eatType)
+		}
+		if payType :=this.GetString("pay_type");payType!=""{
+			beego.Info(payType)
+			payType ,_:= strconv.Atoi(payType)
+			//condition["order.pay_type"] = payType
+			conditionStr = append(conditionStr,"pay_type = ?")
+			arr = append(arr,payType)
+		}
+
+		if status :=this.GetString("status");status!=""{
+			beego.Info(status)
+			status ,_:= strconv.Atoi(status)
+			//condition["order.status"] = status
+			conditionStr = append(conditionStr,"status = ?")
+			arr = append(arr,status)
+		}
+
+		if signUnitId :=this.GetString("sign_unit_id");signUnitId!=""{
+			beego.Info(signUnitId)
+			signUnitId ,_:= strconv.Atoi(signUnitId)
+			//condition["order.sign_unit_id"] = signUnitId
+			conditionStr = append(conditionStr,"sign_unit_id = ?")
+			arr = append(arr,signUnitId)
+		}
+
+		if payStatus :=this.GetString("pay_status");payStatus!=""{
+			beego.Info(payStatus)
+			payStatus ,_:= strconv.Atoi(payStatus)
+			//condition["order.pay_status"] = payStatus
+			conditionStr = append(conditionStr,"pay_status = ?")
+			arr = append(arr,payStatus)
+		}
+
+		if repastDate :=this.GetString("repast_date");repastDate!=""{
+			beego.Info(repastDate)
+			//condition["order.repast_date"] = repastDate
+			conditionStr = append(conditionStr,"repast_date = ?")
+			arr = append(arr,repastDate)
+
+		}
+		if areaId :=this.GetString("area_id");areaId!=""{
+			beego.Info(areaId)
+			areaId ,_:= strconv.Atoi(areaId)
+			//condition["order.area_id"] = areaId
+			conditionStr = append(conditionStr,"area_id = ?")
+			arr = append(arr,areaId)
+		}
+		if nameOrMobile :=this.GetString("name_or_mobile");nameOrMobile!=""{
+			beego.Info(nameOrMobile)
+			//condition["order.user_name like"] = nameOrMobile
+			nameOrMobileStr := "%"+nameOrMobile+"%"
+			engine.Where("user_name like ? OR user_mobile like ?",nameOrMobileStr,nameOrMobileStr)
+		}
+		startTime :=this.GetString("start_time")
+		endTime:=this.GetString("end_time")
+		if startTime!="" && endTime!=""{
+			engine.Where("repast_date BETWEEN ? AND ?",startTime ,endTime)
+		}
+		if conditionNum := len(conditionStr); conditionNum !=0 {
+
+			conditionString := this.DisposeConditionStr(conditionStr...)
+			engine.Where(conditionString,arr...)
+		}
+}
+
+func (this *OrderController)Index(){
+
 	var page int =0
 	var err7 error
 	if pageStr :=this.GetString("page");pageStr!=""{
@@ -26,91 +112,14 @@ func (this *OrderController)Index(){
 		page  = (page-1)*10
 
 	}
+
 	beego.Info(page)
 	engine := models.Engine.Limit(10,page)
 
-	if campusId :=this.GetString("campus_id");campusId!=""{
-		beego.Info(campusId)
-		id ,_:= strconv.Atoi(campusId)
-		conditionStr = append(conditionStr,"campus_id = ?")
-		arr = append(arr,id)
-	}
-	if canteenId :=this.GetString("canteen_id");canteenId!=""{
-		beego.Info(canteenId)
-		id ,_:= strconv.Atoi(canteenId)
-		conditionStr = append(conditionStr,"canteen_id = ?")
-		arr = append(arr,id)
-	}
-	if eatType :=this.GetString("eat_type");eatType!=""{
-		beego.Info(eatType)
-		eatType ,_:= strconv.Atoi(eatType)
-		//condition["order.eat_type"] = eatType
-		conditionStr = append(conditionStr,"eat_type = ?")
-		arr = append(arr,eatType)
-	}
-	if payType :=this.GetString("pay_type");payType!=""{
-		beego.Info(payType)
-		payType ,_:= strconv.Atoi(payType)
-		//condition["order.pay_type"] = payType
-		conditionStr = append(conditionStr,"pay_type = ?")
-		arr = append(arr,payType)
-	}
+	this.condition(engine)
 
-	if status :=this.GetString("status");status!=""{
-		beego.Info(status)
-		status ,_:= strconv.Atoi(status)
-		//condition["order.status"] = status
-		conditionStr = append(conditionStr,"status = ?")
-		arr = append(arr,status)
-	}
-
-	if signUnitId :=this.GetString("sign_unit_id");signUnitId!=""{
-		beego.Info(signUnitId)
-		signUnitId ,_:= strconv.Atoi(signUnitId)
-		//condition["order.sign_unit_id"] = signUnitId
-		conditionStr = append(conditionStr,"sign_unit_id = ?")
-		arr = append(arr,signUnitId)
-	}
-
-	if payStatus :=this.GetString("pay_status");payStatus!=""{
-		beego.Info(payStatus)
-		payStatus ,_:= strconv.Atoi(payStatus)
-		//condition["order.pay_status"] = payStatus
-		conditionStr = append(conditionStr,"pay_status = ?")
-		arr = append(arr,payStatus)
-	}
-
-	if repastDate :=this.GetString("repast_date");repastDate!=""{
-		beego.Info(repastDate)
-		//condition["order.repast_date"] = repastDate
-		conditionStr = append(conditionStr,"repast_date = ?")
-		arr = append(arr,repastDate)
-
-	}
-	if areaId :=this.GetString("area_id");areaId!=""{
-		beego.Info(areaId)
-		areaId ,_:= strconv.Atoi(areaId)
-		//condition["order.area_id"] = areaId
-		conditionStr = append(conditionStr,"area_id = ?")
-		arr = append(arr,areaId)
-	}
-	if nameOrMobile :=this.GetString("name_or_mobile");nameOrMobile!=""{
-		beego.Info(nameOrMobile)
-		//condition["order.user_name like"] = nameOrMobile
-		nameOrMobileStr := "%"+nameOrMobile+"%"
-		engine.Where("user_name like ? OR user_mobile like ?",nameOrMobileStr,nameOrMobileStr)
-	}
-	startTime :=this.GetString("start_time")
-	endTime:=this.GetString("end_time")
-	if startTime!="" && endTime!=""{
-		engine.Where("repast_date BETWEEN ? AND ?",startTime ,endTime)
-	}
-	if conditionNum := len(conditionStr); conditionNum !=0 {
-		conditionString := this.DisposeConditionStr(conditionStr...)
-		engine.Where(conditionString,arr...)
-	}
 	engineC := *engine
-	var orders []models.Order
+	var orders []*models.Order
 	var order models.Order
 	count,_ := engineC.Count(&order)
 	err2 := engine.Find(&orders)
@@ -249,7 +258,7 @@ func(this *OrderController)Detail(){
 	if err2 != nil {
 		this.ReturnJson(map[string]string{"message":err2.Error()},400)
 	}
-	this.ReturnJson(map[string]interface{}{"data":models.OrderNew{order,canteenName,campusName,buildingName,areaName,models.EatType[order.EatType],models.MealType[order.MealType],models.PayStatus[order.PayStatus],models.Status[order.Status],models.PayType[order.PayType]},"goods":goods},200)
+	this.ReturnJson(map[string]interface{}{"data":models.OrderNew{&order,canteenName,campusName,buildingName,areaName,models.EatType[order.EatType],models.MealType[order.MealType],models.PayStatus[order.PayStatus],models.Status[order.Status],models.PayType[order.PayType]},"goods":goods},200)
 }
 
 
@@ -258,6 +267,9 @@ func(this *OrderController)Detail(){
 
 func(this *OrderController)Ceshi(){
 
+	arr := this.GetStrings("aa")
+
+	this.ReturnJson(map[string]interface{}{"columns":arr},200)
 
 	//var orders []models.Order
 	//engine :=models.Engine.Where("id = ?",542)
@@ -280,24 +292,24 @@ func(this *OrderController)Ceshi(){
 	//	canteenData[int(v.Id)] = v.Name
 	//}
 	//var canteenData []models.Canteen
-	canteenData := make(map[int]interface{})
+	//canteenData := make(map[int]interface{})
 	//var canteenData []string
 	//err := models.Engine.Cols("id").Limit(10).Find(&canteenData)
-	err := models.Engine.Table("canteen").Limit(10).Find(&canteenData)
+	//err := models.Engine.Table("canteen").Limit(10).Find(&canteenData)
 
 
 
 
-	if err != nil {
-		this.ReturnJson(err,200)
-	}
-	//engine := models.Engine.Limit(10)
-	var names []string
-	err3 := models.Engine.Table("canteen").Cols("id").Limit(10).Find(&names)
-	if err3 != nil {
-		this.ReturnJson(err3,200)
-	}
-	res := make(map[int]interface{})
+	//if err != nil {
+	//	this.ReturnJson(err,200)
+	//}
+	////engine := models.Engine.Limit(10)
+	//var names []string
+	//err3 := models.Engine.Table("canteen").Cols("id").Limit(10).Find(&names)
+	//if err3 != nil {
+	//	this.ReturnJson(err3,200)
+	//}
+	//res := make(map[int]interface{})
 
 	//for _,v := range names{
 	//	id,_ := strconv.Atoi(v)
@@ -306,13 +318,13 @@ func(this *OrderController)Ceshi(){
 	//}
 
 
-	res ,err4 := models.Pluck(models.Engine.Table("canteen"),"name")
-	if err4 != nil{
-		this.ReturnJson(err4,200)
-	}
+	//res ,err4 := models.Pluck(models.Engine.Table("canteen"),"name")
+	//if err4 != nil{
+	//	this.ReturnJson(err4,200)
+	//}
 
 
-	this.ReturnJson(map[string]interface{}{"columns":names,"data":res},200)
+	//this.ReturnJson(map[string]interface{}{"columns":names,"data":res},200)
 }
 
 type Name struct {
@@ -517,4 +529,129 @@ func(this *OrderController)Ceshi2(){
 		 this.ReturnJson(map[string]string{"message":"事务提交失败"},400)
 	 }
 
+
+
  }
+
+
+ /*
+ 	今日订单
+
+
+  */
+  func(this *OrderController)Today(){
+  	var orders []*models.Order
+  	t := time.Now()
+  	engine := models.Engine.Where("repast_date = ?",t.Format("2006-01-02"))
+  	this.condition(engine)
+	  if isFloor := this.GetString("is_floor");isFloor != "" {
+		 engine.OrderBy("floor")
+	  }
+  	//engineC := *engine
+
+
+
+
+
+
+
+	  var page int =0
+	  var err7 error
+	  if pageStr :=this.GetString("page");pageStr!=""{
+		  beego.Info(pageStr)
+		  page,err7 = strconv.Atoi(pageStr)
+		  if err7 !=nil {
+
+		  }
+		  page  = (page-1)*10
+
+	  }
+
+
+
+	  engineC := *engine
+	  var order models.Order
+	  count,_ := engineC.Count(&order)
+	  err2 := engine.Find(&orders)
+	  if err2 != nil {
+		 //this.Ctx.WriteString("查询出错"+err2.Error())
+		 this.ReturnJson(map[string]interface{}{"message":"查询出错"+err2.Error()},400)
+		 //this.Ctx.WriteString(err2.Error())
+	  }
+
+
+
+	  ////其他数据
+
+	  //食堂
+	  canteen ,err4 := models.Pluck(models.Engine.Table("canteen"),"name")
+	  canteen[0] = "未知"
+	  if err4 != nil{
+		 this.ReturnJson(err4,400)
+	  }
+	  //校区
+	  campus ,err5 := models.Pluck(models.Engine.Table("campus"),"name")
+	  campus[0] = "未知"
+	  if err5 != nil{
+		 this.ReturnJson(err5,400)
+	  }
+
+	  //楼幢
+	  building ,err6 := models.Pluck(models.Engine.Table("campus"),"name")
+	  building[0] = "未知"
+	  if err5 != nil{
+		 this.ReturnJson(err6,400)
+	  }
+
+	  this.ReturnJson(map[string]interface{}{"data":orders,"count":count},200)
+	  var ordersNew []*models.OrderNew
+	  for _,v:= range orders{
+		 //	ordern :=
+		 ordersNew = append(ordersNew,&(models.OrderNew{v,(canteen[v.CanteenId]).(string),campus[v.CampusId].(string),building[v.BuildId].(string),"",models.EatType[v.EatType],models.MealType[v.MealType],models.PayStatus[v.PayStatus],models.Status[v.Status],models.PayType[v.PayType]}))
+	  }
+
+
+	  this.ReturnJson(map[string]interface{}{"data":ordersNew,"count":count},200)
+
+
+
+  }
+
+  func(this *OrderController)BatchSign(){
+  	orderIds := this.GetStrings("order_ids")
+	  if len(orderIds)==0 {
+		  this.ReturnJson(map[string]string{"message":"请输入订单id"},400)
+
+	  }
+  	var orderIdsNew []int
+  	for _,v := range  orderIds{
+  		id ,_ :=strconv.Atoi(v)
+  		orderIdsNew = append(orderIdsNew,id)
+	}
+  	beego.Info(orderIdsNew)
+  	var orders []*models.Log
+  	err := models.Engine.In("id",orderIdsNew).Find(&orders)
+	  if err != nil {
+		  this.ReturnJson(map[string]string{"message":"查询出错"+err.Error()},400)
+	  }
+
+  	session := models.Engine.NewSession()
+
+	  for _,v := range orders{
+	  	beego.Info(v)
+	  	v.Value= "cccccc"
+		  beego.Info(v)
+		  _,err2 := session.Id(v.Id).Update(v)
+		  if err2 != nil {
+			  this.ReturnJson(map[string]string{"message":"更新出错"+err.Error()},400)
+		  }
+	  }
+
+
+
+	  beego.Info("更新结束")
+	  this.ReturnJson(map[string]string{"message":"更新成功"},200)
+
+
+
+  }
