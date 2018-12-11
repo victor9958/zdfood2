@@ -267,9 +267,18 @@ func(this *OrderController)Detail(){
 
 func(this *OrderController)Ceshi(){
 
-	arr := this.GetStrings("aa")
+	var users []*models.Goods
+	err := models.Engine.Find(&users)
+	beego.Info(users)
+	if err!= nil {
+		this.ReturnJson(map[string]string{"message":err.Error()},400)
+	}
 
-	this.ReturnJson(map[string]interface{}{"columns":arr},200)
+	this.ReturnJson(map[string]interface{}{"data":users},200)
+
+	//arr := this.GetStrings("aa")
+	//
+	//this.ReturnJson(map[string]interface{}{"columns":arr},200)
 
 	//var orders []models.Order
 	//engine :=models.Engine.Where("id = ?",542)
@@ -503,7 +512,7 @@ func(this *OrderController)Ceshi2(){
 	 if err3 !=  nil {
 		 this.ReturnJson(map[string]string{"message":"只有未支付订单才可取消订单"},400)
 	 }
-	 _,err4 := session.Update(&order)
+	 _,err4 := session.Id(order.Id).Update(&order)
 	 if err4 != nil {
 	 	session.Rollback()
 		 this.ReturnJson(map[string]string{"message":"修改订单信息失败"},400)
@@ -516,20 +525,19 @@ func(this *OrderController)Ceshi2(){
 	 for k,_ := range goods{
 		 goods[k].Status = 3
 	 }
-
-	 num,err7 := session.Update(&goods)
-	 beego.Info(num)
-	 if err7 != nil {
-	 	session.Rollback()
-		 this.ReturnJson(map[string]string{"message":"修改菜品信息错误"},400)
+	 for _,v := range goods{
+	 	v.Status = 3
+		 _,err7 := session.Id(v.Id).Update(&v)
+		 if err7 != nil {
+			 session.Rollback()
+			 this.ReturnJson(map[string]string{"message":"修改菜品信息错误"},400)
+		 }
 	 }
 
 	 err8 := session.Commit()
 	 if err8 != nil {
 		 this.ReturnJson(map[string]string{"message":"事务提交失败"},400)
 	 }
-
-
 
  }
 
@@ -639,7 +647,7 @@ func(this *OrderController)Ceshi2(){
 
 	  for _,v := range orders{
 	  	beego.Info(v)
-	  	v.Value= "cccccc"
+	  	v.Value= "vvvvv"
 		  beego.Info(v)
 		  _,err2 := session.Id(v.Id).Update(v)
 		  if err2 != nil {
@@ -653,5 +661,45 @@ func(this *OrderController)Ceshi2(){
 	  this.ReturnJson(map[string]string{"message":"更新成功"},200)
 
 
+
+  }
+
+  func (this *OrderController)CreateOrder(){
+  	var order models.Order
+  	//var carts []*models.Carts
+  	goods := make([]models.Goods,0)
+
+  	err3 := models.Engine.Find(&goods)
+	  if err3 != nil {
+		  this.ReturnJson(map[string]string{"message":"无可售商品"},400)
+	  }
+
+
+
+	  if userId := this.GetString("user_id");userId == ""{
+		  this.ReturnJson(map[string]string{"message":"缺少用户id"},400)
+	  }else{
+	  	userIdInt,err := strconv.Atoi(userId)
+		  if err != nil {
+			  this.ReturnJson(map[string]string{"message":"输入的用户id不是数字"},400)
+		  }
+
+	  	e,err2 := models.Engine.Id(userIdInt).Get(&user)
+		  if err2 != nil || !e {
+			  this.ReturnJson(map[string]string{"message":"用户不存在"},400)
+		  }
+
+	  	order.UserId = userIdInt
+	  }
+
+	  if goodsStr := this.GetStrings("goods_ids");len(goodsStr)==0{
+	  	this.ReturnJson(map[string]string{"message":"请选择商品"},400)
+	  }else{
+	  	//查询到了商品
+	  	//for _,v := range goodsStr{
+	  	//
+		//}
+
+	  }
 
   }
