@@ -1,6 +1,7 @@
 package order
 
 import (
+	"encoding/json"
 	"github.com/astaxie/beego"
 	"github.com/go-xorm/xorm"
 	"strconv"
@@ -263,18 +264,39 @@ func(this *OrderController)Detail(){
 
 
 
-
+type CeshiJson struct {
+	GoodsIds string
+}
 
 func(this *OrderController)Ceshi(){
 
-	var users []*models.Goods
-	err := models.Engine.Find(&users)
-	beego.Info(users)
-	if err!= nil {
-		this.ReturnJson(map[string]string{"message":err.Error()},400)
-	}
 
-	this.ReturnJson(map[string]interface{}{"data":users},200)
+
+	this.ReturnJson(map[string]string{"message":time.Now().Format("2006-01-02 15:04:05")},400)
+
+	//if  goodsIds := this.GetStrings("goods_ids");len(goodsIds)>0{
+	//	beego.Info("goods_ids")
+	//	this.ReturnJson(map[string]interface{}{"data":goodsIds},200)
+	//}
+	//
+	//if goodsIds2:=this.GetStrings("goods_ids[]");len(goodsIds2)>0 {
+	//	beego.Info("goods_ids[]")
+	//	this.ReturnJson(map[string]interface{}{"message":goodsIds2},200)
+	//}
+	//var ob CeshiJson
+	//json.Unmarshal(this.Ctx.Input.RequestBody,&ob)
+	//this.ReturnJson(map[string]interface{}{"json_data":ob},400)
+	//
+	//this.ReturnJson(map[string]string{"message":"没有进入任何选项"},400)
+
+	//var users []*models.Goods
+	//err := models.Engine.Find(&users)
+	//beego.Info(users)
+	//if err!= nil {
+	//	this.ReturnJson(map[string]string{"message":err.Error()},400)
+	//}
+	//
+	//this.ReturnJson(map[string]interface{}{"data":users},200)
 
 	//arr := this.GetStrings("aa")
 	//
@@ -668,6 +690,10 @@ func(this *OrderController)Ceshi2(){
   	var order models.Order
   	//var carts []*models.Carts
   	goods := make([]models.Goods,0)
+  	var user models.User
+  	var goodsInput models.GoodsInput
+  	var campus models.Campus
+  	var canteen models.Canteen
 
   	err3 := models.Engine.Find(&goods)
 	  if err3 != nil {
@@ -692,6 +718,19 @@ func(this *OrderController)Ceshi2(){
 	  	order.UserId = userIdInt
 	  }
 
+	  err4 := json.Unmarshal(this.Ctx.Input.RequestBody,&goodsInput)
+	  if err4 != nil {
+		  this.ReturnJson(map[string]string{"message":"商品信息错误"},400)
+	  }
+
+	  beego.Info(goodsInput)
+
+
+
+	  nowTime:= time.Now().Format("2006-01-02 15:04:05")
+	  beego.Info(nowTime)
+
+
 	  if goodsStr := this.GetStrings("goods_ids");len(goodsStr)==0{
 	  	this.ReturnJson(map[string]string{"message":"请选择商品"},400)
 	  }else{
@@ -701,5 +740,119 @@ func(this *OrderController)Ceshi2(){
 		//}
 
 	  }
+	  //就餐时间
+	  if order.RepastDate =this.GetString("repast_date");order.RepastDate == "" {
+		  this.ReturnJson(map[string]string{"message":"缺少就餐时间"},400)
+	  }
+	  //就餐方式
+	  if eayType :=this.GetString("eat_type");eayType != "" {
+	  		eatTypeInt,err5 := strconv.Atoi(eayType)
+		  if err5 != nil {
+			  this.ReturnJson(map[string]string{"message":"就餐方式传参错误"},400)
+		  }
+		  order.EatType = eatTypeInt
+	  }else{
+		  this.ReturnJson(map[string]string{"message":"就餐方式必选"},400)
+	  }
+	  //支付方式
+	  if payType:=this.GetString("pay_type");payType != "" {
+		  payTypeInt,err6 := strconv.Atoi(payType)
+		  if err6 != nil {
+			  this.ReturnJson(map[string]string{"message":"支付方式传参错误"},400)
+		  }
+		  order.PayType = payTypeInt
+	  }else{
+		  this.ReturnJson(map[string]string{"message":"缺少支付方式"},400)
+	  }
+		//签单单位id
+	  if order.PayType ==2 {
+		  signUnitId :=this.GetString("sign_unit_id")
+		  if signUnitId == "" {
+			  this.ReturnJson(map[string]string{"message":"缺少签单单位id"},400)
+		  }
+		  signUnitIdInt,err7 := strconv.Atoi(signUnitId)
+
+		  if err7 != nil {
+			  this.ReturnJson(map[string]string{"message":"请输入正确的签单单位id"},400)
+		  }
+		  order.SignUnitId = signUnitIdInt
+	  }
+	  //就餐方式
+	  if mealType:=this.GetString("meal_type");mealType != "" {
+		  mealTypeInt,err7 := strconv.Atoi(mealType)
+		  if err7 != nil {
+			  this.ReturnJson(map[string]string{"message":"餐次传参错误"},400)
+		  }
+		  order.MealType = mealTypeInt
+	  }else{
+		  this.ReturnJson(map[string]string{"message":"缺少餐次信息"},400)
+	  }
+	  //校区
+	  if campusId :=this.GetString("campus_id");campusId != "" {
+		  campusIdInt,err8 := strconv.Atoi(campusId)
+		  if err8 != nil {
+			  this.ReturnJson(map[string]string{"message":"校区信息传参错误"},400)
+		  }
+		  campusE,err9 := models.Engine.Id(campusIdInt).Get(&campus)
+		  if err9 == nil || !campusE {
+			  this.ReturnJson(map[string]string{"message":"校区信息不存在"},400)
+		  }
+		  order.CampusId = campusIdInt
+	  }else{
+		  this.ReturnJson(map[string]string{"message":"缺少校区信息"},400)
+	  }
+	//食堂
+	  if canteenId :=this.GetString("canteen_id");canteenId != "" {
+		  canteenIdInt,err8 := strconv.Atoi(canteenId)
+		  if err8 != nil {
+			  this.ReturnJson(map[string]string{"message":"食堂信息传参错误"},400)
+		  }
+
+		  canteenE,err10 := models.Engine.Id(canteenIdInt).Get(&canteen)
+		  if err10 != nil && !canteenE {
+			  this.ReturnJson(map[string]string{"message":"食堂信息不存在"},400)
+		  }
+		  order.CanteenId = canteenIdInt
+	  }else{
+		  this.ReturnJson(map[string]string{"message":"缺少餐次信息"},400)
+	  }
+	  //用户信息
+	  order.UserId = user.Id
+	  order.UserName = user.Name
+	  order.UserMobile = user.Mobile
+
+	  //楼宇 外卖
+	  if order.EatType==1 {
+		  buildId := this.GetString("build_id")
+		  if buildId =="" {
+			  this.ReturnJson(map[string]string{"message":"缺少楼宇信息"},400)
+		  }
+		  buildIdInt,err11 := strconv.Atoi(buildId)
+		  if err11 != nil {
+			  this.ReturnJson(map[string]string{"message":"请输入正确的楼宇id"},400)
+		  }
+		  order.BuildId = buildIdInt
+
+		  floor := this.GetString("floor")
+		  if floor =="" {
+			  this.ReturnJson(map[string]string{"message":"缺少楼层信息"},400)
+		  }
+		  floorInt,err12 := strconv.Atoi(floor)
+		  if err12 != nil {
+			  this.ReturnJson(map[string]string{"message":"请输入正确的楼宇id"},400)
+		  }
+		  order.Floor = floorInt
+
+	  }
+
+	  //时间
+	  //order.CreatedAt = nowTime
+	  //order.UpdatedAt = nowTime
+
+
+
+
+
+
 
   }

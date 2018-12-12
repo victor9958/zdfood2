@@ -34,3 +34,8 @@ type Goods struct {
 	DeletedAt time.Time			`xorm:"VARCHAR(255)" json:"deleted_at"`
 
 }
+type GoodsInput struct {
+	GoodsId []int `json:"goods_id"`
+	Num []int `json:"num"`
+	
+}
