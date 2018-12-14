@@ -7,7 +7,7 @@ import (
 
 type Goods struct {
 	Id int             		`xorm:"not null pk autoincr INT(11)" json:"id"`
-	ZdDishId int             		`xorm:"not null pk autoincr INT(11)" json:"zd_dish_id"`
+	ZdDishId int             		`xorm:"INT(11)" json:"zd_dish_id"`
 	Code string 		`xorm:"not null CHAR(50)" json:"code"`
 	CanteenId int     		`xorm:"not null INT(11)" json:"canteen_id"`
 	Name string		`xorm:"not null VARCHAR(255)" json:"name"`

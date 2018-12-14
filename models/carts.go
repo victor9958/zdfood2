@@ -21,7 +21,7 @@ type Carts struct {
 
 	AreaId int				`xorm:"not null INT(11)" json:"area_id"`
 	Status int				`xorm:"not null INT(11)" json:"status"`
-	TakeOutType string	`xorm:"not null VARCHAR(50)" json:"take_out_type"`
+	TakeOutType int	`xorm:"TINYINT(1)" json:"take_out_type"`
 
 	CreatedAt time.Time			`xorm:"created" json:"created_at"`
 	UpdatedAt time.Time			`xorm:"VARCHAR(255)" json:"updated_at"`

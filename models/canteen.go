@@ -20,7 +20,7 @@ type Canteen struct {
 	OrderExpire int64			`xorm:"not null INT(11)" json:"order_expire"`
 	CantSubMinute int		`xorm:"not null INT(11)" json:"cant_sub_minute"`
 	Latitude string			`xorm:"not null VARCHAR(255)" json:"latitude"`
-	Longitude int		 	`xorm:"not null VARCHAR(255)" json:"longitude"`
+	Longitude string		 	`xorm:"not null VARCHAR(255)" json:"longitude"`
 	Email int				`xorm:"not null VARCHAR(11)" json:"email"`
 	Origin string			`xorm:"not null TINYINT(1)" json:"origin"`
 	LunchStartAt string		`xorm:"not null VARCHAR(29)" json:"lunch_start_at"`

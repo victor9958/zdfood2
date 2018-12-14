@@ -270,15 +270,15 @@ type CeshiJson struct {
 
 func(this *OrderController)Ceshi(){
 
-	var log models.Log
-	log.Value = "sss"
-	log.Key = "sssss"
-	_,err := models.Engine.Insert(&log)
-	if err != nil {
-		this.ReturnJson(map[string]string{"message":err.Error()},400)
-
-	}
-	this.ReturnJson(map[string]interface{}{"message":log},400)
+	//var log models.Log
+	//log.Value = "sss"
+	//log.Key = "sssss"
+	//_,err := models.Engine.Insert(&log)
+	//if err != nil {
+	//	this.ReturnJson(map[string]string{"message":err.Error()},400)
+	//
+	//}
+	//this.ReturnJson(map[string]interface{}{"message":log},400)
 	//this.ReturnJson(map[string]string{"message":time.Now().Format("2006-01-02 15:04:05")},400)
 	//timeStr ,_:= time.Parse("2006-01-02 15:04:05","2018-11-13 19:00:00")
 	//num := timeStr.Add(3600*12*1e9)
@@ -300,14 +300,14 @@ func(this *OrderController)Ceshi(){
 	//
 	//this.ReturnJson(map[string]string{"message":"没有进入任何选项"},400)
 
-	//var users []*models.Admin
-	//err := models.Engine.Find(&users)
-	//beego.Info(users)
-	//if err!= nil {
-	//	this.ReturnJson(map[string]string{"message":err.Error()},400)
-	//}
+	var users []*models.Carts
+	err := models.Engine.Find(&users)
+	beego.Info(users)
+	if err!= nil {
+		this.ReturnJson(map[string]string{"message":err.Error()},400)
+	}
 	//
-	//this.ReturnJson(map[string]interface{}{"data":users},200)
+	this.ReturnJson(map[string]interface{}{"data":users},200)
 
 	//arr := this.GetStrings("aa")
 	//
@@ -700,7 +700,7 @@ func(this *OrderController)Ceshi2(){
   func (this *OrderController)CreateOrder(){
   	var order models.Order
   	//var carts []*models.Carts
-  	goods := make([]models.Goods,0)
+  	goods := make(map[int64]models.Goods)
   	var user models.User
   	var goodsInput models.GoodsInput
   	var campus models.Campus
@@ -709,10 +709,7 @@ func(this *OrderController)Ceshi2(){
   	var area models.Area
   	var admin models.Admin
 
-  	err3 := models.Engine.Find(&goods)
-	  if err3 != nil {
-		  this.ReturnJson(map[string]string{"message":"无可售商品"},400)
-	  }
+
 
 
 
@@ -737,7 +734,14 @@ func(this *OrderController)Ceshi2(){
 		  this.ReturnJson(map[string]string{"message":"商品信息错误"},400)
 	  }
 
+	  err3 := models.Engine.In("id",goodsInput.GoodsId).Find(&goods)
+	  if err3 != nil {
+		  this.ReturnJson(map[string]string{"message":"无可售商品"+err3.Error()+"err3"},400)
+	  }
+	  //this.ReturnJson(map[string]interface{}{"data":goods},400)
+
 	  beego.Info(goodsInput)
+	  beego.Info(goods)
 
 	  for  _,v := range goodsInput.Num{
 		 order.Count += v
@@ -836,7 +840,7 @@ func(this *OrderController)Ceshi2(){
 		  }
 		  order.CanteenId = canteenIdInt
 	  }else{
-		  this.ReturnJson(map[string]string{"message":"缺少餐次信息"},400)
+		  this.ReturnJson(map[string]string{"message":"缺少食堂信息"},400)
 	  }
 	  //用户信息
 	  order.UserId = user.Id
@@ -896,7 +900,7 @@ func(this *OrderController)Ceshi2(){
 	  if order.MealType ==2 {
 	  	timeEatStart,err16 =time.Parse(models.BaseFormat,order.RepastDate+" "+canteen.LunchStartAt)
 		  if err16 != nil {
-			  this.ReturnJson(map[string]string{"message":"时间转换出错"},400)
+			  this.ReturnJson(map[string]string{"message":"时间转换出错"+err16.Error()},400)
 		  }
 	  	timeEatEnd,err17 =time.Parse(models.BaseFormat,order.RepastDate+" "+canteen.LunchEndAt)
 		  if err17 != nil {
@@ -914,43 +918,52 @@ func(this *OrderController)Ceshi2(){
 			  this.ReturnJson(map[string]string{"message":"时间转换出错"},400)
 		  }
 	  }
+	  if len(goodsInput.GoodsId)==0 || len(goodsInput.Num)==0  {
+		  this.ReturnJson(map[string]string{"message":"请输入商品参数"},400)
+	  }
 
 	  //验证菜品
 	  for _,v := range goodsInput.GoodsId{
-		  if goods[v].CanteenId != order.CanteenId  {
+		  if goods[int64(v)].CanteenId != order.CanteenId  {
 			  this.ReturnJson(map[string]string{"message":"菜品不属于该食堂"},400)
 		  }
 	  }
+	  beego.Info("验证菜品结束")
 	  order.EatStartAt = timeEatStart
 	  order.EatEndAt = timeEatEnd.Add(time.Duration(canteen.OrderExpire*60*1e9))
 
 	  order.CardNo  = user.CardNo
 
 	  //时间
+	  beego.Info("时间开始")
 	  t := time.Now()
 	  order.CreatedAt = t
 	  order.UpdatedAt = t
 	  //time.Now()
+
+	  order.DiscountPrice = "0.00"
 
 
 
 
 	  session := models.Engine.NewSession()
 	  defer session.Close()
-
+		beego.Info("插入开始1")
 	  err18 := session.Begin()
 	  if err18 !=  nil {
 		  this.ReturnJson(map[string]string{"message":"只有未支付订单才可取消订单"},400)
 	  }
+	  beego.Info("插入开始2")
 	  insertNum,err19 := session.InsertOne(&order)
 	  if err19 != nil || insertNum ==0  {
 		  session.Rollback()
-		  this.ReturnJson(map[string]string{"message":"添加订单失败"},400)
+		  this.ReturnJson(map[string]string{"message":"添加订单失败"+err19.Error()},400)
 	  }
+	  beego.Info("插入开始3")
 	  var cartInsert []*models.Carts
 	  var orderFinalPrice float64
 	  for k,v:= range goodsInput.GoodsId{
-	  	  goodsPrice ,err20 := strconv.ParseFloat(goods[v].Price,64)
+	  	  goodsPrice ,err20 := strconv.ParseFloat(goods[int64(v)].Price,64)
 		  if err20 != nil {
 			  this.ReturnJson(map[string]string{"message":"菜品价格有误"},400)
 		  }
@@ -968,8 +981,8 @@ func(this *OrderController)Ceshi2(){
 		  cart.FinalPrice = strconv.FormatFloat(finalPrice,'f',2,64)
 		  cart.OrderId = order.Id
 		  cart.Status=1
-		  cart.GoodsImage = goods[k].ImageUrl
-		  cart.GoodsName = goods[k].Name
+		  cart.GoodsImage = goods[int64(k)].ImageUrl
+		  cart.GoodsName = goods[int64(k)].Name
 		  cart.CreatedAt = t
 		  cart.UpdatedAt = t
 		  cartInsert = append(cartInsert,&cart)
@@ -978,17 +991,19 @@ func(this *OrderController)Ceshi2(){
 	  _,err21 := session.Insert(&cartInsert)
 	  if err21 != nil {
 		  session.Rollback()
-		  this.ReturnJson(map[string]string{"message":"事务提交失败"},400)
+		  this.ReturnJson(map[string]string{"message":"事务提交失败"+err21.Error()+"err21"},400)
 	  }
+	  //修改最终价格
+	  order.DiscountPrice = strconv.FormatFloat(orderFinalPrice,'f',2,64)
 	  _,err22 := session.Id(order.Id).Update(&order)
 	  if err22 != nil {
 	  		session.Rollback()
-		  this.ReturnJson(map[string]string{"message":"事务提交失败"},400)
+		  this.ReturnJson(map[string]string{"message":"事务提交失败"+err22.Error()+"err22"},400)
 	  }
 
 	  err23 := session.Commit()
 	  if err23 != nil {
-		  this.ReturnJson(map[string]string{"message":"事务提交失败"},400)
+		  this.ReturnJson(map[string]string{"message":"事务提交失败"+err23.Error()+"err23"},400)
 	  }
 
 	  this.ReturnJson(map[string]string{"message":"生成订单成功"},400)
