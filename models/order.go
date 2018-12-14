@@ -39,6 +39,7 @@ type Order struct {
 	RepastDate string		`xorm:"VARCHAR(255)" json:"repast_date"`
 	CreatedAt time.Time			`xorm:"created" json:"created_at"`
 	EatStartAt time.Time			`xorm:"VARCHAR(255)" json:"eat_start_at"`
+	EatEndAt time.Time			`xorm:"VARCHAR(255)" json:"eat_end_at"`
 	TakeAt time.Time				`xorm:"VARCHAR(255)" json:"take_at"`
 	UpdatedAt time.Time			`xorm:"VARCHAR(255)" json:"updated_at"`
 	Count int				`xorm:"not null INT(10)" json:"count"`
@@ -64,6 +65,8 @@ type OrderGoods struct {
 	Order 	`xorm:"entends"`
 
 }
+
+const BaseFormat = "2006-01-02 15:04:05"
 type OrderGoodsTwo struct {
 	//Order 	`xorm:"entends"`
 

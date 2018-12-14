@@ -16,6 +16,7 @@ type Carts struct {
 	StyleName string		`xorm:"not null VARCHAR(255)" json:"style_name"`
 	StyleImage string		`xorm:"not null VARCHAR(255)" json:"style_image"`
 	GoodsName string		`xorm:"not null VARCHAR(255)" json:"goods_name"`
+	GoodsImage string		`xorm:"not null VARCHAR(255)" json:"goods_image"`
 	FinalPrice string	`xorm:"not null DECIMAL(10,2)" json:"final_price"`
 
 	AreaId int				`xorm:"not null INT(11)" json:"area_id"`

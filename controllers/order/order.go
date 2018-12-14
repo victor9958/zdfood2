@@ -265,14 +265,24 @@ func(this *OrderController)Detail(){
 
 
 type CeshiJson struct {
-	GoodsIds string
+	GoodsIds []int
 }
 
 func(this *OrderController)Ceshi(){
 
+	var log models.Log
+	log.Value = "sss"
+	log.Key = "sssss"
+	_,err := models.Engine.Insert(&log)
+	if err != nil {
+		this.ReturnJson(map[string]string{"message":err.Error()},400)
 
-
-	this.ReturnJson(map[string]string{"message":time.Now().Format("2006-01-02 15:04:05")},400)
+	}
+	this.ReturnJson(map[string]interface{}{"message":log},400)
+	//this.ReturnJson(map[string]string{"message":time.Now().Format("2006-01-02 15:04:05")},400)
+	//timeStr ,_:= time.Parse("2006-01-02 15:04:05","2018-11-13 19:00:00")
+	//num := timeStr.Add(3600*12*1e9)
+	//this.ReturnJson(map[string]interface{}{"message":num},400)
 
 	//if  goodsIds := this.GetStrings("goods_ids");len(goodsIds)>0{
 	//	beego.Info("goods_ids")
@@ -285,11 +295,12 @@ func(this *OrderController)Ceshi(){
 	//}
 	//var ob CeshiJson
 	//json.Unmarshal(this.Ctx.Input.RequestBody,&ob)
+	//for _,v := range
 	//this.ReturnJson(map[string]interface{}{"json_data":ob},400)
 	//
 	//this.ReturnJson(map[string]string{"message":"没有进入任何选项"},400)
 
-	//var users []*models.Goods
+	//var users []*models.Admin
 	//err := models.Engine.Find(&users)
 	//beego.Info(users)
 	//if err!= nil {
@@ -694,6 +705,9 @@ func(this *OrderController)Ceshi2(){
   	var goodsInput models.GoodsInput
   	var campus models.Campus
   	var canteen models.Canteen
+  	var build models.Building
+  	var area models.Area
+  	var admin models.Admin
 
   	err3 := models.Engine.Find(&goods)
 	  if err3 != nil {
@@ -725,21 +739,26 @@ func(this *OrderController)Ceshi2(){
 
 	  beego.Info(goodsInput)
 
+	  for  _,v := range goodsInput.Num{
+		 order.Count += v
+	  }
+
+
 
 
 	  nowTime:= time.Now().Format("2006-01-02 15:04:05")
 	  beego.Info(nowTime)
 
 
-	  if goodsStr := this.GetStrings("goods_ids");len(goodsStr)==0{
-	  	this.ReturnJson(map[string]string{"message":"请选择商品"},400)
-	  }else{
-	  	//查询到了商品
-	  	//for _,v := range goodsStr{
-	  	//
+	  //if goodsStr := this.GetStrings("goods_ids");len(goodsStr)==0{
+	  //	this.ReturnJson(map[string]string{"message":"请选择商品"},400)
+	  //}else{
+	  //	//查询到了商品
+	  //	for _,v := range goodsStr.num{
+	  //		goodsCount += v
 		//}
-
-	  }
+	  //
+	  //}
 	  //就餐时间
 	  if order.RepastDate =this.GetString("repast_date");order.RepastDate == "" {
 		  this.ReturnJson(map[string]string{"message":"缺少就餐时间"},400)
@@ -776,6 +795,9 @@ func(this *OrderController)Ceshi2(){
 			  this.ReturnJson(map[string]string{"message":"请输入正确的签单单位id"},400)
 		  }
 		  order.SignUnitId = signUnitIdInt
+
+		  //签单人
+		  order.SignName = user.Name
 	  }
 	  //就餐方式
 	  if mealType:=this.GetString("meal_type");mealType != "" {
@@ -831,6 +853,10 @@ func(this *OrderController)Ceshi2(){
 		  if err11 != nil {
 			  this.ReturnJson(map[string]string{"message":"请输入正确的楼宇id"},400)
 		  }
+		  buildE,err12 := models.Engine.Id(buildIdInt).Get(&build)
+		  if err12!= nil|| !buildE {
+			  this.ReturnJson(map[string]string{"message":"查无次楼宇信息"},400)
+		  }
 		  order.BuildId = buildIdInt
 
 		  floor := this.GetString("floor")
@@ -843,16 +869,128 @@ func(this *OrderController)Ceshi2(){
 		  }
 		  order.Floor = floorInt
 
+		  //详细地址
+
+		  order.Address = campus.Name+" "+canteen.Name+ " "+floor+"楼 "+this.GetString("address")
+		  //区域
+		  areaE,err13 := models.Engine.Id(build.AreaId).Get(&area)
+		  if err13!=nil|| !areaE {
+			  this.ReturnJson(map[string]string{"message":"查无此区域"},400)
+		  }
+		  order.AreaId = build.AreaId
+		  adminE,err14 := models.Engine.Id(area.AdminId).Get(&admin)
+		  if err14 != nil || !adminE {
+			  this.ReturnJson(map[string]string{"message":"骑手信息错误"},400)
+		  }
+		  order.RiderId = admin.Id
+		  order.RiderName = admin.Name
+		  order.RiderMobile = admin.Mobile
+
+
+	  }
+	  var timeEatStart,timeEatEnd time.Time
+	  var err16,err17 error
+
+
+	  //如果是午餐
+	  if order.MealType ==2 {
+	  	timeEatStart,err16 =time.Parse(models.BaseFormat,order.RepastDate+" "+canteen.LunchStartAt)
+		  if err16 != nil {
+			  this.ReturnJson(map[string]string{"message":"时间转换出错"},400)
+		  }
+	  	timeEatEnd,err17 =time.Parse(models.BaseFormat,order.RepastDate+" "+canteen.LunchEndAt)
+		  if err17 != nil {
+			  this.ReturnJson(map[string]string{"message":"时间转换出错"},400)
+		  }
+	  }
+	  //如果是午餐
+	  if order.MealType ==3 {
+		  timeEatStart,err16 =time.Parse(models.BaseFormat,order.RepastDate+" "+canteen.DinnerStartAt)
+		  if err16 != nil {
+			  this.ReturnJson(map[string]string{"message":"时间转换出错"},400)
+		  }
+		  timeEatEnd,err17 =time.Parse(models.BaseFormat,order.RepastDate+" "+canteen.DinnerStartAt)
+		  if err17 != nil {
+			  this.ReturnJson(map[string]string{"message":"时间转换出错"},400)
+		  }
 	  }
 
+	  //验证菜品
+	  for _,v := range goodsInput.GoodsId{
+		  if goods[v].CanteenId != order.CanteenId  {
+			  this.ReturnJson(map[string]string{"message":"菜品不属于该食堂"},400)
+		  }
+	  }
+	  order.EatStartAt = timeEatStart
+	  order.EatEndAt = timeEatEnd.Add(time.Duration(canteen.OrderExpire*60*1e9))
+
+	  order.CardNo  = user.CardNo
+
 	  //时间
-	  //order.CreatedAt = nowTime
-	  //order.UpdatedAt = nowTime
+	  t := time.Now()
+	  order.CreatedAt = t
+	  order.UpdatedAt = t
+	  //time.Now()
 
 
 
 
+	  session := models.Engine.NewSession()
+	  defer session.Close()
 
+	  err18 := session.Begin()
+	  if err18 !=  nil {
+		  this.ReturnJson(map[string]string{"message":"只有未支付订单才可取消订单"},400)
+	  }
+	  insertNum,err19 := session.InsertOne(&order)
+	  if err19 != nil || insertNum ==0  {
+		  session.Rollback()
+		  this.ReturnJson(map[string]string{"message":"添加订单失败"},400)
+	  }
+	  var cartInsert []*models.Carts
+	  var orderFinalPrice float64
+	  for k,v:= range goodsInput.GoodsId{
+	  	  goodsPrice ,err20 := strconv.ParseFloat(goods[v].Price,64)
+		  if err20 != nil {
+			  this.ReturnJson(map[string]string{"message":"菜品价格有误"},400)
+		  }
+		  finalPrice := goodsPrice*float64(goodsInput.Num[k])
+		  orderFinalPrice += finalPrice
 
+		  var cart models.Carts
+		  cart.UserId = user.Id
+		  cart.GoodsId = v
+		  cart.CanteenId = canteen.Id
+		  cart.TakeOutType = order.TakeOutType
+		  cart.AreaId = order.AreaId
+		  cart.EatType = order.EatType
+		  cart.Num = goodsInput.Num[k]
+		  cart.FinalPrice = strconv.FormatFloat(finalPrice,'f',2,64)
+		  cart.OrderId = order.Id
+		  cart.Status=1
+		  cart.GoodsImage = goods[k].ImageUrl
+		  cart.GoodsName = goods[k].Name
+		  cart.CreatedAt = t
+		  cart.UpdatedAt = t
+		  cartInsert = append(cartInsert,&cart)
+
+	  }
+	  _,err21 := session.Insert(&cartInsert)
+	  if err21 != nil {
+		  session.Rollback()
+		  this.ReturnJson(map[string]string{"message":"事务提交失败"},400)
+	  }
+	  _,err22 := session.Id(order.Id).Update(&order)
+	  if err22 != nil {
+	  		session.Rollback()
+		  this.ReturnJson(map[string]string{"message":"事务提交失败"},400)
+	  }
+
+	  err23 := session.Commit()
+	  if err23 != nil {
+		  this.ReturnJson(map[string]string{"message":"事务提交失败"},400)
+	  }
+
+	  this.ReturnJson(map[string]string{"message":"生成订单成功"},400)
 
   }
