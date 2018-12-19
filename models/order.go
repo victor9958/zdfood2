@@ -52,12 +52,21 @@ type OrderNew struct {
 	CanteenName 	string `json:"canteen_name"`
 	CampusName 		string `json:"campus_name"`
 	BuildingName 	string `json:"building_name"`
-	AreaName 	string `json:"area_name"`
+	AreaName 		string `json:"area_name"`
+	UnitName 		string `json:"unit_name"`
+
+
 	EatTypeName 	string `json:"eat_type_name"`
 	MealTypeName 	string `json:"meal_type_name"`
 	PayStatusName 	string `json:"pay_status_name"`
 	StatusName 		string `json:"status_name"`
 	PayTypeName 	string `json:"pay_type_name"`
+}
+type OrderGoodsNew struct {
+	*OrderNew
+	GoodsName string `json:"goods_name"`
+	GoodsNum	int `json:"goods_num"`
+	GoodsPrice string `json:"goods_price"`
 }
 
 type OrderGoods struct {
@@ -158,4 +167,10 @@ var	PayType  map[int]string = map[int]string{
 	0:"未知",
 	1:"一卡通",
 	2:"签单",
+}
+
+type OrderPriceSun struct {
+	Id int64
+	Money int
+	Rate float32
 }

@@ -2,6 +2,7 @@ package order
 
 import (
 	"encoding/json"
+	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/astaxie/beego"
 	"github.com/go-xorm/xorm"
 	"strconv"
@@ -154,7 +155,7 @@ func (this *OrderController)Index(){
 
 	for _,v:= range orders{
 	//	ordern :=
-		ordersNew = append(ordersNew,&(models.OrderNew{v,(canteen[v.CanteenId]).(string),campus[v.CampusId].(string),building[v.BuildId].(string),"",models.EatType[v.EatType],models.MealType[v.MealType],models.PayStatus[v.PayStatus],models.Status[v.Status],models.PayType[v.PayType]}))
+		ordersNew = append(ordersNew,&(models.OrderNew{v,(canteen[v.CanteenId]).(string),campus[v.CampusId].(string),building[v.BuildId].(string),"","",models.EatType[v.EatType],models.MealType[v.MealType],models.PayStatus[v.PayStatus],models.Status[v.Status],models.PayType[v.PayType]}))
 	}
 
 
@@ -259,7 +260,7 @@ func(this *OrderController)Detail(){
 	if err2 != nil {
 		this.ReturnJson(map[string]string{"message":err2.Error()},400)
 	}
-	this.ReturnJson(map[string]interface{}{"data":models.OrderNew{&order,canteenName,campusName,buildingName,areaName,models.EatType[order.EatType],models.MealType[order.MealType],models.PayStatus[order.PayStatus],models.Status[order.Status],models.PayType[order.PayType]},"goods":goods},200)
+	this.ReturnJson(map[string]interface{}{"data":models.OrderNew{&order,canteenName,campusName,buildingName,areaName,"",models.EatType[order.EatType],models.MealType[order.MealType],models.PayStatus[order.PayStatus],models.Status[order.Status],models.PayType[order.PayType]},"goods":goods},200)
 }
 
 
@@ -269,6 +270,42 @@ type CeshiJson struct {
 }
 
 func(this *OrderController)Ceshi(){
+
+	//t := strconv.Itoa(int(time.Now().Unix()))
+	//w := map[string]string{"first":"您的订单已结账成功",
+	//"keyword1":"keyword1",
+	//"keyword2":"keyword2",
+	//"keyword3":"keyword3",
+	//"time":t,
+	//"touser":"oW9idwtwDrOEE8w2ZgZPL8b9nNY0"}
+	////oW9idwtwDrOEE8w2ZgZPL8b9nNY0
+	//err := this.SendMessageTmplate2(w)
+	//if err!= nil {
+	//	this.ReturnJson(map[string]string{"message":err.Error()},400)
+	//}
+	//bb := "肯定及时飞机上的浪费"
+	//bbb := strings.Replace(bb,"及时","aaa",-1)
+	//bbb :=base64.StdEncoding.EncodeToString([]byte(bb))  //base64 编码
+	//urlencode 是把 字符串转变成16进制然后 在每个字符前面加上 %
+	//this.ReturnJson(map[string]string{"message":"成功"},400)
+
+
+	//aa := "%E8%82%AF%E5%AE%9A%E5%B0%B1%E6%98%AF%E9%A3%9E%E6%9C%BA%E4%B8%8A%E7%9A%84%E6%B5%AA%E8%B4%B9"
+	//bb := "肯定及时飞机上的浪费"
+	//bbb := url.QueryEscape(bb)
+	////bbb :=base64.StdEncoding.EncodeToString([]byte(bb))  //base64 编码
+	////urlencode 是把 字符串转变成16进制然后 在每个字符前面加上 %
+	//this.ReturnJson(map[string]string{"message":bbb,"2222":aa},400)
+
+	//t := make(map[string]string)
+	//
+	//t["message"] = "这的说法是打开了房间"
+	//str,err := url.Parse(t["message"])
+	//if err != nil {
+	//		this.ReturnJson(map[string]string{"message":err.Error()},400)
+	//}
+	//this.ReturnJson(map[string]string{"message":str.Query().Encode()},400)
+
 
 	//var log models.Log
 	//log.Value = "sss"
@@ -301,11 +338,12 @@ func(this *OrderController)Ceshi(){
 	//this.ReturnJson(map[string]string{"message":"没有进入任何选项"},400)
 
 	var users []*models.Carts
-	err := models.Engine.Find(&users)
+	err := models.Engine.Where("order_id = ?",347).Find(&users)
 	beego.Info(users)
 	if err!= nil {
 		this.ReturnJson(map[string]string{"message":err.Error()},400)
 	}
+
 	//
 	this.ReturnJson(map[string]interface{}{"data":users},200)
 
@@ -648,7 +686,7 @@ func(this *OrderController)Ceshi2(){
 	  var ordersNew []*models.OrderNew
 	  for _,v:= range orders{
 		 //	ordern :=
-		 ordersNew = append(ordersNew,&(models.OrderNew{v,(canteen[v.CanteenId]).(string),campus[v.CampusId].(string),building[v.BuildId].(string),"",models.EatType[v.EatType],models.MealType[v.MealType],models.PayStatus[v.PayStatus],models.Status[v.Status],models.PayType[v.PayType]}))
+		 ordersNew = append(ordersNew,&(models.OrderNew{v,(canteen[v.CanteenId]).(string),campus[v.CampusId].(string),building[v.BuildId].(string),"","",models.EatType[v.EatType],models.MealType[v.MealType],models.PayStatus[v.PayStatus],models.Status[v.Status],models.PayType[v.PayType]}))
 	  }
 
 
@@ -1009,3 +1047,364 @@ func(this *OrderController)Ceshi2(){
 	  this.ReturnJson(map[string]string{"message":"生成订单成功"},400)
 
   }
+
+  func(this *OrderController)TakeOutList(){
+  	orderId := this.GetString("order_id")
+	  if orderId=="" {
+		  this.ReturnJson(map[string]string{"message":"缺少订单id"},400)
+	  }
+  	orderIdInt,err3 := strconv.Atoi(orderId)
+	  if err3 != nil  {
+		  this.ReturnJson(map[string]string{"message":"订单id是数字"},400)
+	  }
+  	var order models.Order
+  	orderE,err := models.Engine.Id(orderIdInt).Get(&order)
+  	if err != nil || !orderE {
+		this.ReturnJson(map[string]string{"message":"订单已失效"},400)
+	}
+
+  	var list []*models.Admin
+  	campusId := this.GetString("campus_id")
+
+	  if orderId=="" {
+		  this.ReturnJson(map[string]string{"message":"缺少订单id"},400)
+	  }
+	  campusIdInt,err4 := strconv.Atoi(campusId)
+
+	  if err4 != nil {
+		  this.ReturnJson(map[string]string{"message":"校区参数错误"},400)
+	  }
+  	err2 := models.Engine.Where("campus_id = ?",campusIdInt).Find(&list)
+	  if err2 != nil {
+		  this.ReturnJson(map[string]string{"message":"外卖员查询错误"},400)
+	  }
+  	var AdminList []*models.AdminValue
+	  for _,v:= range list{
+	  	var value int
+		  if order.RiderId == v.Id {
+			  value = 1
+		  }else{
+		  	  value = 0
+		  }
+	  	AdminList = append(AdminList,&models.AdminValue{v,value})
+	  }
+
+
+	  this.ReturnJson(map[string]interface{}{"data":AdminList},200)
+  }
+
+
+  func(this *OrderController)ChangeTakeOut(){
+
+	  orderId := this.GetString("order_id")
+	  if orderId=="" {
+		  this.ReturnJson(map[string]string{"message":"缺少订单id"},400)
+	  }
+	  orderIdInt,err3 := strconv.Atoi(orderId)
+	  if err3 != nil {
+		  this.ReturnJson(map[string]string{"message":"订单id是数字"},400)
+	  }
+	  var order models.Order
+	  orderE,err := models.Engine.Id(orderIdInt).Get(&order)
+	  if err != nil || orderE {
+		  this.ReturnJson(map[string]string{"message":"订单已失效"},400)
+	  }
+
+	  adminId := this.GetString("admin_id")
+	  if adminId == "" {
+		  this.ReturnJson(map[string]string{"message":"缺少外卖员id"},400)
+	  }
+	  adminIdInt,err4 := strconv.Atoi(adminId)
+	  if err4 != nil {
+		  this.ReturnJson(map[string]string{"message":"外卖员id不是数字"},400)
+	  }
+	  var admin models.Admin
+	  adminE,err5 := models.Engine.Id(adminIdInt).Get(&admin)
+	  if err5 != nil || !adminE {
+		  this.ReturnJson(map[string]string{"message":"该外卖员信息缺失"},400)
+	  }
+	  order.RiderId = admin.Id
+	  order.RiderName = admin.Name
+	  order.RiderMobile = admin.Mobile
+	  num,err6 := models.Engine.Id(order.Id).Update(&order)
+	  if err6 != nil || num==0 {
+		  this.ReturnJson(map[string]string{"message":"修改失败"},400)
+	  }
+	  this.ReturnJson(map[string]string{"message":"修改成功"},200)
+
+  }
+
+  func(this *OrderController)SignList(){
+  	engine := models.Engine.NewSession()
+  	this.condition(engine)
+  	engine.Where("pay_type = ? AND status BETWEEN ? AND ?",2,1,7)
+  	enginePrice := *engine
+  	engineCount := *engine
+  	var orderPrice models.Order
+  	orderPriceF64,err := enginePrice.Sum(orderPrice,"discount_price")
+	  if err != nil {
+		  this.ReturnJson(map[string]string{"message":err.Error()},400)
+	  }
+  	beego.Info(orderPriceF64)
+
+  	//count
+  	orderCount,err8 := engineCount.Count(orderPrice)
+	  if err8 != nil {
+		  this.ReturnJson(map[string]string{"message":err8.Error()},400)
+	  }
+  	beego.Info(orderCount)
+
+
+	  var page int =1
+	  var err7 error
+	  if pageStr :=this.GetString("page");pageStr!=""{
+		  beego.Info(pageStr)
+		  page,err7 = strconv.Atoi(pageStr)
+		  if err7 !=nil {
+
+		  }
+		  beego.Info("strconv",page)
+		  page  = (page-1)*10
+
+	  }
+
+	  var orders []*models.Order
+	  err2 := engine.Limit(10,page).Find(&orders)
+	  if err2 != nil {
+		  this.ReturnJson(map[string]string{"message":"分页查询错误"},400)
+	  }
+
+	  //其他数据
+	  var ordersNew []*models.OrderNew
+	  //食堂
+	  canteen ,err4 := models.Pluck(models.Engine.Table("canteen"),"name")
+	  canteen[0] = "未知"
+	  if err4 != nil{
+		  this.ReturnJson(err4,400)
+	  }
+	  //校区
+	  campus ,err5 := models.Pluck(models.Engine.Table("campus"),"name")
+	  campus[0] = "未知"
+	  if err5 != nil{
+		  this.ReturnJson(err5,400)
+	  }
+
+	  //楼幢
+	  building ,err6 := models.Pluck(models.Engine.Table("campus"),"name")
+	  building[0] = "未知"
+	  if err5 != nil{
+		  this.ReturnJson(err6,400)
+	  }
+
+	  //签单单位
+	  unit,err7 := models.Pluck(models.Engine.Table("unit"),"name")
+	  unit[0] = "未知"
+	  if err7 != nil{
+		  this.ReturnJson(err7,400)
+	  }
+
+
+
+	  for _,v:= range orders{
+		  //	ordern :=
+		  ordersNew = append(ordersNew,&(models.OrderNew{v,(canteen[v.CanteenId]).(string),campus[v.CampusId].(string),building[v.BuildId].(string),"",unit[v.SignUnitId].(string),models.EatType[v.EatType],models.MealType[v.MealType],models.PayStatus[v.PayStatus],models.Status[v.Status],models.PayType[v.PayType]}))
+	  }
+
+	  this.ReturnJson(map[string]interface{}{"data":ordersNew,"count":orderCount,"price_count":orderPriceF64},200)
+
+
+  }
+
+  type OrderIds struct {
+  	OrderIds []int
+  }
+
+
+  func(this *OrderController) BatchSignNotified(){
+  	userId := this.GetSession("user_id")
+	  if userId != nil {
+		  this.ReturnJson(map[string]string{"message":"找不到用户"},400)
+	  }
+  	var admin models.Admin
+  	adminE,err := models.Engine.Id(userId).Get(&admin)
+	  if err != nil || !adminE {
+		  this.ReturnJson(map[string]string{"message":"操作人信息不存在"+err.Error()},400)
+	  }
+
+  	var orderIds OrderIds
+
+	  if err2 := json.Unmarshal(this.Ctx.Input.RequestBody,&orderIds);err2 != nil {
+		  this.ReturnJson(map[string]string{"message":"订单id错误"},400)
+	  }
+
+	  t := int(time.Now().Unix())
+	  //orderDatas
+		orders := make(map[int64]*models.Order)
+		err3 := models.Engine.In("id",orderIds.OrderIds).Find(&orders)
+	  if err3 != nil {
+		  this.ReturnJson(map[string]string{"message":"订单查询错误"},400)
+	  }
+		var userIds []int
+		for _,v := range orders{
+			if v.PayType ==2 && v.PayStatus == 1 {
+				userIds = append(userIds,v.UserId)
+			}
+		}
+		users := make(map[int64]models.User)
+		err4 := models.Engine.In("id",userIds).Find(&users)
+		if err4 != nil{
+			this.ReturnJson(map[string]string{"message":"用户查询错误"},400)
+		}
+
+	  //签单单位
+	  unit,err7 := models.Pluck(models.Engine.Table("unit"),"name")
+	  unit[0] = "未知"
+	  if err7 != nil{
+		  this.ReturnJson(err7,400)
+	  }
+
+	  for _,v := range orders{
+		  if _,ok := users[int64(v.UserId)]; ok && v.PayType ==2 && v.PayStatus == 1 {
+			  this.SendMessageTmplate2(map[string]string{"first":"您的签单订单还未结转,请及时结转",
+			  "keyword1":"笔数:1笔,金额:"+v.DiscountPrice,
+			  "keyword2":time.Now().Format(models.BaseFormat),
+			  "keyword3":unit[v.SignUnitId].(string),
+			  "time":strconv.Itoa(t),
+			  "tourer":users[int64(v.UserId)].Openid,
+			  })
+		  }
+	  }
+  }
+
+
+
+  /*
+  			订单到处execl
+   */
+   func(this *OrderController)OrderExecl(){
+   	var userId int = 7
+	   //if userId := this.GetSession("user_id");userId == nil{
+		//   this.ReturnJson(map[string]string{"message":"已过期请重新登录"},400)
+	   //}
+
+   	//当前操作人员信息
+   	var user models.Admin
+   	userE,err9 := models.Engine.Id(userId).Get(&user)
+   	beego.Info(user)
+   	if err9!= nil || !userE {
+		this.ReturnJson(map[string]string{"message":"用户不存在"+err9.Error()},400)
+	}
+
+
+
+	   //其他数据
+	   //食堂
+	   canteen ,err4 := models.Pluck(models.Engine.Table("canteen"),"name")
+	   canteen[0] = "未知"
+	   if err4 != nil{
+		   this.ReturnJson(err4,400)
+	   }
+	   //校区
+	   campus ,err5 := models.Pluck(models.Engine.Table("campus"),"name")
+	   campus[0] = "未知"
+	   if err5 != nil{
+		   this.ReturnJson(err5,400)
+	   }
+
+	   //楼幢
+	   building ,err6 := models.Pluck(models.Engine.Table("building"),"name")
+	   building[0] = "未知"
+	   if err5 != nil{
+		   this.ReturnJson(err6,400)
+	   }
+
+	   beego.Info(building)
+
+	   //签单单位
+	   area,err7 := models.Pluck(models.Engine.Table("area"),"name")
+	   area[0] = "未知"
+	   if err7 != nil{
+		   this.ReturnJson(err7,400)
+	   }
+
+	   //形成一个slise 包着 slice
+	   var orderExecl [][]string
+	   orderExecl = append(orderExecl,[]string{"订单号","就餐日期","客户姓名","手机号","就餐方式","就餐餐次","套餐","数量","金额","地址","支付方式","配送员","配送员电话"})
+
+	   engine := models.Engine.NewSession()
+
+	   this.condition(engine)
+
+	   var i = 2
+
+	   aa:
+	   for  {
+	   		engineTmp := *engine
+	   		var orders []*models.Order
+	   		err := engineTmp.Where("campus_id = ?",user.CampusId).Limit(50,(i-1)*50).Find(&orders)
+
+	   		//err := models.Engine.Table("order").Join("INNER", "carts", "carts.order_id = order.id").Limit(10).Find(&orderGoods)
+		   if err != nil {
+			   this.ReturnJson(map[string]string{"message":"分页查询错误"},400)
+		   }
+
+
+		   //if i==2 {
+			//   break aa
+		   //}
+
+	   		if len(orders) ==0 {
+				this.ReturnJson(map[string]string{"message":"跳出循环"},400)
+	   			break aa
+			}
+	   		for _,v := range orders{
+	   			var goods []*models.Carts
+
+	   			address := canteen[v.CampusId].(string)+building[v.BuildId].(string)+strconv.Itoa(v.Floor)+"楼"+v.Address
+	   			//address := ""
+	   			err10 := models.Engine.Where("order_id = ?",v.Id).Find(&goods)
+				//if err10 != nil {
+				//	this.ReturnJson(map[string]string{"message":"查询商品错误"},400)
+				//}
+				beego.Info(err10)
+	   			if len(goods) == 0{
+					orderExecl = append(orderExecl,[]string{v.OrderSn,v.RepastDate,v.UserName,v.UserMobile,models.EatType[v.EatType],
+						models.MealType[v.MealType],"","","",
+						address,models.PayType[v.PayType],v.RiderName,v.RiderMobile})
+				}else {
+					for _,g := range goods{
+						orderExecl = append(orderExecl,[]string{v.OrderSn,v.RepastDate,v.UserName,v.UserMobile,models.EatType[v.EatType],
+							models.MealType[v.MealType],g.GoodsName,strconv.Itoa(g.Num),g.FinalPrice,
+						address,models.PayType[v.PayType],v.RiderName,v.RiderMobile})
+					}
+				}
+
+
+			}
+
+	   		i++
+	   }
+
+		beego.Info(orderExecl)
+	   ex := excelize.NewFile()
+	   for k,v := range orderExecl{
+		   for key,val := range v{
+			   ex.SetCellValue("sheet1",controllers.ExeclMap[key]+strconv.Itoa(k+1),val)
+			   //beego.Info(controllers.ExeclMap[key]+strconv.Itoa(k))
+		   }
+
+	   }
+	  err11 := ex.SaveAs("./Book.xlsx")
+	   if err11 != nil {
+		   this.ReturnJson(map[string]string{"message":"已过期请重新登录"},400)
+	   }
+
+	   this.ReturnJson(map[string]string{"message":"结束"},400)
+
+
+
+
+
+   }
+
+

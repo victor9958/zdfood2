@@ -31,3 +31,9 @@ type Admin struct {
 
 }
 
+type AdminValue struct {
+	*Admin
+	Value int `json:"value"`
+}
+
+

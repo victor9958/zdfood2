@@ -35,6 +35,7 @@ func init(){
 	//
 	//orm.RunSyncdb("default", false, false)
 	Engine,_ = xorm.NewEngine("mysql",fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8", user, passwd, host, port, dbname))
+	beego.Info(host)
 	//if err != nil {
 	//	beego.Error(err)
 	//	return
@@ -80,12 +81,6 @@ func Pluck(db *xorm.Session,columnName string)(map[int]interface{}, error){
 		id,_:= strconv.Atoi(v)
 		res[id] = columns[k]
 		//res = append(res,)
-
-
 	}
-
-
-
 	return res,nil
 }
-
