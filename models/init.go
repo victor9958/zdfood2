@@ -84,3 +84,5 @@ func Pluck(db *xorm.Session,columnName string)(map[int]interface{}, error){
 	}
 	return res,nil
 }
+
+

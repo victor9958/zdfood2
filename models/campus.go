@@ -2,6 +2,7 @@ package models
 
 import (
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/go-xorm/xorm"
 	"time"
 )
 
@@ -19,4 +20,18 @@ type Campus struct {
 	UpdatedAt time.Time			`xorm:"VARCHAR(255)" json:"updated_at"`
 	DeletedAt time.Time			`xorm:"VARCHAR(255)" json:"deleted_at"`
 
+}
+
+func PluckCampusName(x *xorm.Session)(map[int]interface{},error){
+	campus := map[int64]Campus{}
+	err:= x.Select("id,name").Find(&campus)
+	if err != nil{
+		return map[int]interface{}{},err
+	}
+	res := map[int]interface{}{}
+	for _,v := range campus{
+		res[v.Id] = v.Name
+	}
+	res[0] = "未知"
+	return res,nil
 }

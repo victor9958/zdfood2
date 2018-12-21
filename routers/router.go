@@ -3,7 +3,8 @@ package routers
 import (
 	"zdfood2/controllers"
 	"github.com/astaxie/beego"
-	"zdfood2/controllers/order"
+    "zdfood2/controllers/finance"
+    "zdfood2/controllers/order"
 )
 
 func init() {
@@ -20,4 +21,5 @@ func init() {
     beego.Router("/v1/admin/order/create-order", &order.OrderController{},"post:CreateOrder")
     beego.Router("/v1/admin/order/sign-list", &order.OrderController{},"get:SignList")
     beego.Router("/v1/admin/order/order-all-execl", &order.OrderController{},"get:OrderExecl")
+    beego.Router("/v1/admin/order/order-statistics", &finance.FinanceController{},"get:OrderStatistics")
 }

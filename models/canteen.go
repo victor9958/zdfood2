@@ -2,6 +2,7 @@ package models
 
 import (
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/go-xorm/xorm"
 	"time"
 )
 
@@ -36,4 +37,17 @@ type Canteen struct {
 	UpdatedAt time.Time			`xorm:"VARCHAR(255)" json:"updated_at"`
 	DeletedAt time.Time			`xorm:"VARCHAR(255)" json:"deleted_at"`
 
+}
+
+func PluckCanteenName(x *xorm.Session)(map[int]interface{},error){
+	tMap := map[int64]Canteen{}
+	err:= x.Select("id,name").Find(&tMap)
+	if err != nil{
+		return map[int]interface{}{},err
+	}
+	res := map[int]interface{}{}
+	for _,v := range tMap{
+		res[v.Id] = v.Name
+	}
+	return res,nil
 }

@@ -2,9 +2,13 @@ package order
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/astaxie/beego"
 	"github.com/go-xorm/xorm"
+	"io"
+	"net/http"
+	"reflect"
 	"strconv"
 	"time"
 	"zdfood2/controllers"
@@ -269,7 +273,65 @@ type CeshiJson struct {
 	GoodsIds []int
 }
 
+func(this *OrderController)ExcelHeader(path string){
+	this.Ctx.Output.Header("Accept-Ranges", "bytes")
+	this.Ctx.Output.Header("Content-Disposition", "attachment; filename="+fmt.Sprintf("%s", path))//文件名
+	this.Ctx.Output.Header("Cache-Control", "must-revalidate, post-check=0, pre-check=0")
+	this.Ctx.Output.Header("Pragma", "no-cache")
+	this.Ctx.Output.Header("Expires", "0")
+	http.ServeFile(this.Ctx.ResponseWriter, this.Ctx.Request, "Book.xlsx")
+}
+
 func(this *OrderController)Ceshi(){
+	var name Name
+	name.Id = 111
+	name.Name = "vart"
+	object := reflect.ValueOf(&name)
+	myref := object.Elem()
+
+	for i:=0;i<myref.NumField() ;i++{
+		field := myref.Field(i)
+		beego.Info(field)
+		beego.Info(field.Interface())
+	}
+
+	this.ReturnJson("结束",200)
+
+
+	//var orders []*models.OrderExcel
+	////err := engineTmp.Where("campus_id = ?",user.CampusId).Limit(50,(i-1)*50).Find(&orders)
+	//err := models.Engine.Table("order").Join("INNER","carts","carts.order_id = order.id").
+	//	Select("`order`.*,`carts`.num,`carts`.goods_name,`carts`.final_price").
+	//	Where("order.campus_id = ?",1).Find(&orders)
+	//beego.Info(err)
+	//this.ReturnJson(map[string]interface{}{"data":orders},200)
+
+
+
+
+	//ex := excelize.NewFile()
+	//ex.SetCellValue("sheet1","A1","sssssss")
+	//buff,err11 := ex.WriteToBuffer()
+	//if err11 != nil {
+	//	this.ReturnJson(map[string]string{"message":"已过期请重新登录"},400)
+	//}
+	//
+	////测试下载
+	////this.Ctx.Output.Header("Accept-Ranges", "bytes")
+	//this.Ctx.Output.Header("Content-Type", "application/octet-stream")
+	//this.Ctx.Output.Header("Content-Disposition", "attachment; filename="+fmt.Sprintf("%s", "Book.xlsx"))//文件名
+	//this.Ctx.Output.Header("Cache-Control", "must-revalidate, post-check=0, pre-check=0")
+	//this.Ctx.Output.Header("Pragma", "no-cache")
+	//this.Ctx.Output.Header("Expires", "0")
+	//_,err12 := io.Copy(this.Ctx.ResponseWriter,buff)
+	//if err12 != nil{
+	//	this.ReturnJson(map[string]string{"message":"写入header出错"},400)
+	//}
+	//this.ReturnJson(map[string]string{"message":"写入完成"},200)
+	//http.ServeFile(this.Ctx.ResponseWriter, this.Ctx.Request, "Book.xlsx")
+	//this.ExcelHeader("Book.xlsx")
+	//最主要的一句
+
 
 	//t := strconv.Itoa(int(time.Now().Unix()))
 	//w := map[string]string{"first":"您的订单已结账成功",
@@ -337,15 +399,15 @@ func(this *OrderController)Ceshi(){
 	//
 	//this.ReturnJson(map[string]string{"message":"没有进入任何选项"},400)
 
-	var users []*models.Carts
-	err := models.Engine.Where("order_id = ?",347).Find(&users)
-	beego.Info(users)
-	if err!= nil {
-		this.ReturnJson(map[string]string{"message":err.Error()},400)
-	}
-
+	//var users []*models.Carts
+	//err := models.Engine.Where("order_id = ?",347).Find(&users)
+	//beego.Info(users)
+	//if err!= nil {
+	//	this.ReturnJson(map[string]string{"message":err.Error()},400)
+	//}
 	//
-	this.ReturnJson(map[string]interface{}{"data":users},200)
+	////
+	//this.ReturnJson(map[string]interface{}{"data":users},200)
 
 	//arr := this.GetStrings("aa")
 	//
@@ -1340,50 +1402,51 @@ func(this *OrderController)Ceshi2(){
 	   aa:
 	   for  {
 	   		engineTmp := *engine
-	   		var orders []*models.Order
-	   		err := engineTmp.Where("campus_id = ?",user.CampusId).Limit(50,(i-1)*50).Find(&orders)
+	   		var orders []*models.OrderExcel
+	   		//err := engineTmp.Where("campus_id = ?",user.CampusId).Limit(50,(i-1)*50).Find(&orders)
+	   		err := engineTmp.Table("order").Join("INNER","carts","carts.order_id = order.id").
+	   			Select("`order`.*,`carts`.num,`carts`.goods_name,`carts`.final_price").
+	   			Where("order.campus_id = ?",user.CampusId).
+	   			Limit(50,(i-1)*50).Find(&orders)
 
 	   		//err := models.Engine.Table("order").Join("INNER", "carts", "carts.order_id = order.id").Limit(10).Find(&orderGoods)
 		   if err != nil {
-			   this.ReturnJson(map[string]string{"message":"分页查询错误"},400)
+			   this.ReturnJson(map[string]string{"message":"分页查询错误"+err.Error()},400)
 		   }
 
-
-		   //if i==2 {
-			//   break aa
-		   //}
-
 	   		if len(orders) ==0 {
-				this.ReturnJson(map[string]string{"message":"跳出循环"},400)
 	   			break aa
 			}
 	   		for _,v := range orders{
-	   			var goods []*models.Carts
+	   			//var goods []*models.Carts
 
 	   			address := canteen[v.CampusId].(string)+building[v.BuildId].(string)+strconv.Itoa(v.Floor)+"楼"+v.Address
 	   			//address := ""
-	   			err10 := models.Engine.Where("order_id = ?",v.Id).Find(&goods)
+	   			//err10 := models.Engine.Where("order_id = ?",v.Id).Find(&goods)
 				//if err10 != nil {
 				//	this.ReturnJson(map[string]string{"message":"查询商品错误"},400)
 				//}
-				beego.Info(err10)
-	   			if len(goods) == 0{
-					orderExecl = append(orderExecl,[]string{v.OrderSn,v.RepastDate,v.UserName,v.UserMobile,models.EatType[v.EatType],
-						models.MealType[v.MealType],"","","",
-						address,models.PayType[v.PayType],v.RiderName,v.RiderMobile})
-				}else {
-					for _,g := range goods{
-						orderExecl = append(orderExecl,[]string{v.OrderSn,v.RepastDate,v.UserName,v.UserMobile,models.EatType[v.EatType],
-							models.MealType[v.MealType],g.GoodsName,strconv.Itoa(g.Num),g.FinalPrice,
-						address,models.PayType[v.PayType],v.RiderName,v.RiderMobile})
-					}
-				}
+	   			//if len(goods) == 0{
+				//	orderExecl = append(orderExecl,[]string{v.OrderSn,v.RepastDate,v.UserName,v.UserMobile,models.EatType[v.EatType],
+				//		models.MealType[v.MealType],"","","",
+				//		address,models.PayType[v.PayType],v.RiderName,v.RiderMobile})
+				//}else {
+				//	for _,g := range goods{
+				//		orderExecl = append(orderExecl,[]string{v.OrderSn,v.RepastDate,v.UserName,v.UserMobile,models.EatType[v.EatType],
+				//			models.MealType[v.MealType],g.GoodsName,strconv.Itoa(g.Num),g.FinalPrice,
+				//		address,models.PayType[v.PayType],v.RiderName,v.RiderMobile})
+				//	}
+				//}
 
+				orderExecl = append(orderExecl,[]string{v.OrderSn,v.RepastDate,v.UserName,v.UserMobile,models.EatType[v.EatType],
+						models.MealType[v.MealType],v.GoodsName,strconv.Itoa(v.Num),v.FinalPrice,
+						address,models.PayType[v.PayType],v.RiderName,v.RiderMobile})
 
 			}
 
 	   		i++
 	   }
+	   //this.ReturnJson(map[string]interface{}{"data":"sss"},200)
 
 		beego.Info(orderExecl)
 	   ex := excelize.NewFile()
@@ -1394,17 +1457,20 @@ func(this *OrderController)Ceshi2(){
 		   }
 
 	   }
-	  err11 := ex.SaveAs("./Book.xlsx")
+	  buff,err11 := ex.WriteToBuffer()
 	   if err11 != nil {
 		   this.ReturnJson(map[string]string{"message":"已过期请重新登录"},400)
 	   }
 
-	   this.ReturnJson(map[string]string{"message":"结束"},400)
-
-
-
-
-
+	   this.Ctx.Output.Header("Content-Type", "application/octet-stream")
+	   this.Ctx.Output.Header("Content-Disposition", "attachment; filename="+fmt.Sprintf("%s", "Book.xlsx"))//文件名
+	   this.Ctx.Output.Header("Cache-Control", "must-revalidate, post-check=0, pre-check=0")
+	   this.Ctx.Output.Header("Pragma", "no-cache")
+	   this.Ctx.Output.Header("Expires", "0")
+	   _,err12 := io.Copy(this.Ctx.ResponseWriter,buff)
+	   if err12 != nil{
+		   this.ReturnJson(map[string]string{"message":"写入header出错"},400)
+	   }
    }
 
 
